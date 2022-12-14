@@ -1,3 +1,6 @@
 # quiz-master
 A live quiz presentation app.
-Built on Node.js using TypeScript, and React.
+Node.js
+React UI
+Express backend
+MySQL DB

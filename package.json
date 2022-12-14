@@ -1,0 +1,35 @@
+{
+  "name": "quiz-master",
+  "version": "1.0.0",
+  "description": "A live quiz presentation app",
+  "main": "main.js",
+  "scripts": {
+    "build": "webpack --mode production",
+    "start": "node ./src/server/main.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Malemm/quiz-master.git"
+  },
+  "author": "Malemnganba Mutum",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Malemm/quiz-master/issues"
+  },
+  "homepage": "https://github.com/Malemm/quiz-master#readme",
+  "dependencies": {
+    "express": "^4.18.2",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.20.5",
+    "@babel/preset-react": "^7.18.6",
+    "babel-loader": "^9.1.0",
+    "css-loader": "^6.7.3",
+    "style-loader": "^3.3.1",
+    "webpack": "^5.75.0",
+    "webpack-cli": "^5.0.1"
+  }
+}
