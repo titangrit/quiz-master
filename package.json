@@ -20,8 +20,11 @@
   "homepage": "https://github.com/Malemm/quiz-master#readme",
   "dependencies": {
     "express": "^4.18.2",
+    "morgan": "^1.10.0",
+    "morgan-json": "^1.1.0",
     "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "react-dom": "^18.2.0",
+    "winston": "^3.8.2"
   },
   "devDependencies": {
     "@babel/core": "^7.20.5",
