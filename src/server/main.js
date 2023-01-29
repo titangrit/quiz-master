@@ -10,7 +10,7 @@ app.use(httpLogger)
 app.use(express.static(path.join(__dirname, "..", "..", "public")))
 
 app.get('/', (req, res, next) => {
-    res.status(200).sendFile(path.join(__dirname, "..", "..", "public", "index.html"))
+    res.sendFile(path.join(__dirname, "..", "..", "public", "index.html"))
 })
 
 app.listen(PORT, () => logger.info('Express.js listening on port ' + PORT))
