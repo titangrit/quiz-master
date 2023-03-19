@@ -13,6 +13,13 @@ const QuizStatus = {
     Completed: 'COMPLETED'
 }
 
+const QuizAction = {
+    Start: 'Start',
+    Edit: 'Edit',
+    Resume: 'Resume',
+    ViewResult: 'View Result'
+}
+
 const BackgroundColor = {
     Color1: '#F9DE56',
     Color2: '#FECEA8',
@@ -22,4 +29,4 @@ const BackgroundColor = {
     Color6: '#F4ECFF'
 }
 
-module.exports = { Activity, QuizStatus, BackgroundColor }
+module.exports = { Activity, QuizStatus, QuizAction, BackgroundColor }

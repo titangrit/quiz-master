@@ -1,5 +1,5 @@
 import React from "react";
-import { Activity, QuizStatus, BackgroundColor } from "./constants";
+import { Activity, QuizStatus, QuizAction, BackgroundColor } from "./constants";
 import "./quizMaster.css";
 
 /**
@@ -107,42 +107,52 @@ class HomePage extends React.Component {
         quizzes.push({
             name: "quiz1",
             date: new Date(),
-            status: QuizStatus.Draft
+            status: QuizStatus.Draft,
+            action1: QuizAction.Start,
+            action2: QuizAction.Edit
         })
         quizzes.push({
             name: "quiz2",
             date: new Date(),
-            status: QuizStatus.Draft
+            status: QuizStatus.Draft,
+            action1: QuizAction.Start,
+            action2: QuizAction.Edit
         })
         quizzes.push({
             name: "quiz3",
             date: new Date(),
-            status: QuizStatus.Ready
+            status: QuizStatus.Ready,
+            action1: QuizAction.Edit
         })
         quizzes.push({
             name: "quiz4",
             date: new Date(),
-            status: QuizStatus.Ready
+            status: QuizStatus.Ready,
+            action1: QuizAction.Resume
         })
         quizzes.push({
-            name: "quiz5",
+            name: "very very long text very very long text very very long text very very long text very very long text very very long text very very long text very very long text",
             date: new Date(),
-            status: QuizStatus.Running
+            status: QuizStatus.Running,
+            action1: QuizAction.Resume
         })
         quizzes.push({
             name: "quiz6",
             date: new Date(),
-            status: QuizStatus.Running
+            status: QuizStatus.Running,
+            action1: QuizAction.Resume
         })
         quizzes.push({
             name: "quiz7",
             date: new Date(),
-            status: QuizStatus.Completed
+            status: QuizStatus.Completed,
+            action1: QuizAction.ViewResult
         })
         quizzes.push({
             name: "quiz8",
             date: new Date(),
-            status: QuizStatus.Completed
+            status: QuizStatus.Completed,
+            action1: QuizAction.ViewResult
         })
 
         return quizzes;
@@ -153,24 +163,14 @@ class HomePage extends React.Component {
         if (quizzes.length > 0) {
             return (
                 <div className="quizzes-table-container">
-                    {/* <table className="quizzes-table">
-                        {quizzes.map((item, index) => {
-                            return (
-                                <tr className="quiz-row">
-                                    <td className="quiz-name">{item.name}</td>
-                                    <td className="quiz-action">action-A</td>
-                                    <td className="quiz-action">action-B</td>
-                                </tr>
-                            )
-                        })}
-                    </table> */}
-
                     {quizzes.map((item, index) => {
                         return (
                             <div className="quiz-row">
-                                <div className="quiz-name">{item.name}</div>
-                                <div className="quiz-action">action-A</div>
-                                <div className="quiz-action">action-B</div>
+                                <p className="quiz-description">
+                                    {item.date.toLocaleDateString() + " | " + item.name}
+                                </p>
+                                <div className="quiz-action">{item.action1}</div>
+                                {item.action2 ? <div className="quiz-action">{item.action2}</div> : null}
                             </div>
                         )
                     })}
