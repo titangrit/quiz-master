@@ -1,15 +1,7 @@
-.banner {
-    font-family: 'Montserrat', sans-serif;
-    font-weight: bold;
-    text-align: center;
-}
-
-h1,
-
-h1 {
+/* h1 {
     margin-bottom: -10px;
     padding: 0;
-}
+} */
 
 /* label {
     color: #fff;
@@ -17,29 +9,30 @@ h1 {
 
 } */
 
-p {
+/* p {
     font-size: 16px;
     margin-bottom: 60px;
     padding: 0;
     color: #fff
-}
+} */
 
-span.line {
+/* span.line {
     text-decoration: line-through;
     font-style: italic;
     letter-spacing: -2px
-}
+} */
 
 div.bgCircle {
-    width: 420px;
-    padding: 10px;
+    width: 360px;
+    /* padding: 10px; */
     background: #fff;
     border-radius: 10px;
-    height: 70px;
+    height: 60px;
 
     display: flex;
     justify-content: center;
-    align-items: center
+    align-items: center;
+    margin: auto;
 }
 
 .circle {
@@ -48,8 +41,8 @@ div.bgCircle {
     justify-content: center;
     align-items: center;
     border-radius: 50%;
-    width: 50px;
-    height: 50px;
+    width: 40px;
+    height: 40px;
     border: none;
     margin: 10px;
     transition: ease-in-out 140ms;
@@ -57,7 +50,7 @@ div.bgCircle {
 }
 
 .circle:hover {
-    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.19), 0 3px 6px rgba(0, 0, 0, 0.23);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.19), 0 1px 2px rgba(0, 0, 0, 0.23);
     /* margin-top: -2px; */
 }
 
@@ -119,4 +112,110 @@ div.bgCircle {
 
 .color6 {
     background: #F4ECFF;
+}
+
+.banner {
+    font-family: 'Montserrat', sans-serif;
+    font-size: large;
+    font-weight: bold;
+    text-align: center;
+}
+
+.home-main-content {
+    width: fit-content;
+    height: fit-content;
+    padding-top: 40px;
+    padding-bottom: 40px;
+    margin: auto;
+}
+
+.create-quiz-event {
+    font-family: 'Montserrat', sans-serif;
+    background: #fff;
+    text-align: center;
+
+    /* display: flex;
+    justify-content: center;
+    align-items: center; */
+    /* border-radius: 10%; */
+
+    width: fit-content;
+    height: fit-content;
+
+    padding-top: 10px;
+    padding-bottom: 10px;
+    padding-right: 20px;
+    padding-left: 20px;
+
+    margin-top: 20px;
+    margin-bottom: 20px;
+
+    transition: ease-in-out 140ms;
+    cursor: pointer;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.19), 0 1px 2px rgba(0, 0, 0, 0.23);
+}
+
+.create-quiz-event:hover {
+    box-shadow: 0 2px 3px rgba(0, 0, 0, 0.19), 0 2px 3px rgba(0, 0, 0, 0.23);
+}
+
+.available-quizzes {
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+.quizzes-table-title {
+    font-family: 'Montserrat', sans-serif;
+}
+
+.quizzes-table-container {
+    background-color: #fed9ff;
+    width: 500px;
+    height: 300px;
+    overflow-x: hidden;
+    overflow-y: auto;
+    text-align: center;
+    padding: 10px;
+}
+
+.quizzes-table {
+    margin: auto;
+}
+
+.quiz-row {
+    padding: 20px;
+    margin: auto;
+    background-color: antiquewhite;
+}
+
+.quiz-name {
+    clear: both;
+    font-family: 'Montserrat', sans-serif;
+    width: 50%;
+    text-align: left;
+    vertical-align: middle;
+    /* padding-top: 10px;
+    padding-bottom: 10px;
+    padding-right: 20px;
+    padding-left: 20px;
+    margin: 20px; */
+}
+
+.quiz-action {
+    font-family: 'Montserrat', sans-serif;
+    background: #E84A5F;
+    text-align: center;
+    /* border-radius: 10%; */
+    width: fit-content;
+    height: fit-content;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    padding-right: 20px;
+    padding-left: 20px;
+    margin-left: 20px;
+    margin-right: 20px;
+    transition: ease-in-out 140ms;
+    cursor: pointer;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.19), 0 1px 2px rgba(0, 0, 0, 0.23);
+    float: right;
 }

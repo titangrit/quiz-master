@@ -6,6 +6,13 @@ const Activity = {
     Play: 'PLAY'
 }
 
+const QuizStatus = {
+    Draft: 'DRAFT',
+    Ready: 'READY',
+    Running: 'RUNNING',
+    Completed: 'COMPLETED'
+}
+
 const BackgroundColor = {
     Color1: '#F9DE56',
     Color2: '#FECEA8',
@@ -15,4 +22,4 @@ const BackgroundColor = {
     Color6: '#F4ECFF'
 }
 
-module.exports = { Activity, BackgroundColor }
+module.exports = { Activity, QuizStatus, BackgroundColor }

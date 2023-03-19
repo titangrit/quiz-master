@@ -1,5 +1,5 @@
 import React from "react";
-import { Activity, BackgroundColor } from "./constants";
+import { Activity, QuizStatus, BackgroundColor } from "./constants";
 import "./quizMaster.css";
 
 /**
@@ -62,15 +62,13 @@ class ColorPicker extends React.Component {
 
     render() {
         return (
-            <div className="">
-                <div className="bgCircle">
-                    <div className="circle color1" onClick={() => this.handleChange(BackgroundColor.Color1)}></div>
-                    <div className="circle color2" onClick={() => this.handleChange(BackgroundColor.Color2)}></div>
-                    <div className="circle color3" onClick={() => this.handleChange(BackgroundColor.Color3)}></div>
-                    <div className="circle color4" onClick={() => this.handleChange(BackgroundColor.Color4)}></div>
-                    <div className="circle color5" onClick={() => this.handleChange(BackgroundColor.Color5)}></div>
-                    <div className="circle color6" onClick={() => this.handleChange(BackgroundColor.Color6)}></div>
-                </div>
+            <div className="bgCircle">
+                <div className="circle color1" onClick={() => this.handleChange(BackgroundColor.Color1)}></div>
+                <div className="circle color2" onClick={() => this.handleChange(BackgroundColor.Color2)}></div>
+                <div className="circle color3" onClick={() => this.handleChange(BackgroundColor.Color3)}></div>
+                <div className="circle color4" onClick={() => this.handleChange(BackgroundColor.Color4)}></div>
+                <div className="circle color5" onClick={() => this.handleChange(BackgroundColor.Color5)}></div>
+                <div className="circle color6" onClick={() => this.handleChange(BackgroundColor.Color6)}></div>
             </div>
         )
     }
@@ -80,6 +78,10 @@ class ColorPicker extends React.Component {
  * Renders the quiz creation UI
  */
 class CreateQuiz extends React.Component {
+    constructor(props) {
+        super(props);
+    }
+
     render() {
         return (
             <div>
@@ -99,12 +101,105 @@ class HomePage extends React.Component {
         super(props);
     }
 
+    getAllQuizzes() {
+        // TODO: API call to get the list of available quizzes
+        let quizzes = [];
+        quizzes.push({
+            name: "quiz1",
+            date: new Date(),
+            status: QuizStatus.Draft
+        })
+        quizzes.push({
+            name: "quiz2",
+            date: new Date(),
+            status: QuizStatus.Draft
+        })
+        quizzes.push({
+            name: "quiz3",
+            date: new Date(),
+            status: QuizStatus.Ready
+        })
+        quizzes.push({
+            name: "quiz4",
+            date: new Date(),
+            status: QuizStatus.Ready
+        })
+        quizzes.push({
+            name: "quiz5",
+            date: new Date(),
+            status: QuizStatus.Running
+        })
+        quizzes.push({
+            name: "quiz6",
+            date: new Date(),
+            status: QuizStatus.Running
+        })
+        quizzes.push({
+            name: "quiz7",
+            date: new Date(),
+            status: QuizStatus.Completed
+        })
+        quizzes.push({
+            name: "quiz8",
+            date: new Date(),
+            status: QuizStatus.Completed
+        })
+
+        return quizzes;
+    }
+
+    displayQuizzes() {
+        let quizzes = this.getAllQuizzes()
+        if (quizzes.length > 0) {
+            return (
+                <div className="quizzes-table-container">
+                    {/* <table className="quizzes-table">
+                        {quizzes.map((item, index) => {
+                            return (
+                                <tr className="quiz-row">
+                                    <td className="quiz-name">{item.name}</td>
+                                    <td className="quiz-action">action-A</td>
+                                    <td className="quiz-action">action-B</td>
+                                </tr>
+                            )
+                        })}
+                    </table> */}
+
+                    {quizzes.map((item, index) => {
+                        return (
+                            <div className="quiz-row">
+                                <div className="quiz-name">{item.name}</div>
+                                <div className="quiz-action">action-A</div>
+                                <div className="quiz-action">action-B</div>
+                            </div>
+                        )
+                    })}
+                </div>
+            )
+        } else {
+            return (
+                <p className="quiz-name">No items to display</p>
+            )
+        }
+    }
+
     render() {
+
         return (
             <div>
                 <Banner />
-                <div>This is the HomePage component</div>
-                <button onClick={this.props.createQuiz}>Create Quiz</button>
+
+                <div className="home-main-content">
+
+                    <div className="create-quiz-event" onClick={this.props.createQuiz}>New Quiz Event</div>
+
+                    <div className="available-quizzes">
+                        <p className="quizzes-table-title">Available Quizzes</p>
+                        {this.displayQuizzes()}
+                    </div>
+
+                </div>
+
                 <label>
                     <ColorPicker
                         bgColor={this.props.bgColor}
