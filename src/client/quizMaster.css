@@ -1,4 +1,122 @@
 .banner {
+    font-family: 'Montserrat', sans-serif;
     font-weight: bold;
     text-align: center;
+}
+
+h1,
+
+h1 {
+    margin-bottom: -10px;
+    padding: 0;
+}
+
+/* label {
+    color: #fff;
+    margin-top: 5px;
+
+} */
+
+p {
+    font-size: 16px;
+    margin-bottom: 60px;
+    padding: 0;
+    color: #fff
+}
+
+span.line {
+    text-decoration: line-through;
+    font-style: italic;
+    letter-spacing: -2px
+}
+
+div.bgCircle {
+    width: 420px;
+    padding: 10px;
+    background: #fff;
+    border-radius: 10px;
+    height: 70px;
+
+    display: flex;
+    justify-content: center;
+    align-items: center
+}
+
+.circle {
+    float: left;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    border: none;
+    margin: 10px;
+    transition: ease-in-out 140ms;
+    cursor: pointer
+}
+
+.circle:hover {
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.19), 0 3px 6px rgba(0, 0, 0, 0.23);
+    /* margin-top: -2px; */
+}
+
+.color1 {
+    background: #F9DE56;
+}
+
+/* .color1:hover:after {
+    content: 'cool!';
+    color: #232323;
+    font-size: 12px;
+    margin-top: 90px
+} */
+
+.color2 {
+    background: #FECEA8;
+}
+
+/* .color2:hover:after {
+    content: 'amazing!';
+    color: #232323;
+    font-size: 12px;
+    margin-top: 90px
+} */
+
+
+.color3 {
+    background: #E84A5F;
+}
+
+/* .color3:hover:after {
+    content: 'try it';
+    color: #232323;
+    font-size: 12px;
+    margin-top: 90px
+} */
+
+.color4 {
+    background: #FF847C;
+}
+
+/* .color4:hover:after {
+    content: '<3';
+    color: #232323;
+    font-size: 12px;
+    margin-top: 90px
+} */
+
+.color5 {
+    background: #985bf0;
+}
+
+/* .color5:hover:after {
+    content: 'great!';
+    color: #232323;
+    font-size: 12px;
+    margin-top: 90px
+} */
+
+.color6 {
+    background: #F4ECFF;
 }

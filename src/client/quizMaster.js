@@ -1,5 +1,5 @@
 import React from "react";
-import { Activity } from "./utility";
+import { Activity, BackgroundColor } from "./constants";
 import "./quizMaster.css";
 
 /**
@@ -34,6 +34,49 @@ class Banner extends React.Component {
 }
 
 /**
+ * ColorPicker component
+ */
+class ColorPicker extends React.Component {
+    constructor(props) {
+        super(props);
+    }
+
+    handleChange(color) {
+        this.props.setBgColor(color)
+    }
+
+    /*for the lifecycle methods*/
+    updateBackgroundColor() {
+        let body = document.querySelector('body')
+        body.style.background = this.props.bgColor
+    }
+
+    /*lifecycle methods*/
+    componentDidMount() {
+        this.updateBackgroundColor()
+    }
+
+    componentDidUpdate() {
+        this.updateBackgroundColor()
+    }
+
+    render() {
+        return (
+            <div className="">
+                <div className="bgCircle">
+                    <div className="circle color1" onClick={() => this.handleChange(BackgroundColor.Color1)}></div>
+                    <div className="circle color2" onClick={() => this.handleChange(BackgroundColor.Color2)}></div>
+                    <div className="circle color3" onClick={() => this.handleChange(BackgroundColor.Color3)}></div>
+                    <div className="circle color4" onClick={() => this.handleChange(BackgroundColor.Color4)}></div>
+                    <div className="circle color5" onClick={() => this.handleChange(BackgroundColor.Color5)}></div>
+                    <div className="circle color6" onClick={() => this.handleChange(BackgroundColor.Color6)}></div>
+                </div>
+            </div>
+        )
+    }
+}
+
+/**
  * Renders the quiz creation UI
  */
 class CreateQuiz extends React.Component {
@@ -52,12 +95,22 @@ class CreateQuiz extends React.Component {
  * Renders the home page
  */
 class HomePage extends React.Component {
+    constructor(props) {
+        super(props);
+    }
+
     render() {
         return (
             <div>
                 <Banner />
                 <div>This is the HomePage component</div>
                 <button onClick={this.props.createQuiz}>Create Quiz</button>
+                <label>
+                    <ColorPicker
+                        bgColor={this.props.bgColor}
+                        setBgColor={(color) => this.props.setBgColor(color)}
+                    />
+                </label>
             </div>
         )
     }
@@ -71,7 +124,8 @@ export default class QuizMaster extends React.Component {
         super(props);
 
         this.state = {
-            activity: Activity.Home
+            activity: Activity.Home,
+            bgColor: BackgroundColor.Color1
         }
     }
 
@@ -115,6 +169,14 @@ export default class QuizMaster extends React.Component {
         )
     }
 
+    setBgColor(color) {
+        this.setState(
+            {
+                bgColor: color
+            }
+        )
+    }
+
     render() {
 
         switch (this.state.activity) {
@@ -132,6 +194,8 @@ export default class QuizMaster extends React.Component {
                         copyQuiz={() => this.copyQuiz()}
                         editQuiz={() => this.editQuiz()}
                         playQuiz={() => this.playQuiz()}
+                        bgColor={this.state.bgColor}
+                        setBgColor={(color) => this.setBgColor(color)}
                     />
                 )
         }
