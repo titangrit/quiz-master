@@ -190,9 +190,7 @@ class HomePage extends React.Component {
                 <Banner />
 
                 <div className="home-main-content">
-
-                    <div className="create-quiz-event" onClick={this.props.createQuiz}>New Quiz Event</div>
-
+                    <button className="new-quiz-button" onClick={this.props.createQuiz}>New Quiz Event</button>
                     <div className="available-quizzes">
                         <p className="quizzes-table-title">Available Quizzes</p>
                         {this.displayQuizzes()}
