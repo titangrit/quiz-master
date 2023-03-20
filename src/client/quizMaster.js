@@ -1,33 +1,23 @@
 import React from "react";
 import { Activity, QuizStatus, QuizAction, BackgroundColor } from "./constants";
+import CreateQuiz from "./createQuiz";
 import "./quizMaster.css";
 
 /**
  * Renders the quiz event name as banner
  */
-class Banner extends React.Component {
+class HomeBanner extends React.Component {
 
     constructor(props) {
         super(props);
-
-        // get quiz event name
-        let quizEventName;
-        if (this.props.eventId === undefined) {
-            quizEventName = 'QuizMaster';
-        } else {
-            // TODO: API call to get the name of this event
-            quizEventName = new Date();
-        }
-
-        this.state = {
-            quizEventName: quizEventName
-        }
     }
+
+    appName = 'QuizMaster';
 
     render() {
         return (
-            <div className="banner">
-                <h1 className="title">{this.state.quizEventName}</h1>
+            <div className="banner-homepage">
+                <h1 className="title">{this.appName}</h1>
             </div>
         )
     }
@@ -42,22 +32,22 @@ class ColorPicker extends React.Component {
     }
 
     handleChange(color) {
-        this.props.setBgColor(color)
+        this.props.setBgColor(color);
     }
 
     /*for the lifecycle methods*/
     updateBackgroundColor() {
-        let body = document.querySelector('body')
-        body.style.background = this.props.bgColor
+        let body = document.querySelector('body');
+        body.style.background = this.props.bgColor;
     }
 
     /*lifecycle methods*/
     componentDidMount() {
-        this.updateBackgroundColor()
+        this.updateBackgroundColor();
     }
 
     componentDidUpdate() {
-        this.updateBackgroundColor()
+        this.updateBackgroundColor();
     }
 
     render() {
@@ -70,33 +60,14 @@ class ColorPicker extends React.Component {
                 <div className="circle color5" onClick={() => this.handleChange(BackgroundColor.Color5)}></div>
                 <div className="circle color6" onClick={() => this.handleChange(BackgroundColor.Color6)}></div>
             </div>
-        )
-    }
-}
-
-/**
- * Renders the quiz creation UI
- */
-class CreateQuiz extends React.Component {
-    constructor(props) {
-        super(props);
-    }
-
-    render() {
-        return (
-            <div>
-                <Banner />
-                <div>This is the CreateQuiz component</div>
-                <button onClick={this.props.homePage}>Go to home page</button>
-            </div>
-        )
+        );
     }
 }
 
 /**
  * Renders the home page
  */
-class HomePage extends React.Component {
+export class HomePage extends React.Component {
     constructor(props) {
         super(props);
     }
@@ -159,7 +130,7 @@ class HomePage extends React.Component {
     }
 
     displayQuizzes() {
-        let quizzes = this.getAllQuizzes()
+        let quizzes = this.getAllQuizzes();
         if (quizzes.length > 0) {
             return (
                 <div className="quizzes-table-container">
@@ -175,11 +146,11 @@ class HomePage extends React.Component {
                         )
                     })}
                 </div>
-            )
+            );
         } else {
             return (
                 <p className="quiz-name">No items to display</p>
-            )
+            );
         }
     }
 
@@ -187,12 +158,12 @@ class HomePage extends React.Component {
 
         return (
             <div>
-                <Banner />
+                <HomeBanner />
 
                 <div className="home-main-content">
                     <button className="new-quiz-button" onClick={this.props.createQuiz}>New Quiz Event</button>
                     <div className="available-quizzes">
-                        <p className="quizzes-table-title">Available Quizzes</p>
+                        <p className="quizzes-table-title">Quizzes</p>
                         {this.displayQuizzes()}
                     </div>
 
@@ -205,7 +176,7 @@ class HomePage extends React.Component {
                     />
                 </label>
             </div>
-        )
+        );
     }
 }
 
@@ -227,7 +198,7 @@ export default class QuizMaster extends React.Component {
             {
                 activity: Activity.Home
             }
-        )
+        );
     }
 
     createQuiz() {
@@ -235,7 +206,7 @@ export default class QuizMaster extends React.Component {
             {
                 activity: Activity.Create
             }
-        )
+        );
     }
 
     copyQuiz() {
@@ -243,7 +214,7 @@ export default class QuizMaster extends React.Component {
             {
                 activity: Activity.Copy
             }
-        )
+        );
     }
 
     editQuiz() {
@@ -251,7 +222,7 @@ export default class QuizMaster extends React.Component {
             {
                 activity: Activity.Edit
             }
-        )
+        );
     }
 
     playQuiz() {
@@ -259,7 +230,7 @@ export default class QuizMaster extends React.Component {
             {
                 activity: Activity.Play
             }
-        )
+        );
     }
 
     setBgColor(color) {
@@ -267,7 +238,7 @@ export default class QuizMaster extends React.Component {
             {
                 bgColor: color
             }
-        )
+        );
     }
 
     render() {
@@ -276,9 +247,9 @@ export default class QuizMaster extends React.Component {
             case Activity.Create:
                 return (
                     <CreateQuiz
-                        homePage={() => this.homePage()}
+                        home={() => this.homePage()}
                     />
-                )
+                );
 
             default:
                 return (
@@ -290,7 +261,7 @@ export default class QuizMaster extends React.Component {
                         bgColor={this.state.bgColor}
                         setBgColor={(color) => this.setBgColor(color)}
                     />
-                )
+                );
         }
 
     }
