@@ -1,47 +1,52 @@
-.app-name {
-    font-family: 'Montserrat', sans-serif;
-    font-size: x-large;
-    font-weight: bold;
-    text-align: left;
-    margin-top: 40px;
-    margin-left: 40px;
-}
-
 .home-button {
-    background-color: whitesmoke;
+    align-items: center;
+    background-color: #fff;
     border-radius: 12px;
-    /* box-shadow: transparent 0 0 0 3px, rgba(18, 18, 18, .1) 0 6px 20px; */
+    box-shadow: transparent 0 0 0 3px, rgba(18, 18, 18, .1) 0 6px 20px;
     box-sizing: border-box;
     color: #121212;
     cursor: pointer;
     display: inline-flex;
     flex: 1 1 auto;
-    /* font-family: 'Montserrat', sans-serif; */
-    /* font-size: 1rem; */
-    /* font-weight: 700; */
-    /* justify-content: center; */
+    font-family: 'Montserrat', sans-serif;
+    font-size: 1rem;
+    font-weight: 700;
+    justify-content: center;
     line-height: 1;
-    /* margin: 0; */
+    margin-top: 40px;
+    margin-left: 40px;
     outline: none;
-    /* padding: 1rem 1.2rem; */
-    /* text-align: center; */
+    padding: 0.5rem 0.6rem;
+    text-align: center;
     text-decoration: none;
     transition: box-shadow .2s, -webkit-box-shadow .2s;
     white-space: nowrap;
-    /* border: 0; */
+    border: 0;
     user-select: none;
     -webkit-user-select: none;
     touch-action: manipulation;
 }
 
 .home-button:hover {
-    box-shadow: #121212 0 0 0 1px, transparent 0 0 0 0;
+    box-shadow: grey 0 0 0 3px, transparent 0 0 0 0;
 }
 
-.quiz-banner-text {
+.activity-title {
+    margin-bottom: 0.5rem;
+}
+
+.activity-title-itself {
     font-family: 'Montserrat', sans-serif;
-    font-size: larger;
+    font-size: 1rem;
+    font-weight: bold;
+    display: inline-block;
+}
+
+.activity-title-desc {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 1.4rem;
     font-weight: normal;
-    text-align: center;
-    margin-bottom: 40px;
+    padding-left: 1rem;
+    display: inline-block;
+    padding-left: 1rem;
 }

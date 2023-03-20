@@ -1,6 +1,7 @@
 import React from "react";
 import "./createQuiz.css";
-import { Banner } from "./common";
+import { HomeButton, ActivityTitle } from "./common";
+
 
 /**
  * Create quiz component
@@ -16,12 +17,15 @@ export default class CreateQuiz extends React.Component {
     render() {
         return (
             <div>
-                <Banner
-                    bannerText={this.state.quizEventName}
+                <HomeButton
                     home={this.props.home}
                 />
-                <div>This is the CreateQuiz component</div>
-                <button onClick={this.props.home}>Go to home page</button>
+
+                <ActivityTitle
+                    activityTitle={'New Quiz Event'}
+                    activityTitleDesc={'Quiz Championship 2023'}
+                />
+
             </div>
         );
     }

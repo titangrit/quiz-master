@@ -1,7 +1,7 @@
 import React from "react";
-import "./common.css";PageTransitionEvent
+import "./common.css";
 
-export class Banner extends React.Component {
+export class HomeButton extends React.Component {
     constructor(props) {
         super(props);
     }
@@ -11,9 +11,24 @@ export class Banner extends React.Component {
     render() {
         return (
             <div className="banner">
-                <button className="app-name home-button" onClick={this.props.home}>{this.appName}</button>
-                <h3 className="quiz-banner-text">{this.props.bannerText}</h3>
+                <button className="home-button" onClick={this.props.home}>{this.appName}</button>
             </div>
+        );
+    }
+}
+
+export class ActivityTitle extends React.Component {
+    constructor(props) {
+        super(props);
+    }
+
+    render() {
+        return (
+            <div className="activity-title">
+                <p className="activity-title-itself">{this.props.activityTitle}</p>
+                {this.props.activityTitleDesc ? <p className="activity-title-desc">{this.props.activityTitleDesc}</p> : null}
+            </div>
+
         );
     }
 }
