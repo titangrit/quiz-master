@@ -7,10 +7,10 @@ const Activity = {
 }
 
 const QuizStatus = {
-    Draft: 'DRAFT',
-    Ready: 'READY',
-    Running: 'RUNNING',
-    Completed: 'COMPLETED'
+    Draft: '1',
+    Ready: '2',
+    Running: '3',
+    Completed: '4'
 }
 
 const QuizAction = {
@@ -18,6 +18,14 @@ const QuizAction = {
     Edit: 'Edit',
     Resume: 'Resume',
     ViewResult: 'View Result'
+}
+
+const ModifyQuizStep = {
+    BasicInfo: 1,
+    TeamInfo: 2,
+    RoundInfo: 3,
+    QuestionInfo: 4,
+    LastStep: 4
 }
 
 const BackgroundColor = {
@@ -29,4 +37,4 @@ const BackgroundColor = {
     Color6: '#F4ECFF'
 }
 
-module.exports = { Activity, QuizStatus, QuizAction, BackgroundColor }
+module.exports = { Activity, QuizStatus, QuizAction, ModifyQuizStep, BackgroundColor }
