@@ -6,7 +6,7 @@ import "./quizMaster.css";
 /**
  * Renders the quiz event name as banner
  */
-class HomeBanner extends React.Component {
+class Logo extends React.Component {
 
     constructor(props) {
         super(props);
@@ -16,8 +16,8 @@ class HomeBanner extends React.Component {
 
     render() {
         return (
-            <div className="banner-homepage">
-                <h1 className="title">{this.appName}</h1>
+            <div className="logo-homepage">
+                <h1>{this.appName}</h1>
             </div>
         )
     }
@@ -158,7 +158,7 @@ export class HomePage extends React.Component {
 
         return (
             <div>
-                <HomeBanner />
+                <Logo />
 
                 <div className="home-main-content">
                     <button className="new-quiz-button" onClick={this.props.createQuiz}>New Quiz Event</button>
@@ -169,12 +169,12 @@ export class HomePage extends React.Component {
 
                 </div>
 
-                <label>
+                {/* <label>
                     <ColorPicker
                         bgColor={this.props.bgColor}
                         setBgColor={(color) => this.props.setBgColor(color)}
                     />
-                </label>
+                </label> */}
             </div>
         );
     }
