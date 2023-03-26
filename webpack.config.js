@@ -1,3 +1,4 @@
+require('dotenv').config();
 const path = require("path");
 const webpack = require("webpack");
 
@@ -7,7 +8,7 @@ const PROD = JSON.parse(process.env.PROD_ENV || '0');
 
 module.exports = {
     mode: "development",
-    // devtool: !!PROD ? false : 'inline-source-map',
+    devtool: !!PROD ? false : 'inline-source-map',
     // entry: "./src/client/index.js",
     entry: {
         index: {
