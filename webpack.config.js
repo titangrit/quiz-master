@@ -6,11 +6,23 @@ const TerserPlugin = require('terser-webpack-plugin');
 const PROD = JSON.parse(process.env.PROD_ENV || '0');
 
 module.exports = {
-    entry: "./src/client/index.js",
     mode: "development",
     // devtool: !!PROD ? false : 'inline-source-map',
+    // entry: "./src/client/index.js",
+    entry: {
+        index: {
+            import: './src/client/homePage/renderHomePage.js',
+            // dependOn: ['common', 'react'],
+        },
+        new_quiz: {
+            import: './src/client/newQuiz/renderNewQuiz.js',
+            // dependOn: ['common', 'react'],
+        },
+        // common: './src/client/common',
+        // react: 'react',
+    },
     output: {
-        filename: !!PROD ? 'bundle.min.js' : 'bundle.js',
+        filename: !!PROD ? '[name].bundle.min.js' : '[name].bundle.js',
         path: path.resolve("public/dist"),
         publicPath: "/",
     },

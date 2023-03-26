@@ -1,0 +1,23 @@
+.activity-title {
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+    margin-left: 12rem;
+}
+
+.activity-title-itself {
+    font-family: 'Poppins', sans-serif;
+    font-size: 1rem;
+    font-weight: normal;
+    color: #fff;
+    display: inline;
+}
+
+.activity-title-desc {
+    font-family: 'Poppins', sans-serif;
+    font-size: 1.4rem;
+    font-weight: normal;
+    color: #fff;
+    padding-left: 1rem;
+    display: inline;
+    padding-left: 1rem;
+}

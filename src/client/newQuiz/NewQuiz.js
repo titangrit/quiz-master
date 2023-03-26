@@ -1,7 +1,6 @@
 import React from "react";
-import "./createQuiz.css";
-import { HomeButton, ActivityTitle } from "./common";
-import { ModifyQuizStep } from "./constants";
+import "./NewQuiz.css";
+import { HomeButton, ActivityTitle, ModifyQuizStep } from "../common";
 
 /**
  * Fill question information
@@ -126,7 +125,7 @@ class BasicInfo extends React.Component {
 /**
  * Create quiz component
  */
-export default class CreateQuiz extends React.Component {
+export default class NewQuiz extends React.Component {
     constructor(props) {
         super(props);
         this.state = {

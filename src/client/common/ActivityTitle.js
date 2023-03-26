@@ -1,21 +1,5 @@
 import React from "react";
-import "./common.css";
-
-export class HomeButton extends React.Component {
-    constructor(props) {
-        super(props);
-    }
-
-    appName = 'QuizMaster';
-
-    render() {
-        return (
-            <div className="banner">
-                <button className="home-button" onClick={this.props.home}>{this.appName}</button>
-            </div>
-        );
-    }
-}
+import "./ActivityTitle.css";
 
 export class ActivityTitle extends React.Component {
     constructor(props) {

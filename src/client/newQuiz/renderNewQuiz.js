@@ -1,6 +1,6 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import QuizMaster from "./quizMaster";
+import NewQuiz from "./NewQuiz";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
-root.render(<QuizMaster />);
+root.render(<NewQuiz />);
