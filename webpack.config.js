@@ -8,6 +8,7 @@ const PROD = JSON.parse(process.env.PROD_ENV || '0');
 module.exports = {
     entry: "./src/client/index.js",
     mode: "development",
+    // devtool: !!PROD ? false : 'inline-source-map',
     output: {
         filename: !!PROD ? 'bundle.min.js' : 'bundle.js',
         path: path.resolve("public/dist"),
@@ -38,4 +39,10 @@ module.exports = {
             },
         ],
     },
+    optimization: {
+        minimize: !!PROD ? true : false,
+        minimizer: [
+            new TerserPlugin(),
+        ],
+    }
 }
