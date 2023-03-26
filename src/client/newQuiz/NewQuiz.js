@@ -1,4 +1,12 @@
 import React from "react";
+import Container from "react-bootstrap/Container";
+import Row from "react-bootstrap/Row";
+import Col from "react-bootstrap/Col";
+import Navbar from "react-bootstrap/Navbar";
+import FloatingLabel from 'react-bootstrap/FloatingLabel';
+import Form from 'react-bootstrap/Form';
+import Button from 'react-bootstrap/Button';
+import "bootstrap/dist/css/bootstrap.min.css";
 import "./NewQuiz.css";
 import { HomeButton, ActivityTitle, ModifyQuizStep } from "../common";
 
@@ -98,26 +106,81 @@ class BasicInfo extends React.Component {
         super(props);
     }
 
+    handleSubmit = (event) => {
+        const form = event.currentTarget;
+        if (form.checkValidity() === false) {
+            event.preventDefault();
+            event.stopPropagation();
+        }
+
+    };
+
     render() {
         return (
-            <div>
-                <HomeButton
-                    home={this.props.home}
-                />
+            <>
+                <Navbar sticky="top" bg="dark" variant="dark">
+                    <Container>
+                        {/* Without Container, the element stays extreme left! */}
+                        <Navbar.Brand md={2} href="index.html">QuizMaster</Navbar.Brand>
+                    </Container>
+                </Navbar>
 
-                <ActivityTitle
-                    activityTitle={'New Quiz Event'}
-                />
+                <Container className="mt-4">
+                    <Row className="d-inline">
+                        <Col md="auto" className="d-inline">
+                            <p className="fs-3 d-inline">Basic Detail </p>
+                        </Col>
+                        <Col md="auto" className="d-inline">
+                            <p className="fs-4 d-inline">{`{ New Quiz }`}</p>
+                        </Col>
+                    </Row>
 
-                <div className="basic-info-container">
-                    <p className="create-content-desc">Basic Details</p>
-                    <div className="basic-info-content">
+                    <Row className="mt-5 d-flex justify-content-center">
+                        <Col md={4}>
+                            <Form onSubmit={this.handleSubmit}>
+                                <Row className="mb-4">
+                                    <FloatingLabel controlId="floatingInput" label="Quiz Event Name" className="px-1">
+                                        <Form.Control type="text" placeholder="Quiz Event Name" required />
+                                    </FloatingLabel>
+                                </Row>
+                                <Row className="mb-4">
+                                    <FloatingLabel controlId="floatingSelect" label="Number of Teams" className="px-1">
+                                        <Form.Select aria-label="Floating label select example">
+                                            <option value="2">{`2 (Two)`}</option>
+                                            <option value="3">{`3 (Three)`}</option>
+                                            <option value="4">{`4 (Four)`}</option>
+                                        </Form.Select>
+                                    </FloatingLabel>
+                                </Row>
+                                <Row className="mb-5">
+                                    <FloatingLabel controlId="floatingSelect" label="Number of Quiz Rounds" className="px-1">
+                                        <Form.Select aria-label="Floating label select example">
+                                            <option value="1">{`1 (One)`}</option>
+                                            <option value="2">{`2 (Two)`}</option>
+                                            <option value="3">{`3 (Three)`}</option>
+                                            <option value="4">{`4 (Four)`}</option>
+                                            <option value="5">{`5 (Five)`}</option>
+                                            <option value="6">{`6 (Six)`}</option>
+                                        </Form.Select>
+                                    </FloatingLabel>
+                                </Row>
 
-                    </div>
+                                <Row className="mb-4">
+                                    <Button variant="primary" size="lg" type="submit">
+                                        Save and Continue
+                                    </Button>
+                                </Row>
 
-                </div>
-
-            </div>
+                                <Row>
+                                    <Button variant="outline-danger" size="lg" type="null" onClick={() => { window.location.replace("index.html") }}>
+                                        Cancel
+                                    </Button>
+                                </Row>
+                            </Form>
+                        </Col>
+                    </Row>
+                </Container >
+            </>
         );
     }
 }
