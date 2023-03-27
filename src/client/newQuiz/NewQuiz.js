@@ -1,4 +1,7 @@
 import React from "react";
+import "bootstrap/dist/css/bootstrap.min.css";
+import "./NewQuiz.css";
+import { HomeButton, ActivityTitle, ModifyQuizStep } from "../common";
 import Container from "react-bootstrap/Container";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
@@ -6,9 +9,7 @@ import Navbar from "react-bootstrap/Navbar";
 import FloatingLabel from 'react-bootstrap/FloatingLabel';
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
-import "bootstrap/dist/css/bootstrap.min.css";
-import "./NewQuiz.css";
-import { HomeButton, ActivityTitle, ModifyQuizStep } from "../common";
+import { FormLabel } from "react-bootstrap";
 
 /**
  * Fill question information
@@ -56,19 +57,134 @@ class RoundInfo extends React.Component {
         super(props);
     }
 
+
+    handleSubmit = (event) => {
+        const form = event.currentTarget;
+        event.preventDefault();
+        event.stopPropagation();
+
+        //@TODO extract the form data and POST to backend
+        for (let i = 0; i < this.props.numOfRounds; i++) {
+            //@TODO error handling if data is not somehow supplied
+        }
+
+        this.props.nextStep();
+    };
+
+    handleRoundTypeSelect = (event) => {
+        event.preventDefault();
+        event.stopPropagation();
+        console.log("handleRoundTypeSelect");
+    }
+
     render() {
+
+        let roundTypes = [{
+            UUID: "0",
+            Name: "Define New Round Type",
+            QFullMark: null,
+            IsMCQ: null,
+            IsAudioVisual: null,
+            TimerSeconds: null,
+            IsPassable: null
+        }]
+
+        //@TODO get the list of defined round types and append to roundTypes list
+        roundTypes.push({
+            UUID: "1",
+            Name: "Round Type X",
+            QFullMark: 10,
+            IsMCQ: true,
+            IsAudioVisual: false,
+            TimerSeconds: 30,
+            IsPassable: true
+        });
+        roundTypes.push({
+            UUID: "2",
+            Name: "Round Type Y",
+            QFullMark: 10,
+            IsMCQ: true,
+            IsAudioVisual: true,
+            TimerSeconds: 15,
+            IsPassable: false
+        });
+
         return (
-            <div>
-                <HomeButton
-                    home={this.props.home}
-                />
+            <React.Fragment>
+                <Navbar sticky="top" bg="dark" variant="dark">
+                    <Container>
+                        {/* Without Container, the element stays extreme left! */}
+                        <Navbar.Brand md={2} href="index.html">QuizMaster</Navbar.Brand>
+                    </Container>
+                </Navbar>
 
-                <ActivityTitle
-                    activityTitle={'New Quiz Event'}
-                    activityTitleDesc={'Quiz Championship 2023'}
-                />
+                <Container className="mt-4">
+                    <Row className="d-inline">
+                        <Col md="auto" className="d-inline">
+                            <p className="fs-3 d-inline">Quiz Rounds Detail </p>
+                        </Col>
+                        <Col md="auto" className="d-inline">
+                            <p className="fs-4 d-inline">{`{ New Quiz | ${this.props.quizEventName} }`}</p>
+                        </Col>
+                    </Row>
 
-            </div>
+                    <Form onSubmit={this.handleSubmit}>
+                        {
+                            (
+                                () => {
+                                    let content = [];
+                                    for (let i = 0; i < this.props.numOfRounds; i++) {
+                                        content.push(
+                                            <React.Fragment key={i}>
+                                                <Row className="mt-5 d-flex justify-content-center">
+                                                    <Col md={3}>
+                                                        <Row>
+                                                            <FormLabel>{`Round ${i + 1}`}</FormLabel>
+                                                            <FloatingLabel controlId={`round${i + 1}`} label={`Round Type`} className="px-1">
+                                                                <Form.Select aria-label="Floating label" onChange={this.handleRoundTypeSelect}>
+                                                                    {
+                                                                        (
+                                                                            () => {
+                                                                                let content = [];
+                                                                                for (let roundType of roundTypes) {
+                                                                                    content.push(<option key={roundType.UUID} value={roundType.UUID}>{roundType.Name}</option>);
+                                                                                }
+                                                                                return content;
+                                                                            }
+                                                                        )()
+                                                                    }
+                                                                </Form.Select>
+                                                            </FloatingLabel>
+
+                                                        </Row>
+                                                    </Col>
+                                                </Row>
+                                            </React.Fragment>
+                                        )
+                                    }
+                                    return content;
+                                }
+                            )()
+                        }
+                        {/* Buttons */}
+                        <Row className="mt-5 mb-5 d-flex justify-content-center">
+                            <Col md={3}>
+                                <Row className="mb-4">
+                                    <Button variant="primary" size="lg" type="submit">
+                                        Save and Continue
+                                    </Button>
+                                </Row>
+
+                                <Row className="mb-6">
+                                    <Button variant="outline-danger" size="lg" type="null" onClick={() => { window.location.replace("/") }}>
+                                        Cancel
+                                    </Button>
+                                </Row>
+                            </Col>
+                        </Row>
+                    </Form>
+                </Container>
+            </React.Fragment>
         );
     }
 }
@@ -97,7 +213,7 @@ class TeamInfo extends React.Component {
     render() {
 
         return (
-            <>
+            <React.Fragment>
                 <Navbar sticky="top" bg="dark" variant="dark">
                     <Container>
                         {/* Without Container, the element stays extreme left! */}
@@ -122,7 +238,7 @@ class TeamInfo extends React.Component {
                                     let content = [];
                                     for (let i = 0; i < this.props.numOfTeams; i++) {
                                         content.push(
-                                            <>
+                                            <React.Fragment key={i} >
                                                 {/* Team name */}
                                                 <Row className="mt-5 d-flex justify-content-left">
                                                     <Col md={3}>
@@ -229,7 +345,7 @@ class TeamInfo extends React.Component {
                                                         </Row>
                                                     </Col>
                                                 </Row>
-                                            </>
+                                            </React.Fragment>
                                         )
                                     }
                                     return content;
@@ -254,7 +370,7 @@ class TeamInfo extends React.Component {
                         </Row>
                     </Form>
                 </Container>
-            </>
+            </React.Fragment>
         );
     }
 }
@@ -286,7 +402,7 @@ class BasicInfo extends React.Component {
 
     render() {
         return (
-            <>
+            <React.Fragment>
                 <Navbar sticky="top" bg="dark" variant="dark">
                     <Container>
                         {/* Without Container, the element stays extreme left! */}
@@ -308,13 +424,13 @@ class BasicInfo extends React.Component {
                         <Col md={4}>
                             <Form onSubmit={this.handleSubmit}>
                                 <Row className="mb-4">
-                                    <FloatingLabel controlId="quizEventName" label="Quiz Event Name" className="px-1">
+                                    <FloatingLabel controlId="quizEventName" label="Quiz Event Name *Required" className="px-1">
                                         <Form.Control type="text" placeholder="Quiz Event Name" required />
                                     </FloatingLabel>
                                 </Row>
                                 <Row className="mb-4">
                                     <FloatingLabel controlId="numOfTeams" label="Number of Teams" className="px-1">
-                                        <Form.Select aria-label="Floating label select example">
+                                        <Form.Select aria-label="Floating label">
                                             <option value="2">{`2 (Two)`}</option>
                                             <option value="3">{`3 (Three)`}</option>
                                             <option value="4">{`4 (Four)`}</option>
@@ -323,7 +439,7 @@ class BasicInfo extends React.Component {
                                 </Row>
                                 <Row className="mb-5">
                                     <FloatingLabel controlId="numOfRounds" label="Number of Quiz Rounds" className="px-1">
-                                        <Form.Select aria-label="Floating label select example">
+                                        <Form.Select aria-label="Floating label">
                                             <option value="1">{`1 (One)`}</option>
                                             <option value="2">{`2 (Two)`}</option>
                                             <option value="3">{`3 (Three)`}</option>
@@ -349,7 +465,7 @@ class BasicInfo extends React.Component {
                         </Col>
                     </Row>
                 </Container >
-            </>
+            </React.Fragment>
         );
     }
 }
@@ -381,7 +497,6 @@ export default class NewQuiz extends React.Component {
     }
 
     nextAfterBasicInfo = (quizEventID, quizEventName, numOfRounds, numOfTeams) => {
-        console.log(this.state.createQuizStep);
         const nextStep = this.state.createQuizStep + 1;
         this.setState({
             createQuizStep: nextStep,
