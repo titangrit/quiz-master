@@ -72,8 +72,8 @@ export default class TeamInfo extends React.Component {
                                                     </Col>
                                                     <Col md={3}>
                                                         <Row>
-                                                            <FloatingLabel controlId={`team${i + 1}+Member1Name`} label={`Member 1 Name *Required`} className="px-1">
-                                                                <Form.Control type="text" placeholder={`Member 1 Name`} required />
+                                                            <FloatingLabel controlId={`team${i + 1}+Member1Name`} label={`Member 1 Name`} className="px-1">
+                                                                <Form.Control type="text" placeholder={`Member 1 Name`} />
                                                             </FloatingLabel>
                                                         </Row>
                                                     </Col>
@@ -134,7 +134,7 @@ export default class TeamInfo extends React.Component {
                                                     </Col>
                                                 </Row>
                                                 {/* Member 4 */}
-                                                <Row className="mt-4 d-flex justify-content-left">
+                                                <Row className="mt-4">
                                                     <Col md={3}>
                                                         <Row>
                                                             <FloatingLabel controlId={`team${i + 1}+Member4Surname`} label={`Member 4 Surname`} className="px-1">
@@ -165,7 +165,7 @@ export default class TeamInfo extends React.Component {
                             )()
                         }
                         {/* Buttons */}
-                        <Row className="mt-5 mb-5 d-flex">
+                        <Row className="mt-5 mb-5 d-flex justify-content-center">
                             <Col md={3}>
                                 <Row className="mb-4">
                                     <Button variant="primary" size="lg" type="submit">

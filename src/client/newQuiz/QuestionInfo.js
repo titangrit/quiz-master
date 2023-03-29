@@ -1,7 +1,5 @@
 import React from "react";
-import { HomeNavbar } from "../common";
 import "bootstrap/dist/css/bootstrap.min.css";
-import "./NewQuiz.css";
 import { HomeButton, ActivityTitle, ModifyQuizStep } from "../common";
 import Container from "react-bootstrap/Container";
 import Row from "react-bootstrap/Row";
