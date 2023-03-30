@@ -50,7 +50,6 @@ export default class NewQuiz extends React.Component {
                     <React.Fragment>
                         <HomeNavbar />
                         <BasicInfo
-                            home={this.props.home}
                             nextStep={this.nextAfterBasicInfo}
                         />
                     </React.Fragment>
@@ -61,7 +60,6 @@ export default class NewQuiz extends React.Component {
                     <React.Fragment>
                         <HomeNavbar />
                         <TeamInfo
-                            home={this.props.home}
                             quizEventName={this.state.quizEventName}
                             quizEventID={this.state.quizEventID}
                             numOfTeams={this.state.numOfTeams}
@@ -75,7 +73,6 @@ export default class NewQuiz extends React.Component {
                     <React.Fragment>
                         <HomeNavbar />
                         <RoundInfo
-                            home={this.props.home}
                             quizEventName={this.state.quizEventName}
                             quizEventID={this.state.quizEventID}
                             numOfRounds={this.state.numOfRounds}
@@ -89,7 +86,6 @@ export default class NewQuiz extends React.Component {
                     <React.Fragment>
                         <HomeNavbar />
                         <QuestionInfo
-                            home={this.props.home}
                             quizEventName={this.state.quizEventName}
                             quizEventID={this.state.quizEventID}
                             numOfRounds={this.state.numOfRounds}
