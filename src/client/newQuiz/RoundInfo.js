@@ -28,7 +28,9 @@ export default class RoundInfo extends React.Component {
             IsAudioVisual: false,
             TimerSeconds: 60,
             IsPassable: true
-        }]
+        }];
+
+        this.getRoundTypes();
 
     }
 
@@ -112,9 +114,6 @@ export default class RoundInfo extends React.Component {
     }
 
     render() {
-
-        this.getRoundTypes();
-
         return (
             <React.Fragment>
                 <Container className="mt-4">

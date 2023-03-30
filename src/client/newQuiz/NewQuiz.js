@@ -92,6 +92,8 @@ export default class NewQuiz extends React.Component {
                             home={this.props.home}
                             quizEventName={this.state.quizEventName}
                             quizEventID={this.state.quizEventID}
+                            numOfRounds={this.state.numOfRounds}
+                            numOfTeams={this.state.numOfTeams}
                             nextStep={() => this.nextStep()}
                         />
                     </React.Fragment>
