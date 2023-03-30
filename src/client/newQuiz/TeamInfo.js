@@ -7,6 +7,7 @@ import Col from "react-bootstrap/Col";
 import FloatingLabel from 'react-bootstrap/FloatingLabel';
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
+import Accordion from 'react-bootstrap/Accordion';
 
 /**
  * Fill team information
@@ -61,102 +62,109 @@ export default class TeamInfo extends React.Component {
                                                         </Row>
                                                     </Col>
                                                 </Row>
-                                                {/* Member 1 */}
-                                                <Row className="mt-4 d-flex justify-content-left">
-                                                    <Col md={3}>
-                                                        <Row>
-                                                            <FloatingLabel controlId={`team${i + 1}+Member1Surname`} label={`Member 1 Surname`} className="px-1">
-                                                                <Form.Control type="text" placeholder={`Member 1 Surname`} />
-                                                            </FloatingLabel>
-                                                        </Row>
-                                                    </Col>
-                                                    <Col md={3}>
-                                                        <Row>
-                                                            <FloatingLabel controlId={`team${i + 1}+Member1Name`} label={`Member 1 Name`} className="px-1">
-                                                                <Form.Control type="text" placeholder={`Member 1 Name`} />
-                                                            </FloatingLabel>
-                                                        </Row>
-                                                    </Col>
-                                                    <Col md={3}>
-                                                        <Row>
-                                                            <FloatingLabel controlId={`team${i + 1}+Member1Lastname`} label={`Member 1 Lastname`} className="px-1">
-                                                                <Form.Control type="text" placeholder={`Member 1 Lastname`} />
-                                                            </FloatingLabel>
-                                                        </Row>
-                                                    </Col>
-                                                </Row>
-                                                {/* Member 2 */}
-                                                <Row className="mt-4 d-flex justify-content-left">
-                                                    <Col md={3}>
-                                                        <Row>
-                                                            <FloatingLabel controlId={`team${i + 1}+Member2Surname`} label={`Member 2 Surname`} className="px-1">
-                                                                <Form.Control type="text" placeholder={`Member 2 Surname`} />
-                                                            </FloatingLabel>
-                                                        </Row>
-                                                    </Col>
-                                                    <Col md={3}>
-                                                        <Row>
-                                                            <FloatingLabel controlId={`team${i + 1}+Member2Name`} label={`Member 2 Name`} className="px-1">
-                                                                <Form.Control type="text" placeholder={`Member 2 Name`} />
-                                                            </FloatingLabel>
-                                                        </Row>
-                                                    </Col>
-                                                    <Col md={3}>
-                                                        <Row>
-                                                            <FloatingLabel controlId={`team${i + 1}+Member2Lastname`} label={`Member 2 Lastname`} className="px-1">
-                                                                <Form.Control type="text" placeholder={`Member 2 Lastname`} />
-                                                            </FloatingLabel>
-                                                        </Row>
-                                                    </Col>
-                                                </Row>
-                                                {/* Member 3 */}
-                                                <Row className="mt-4 d-flex justify-content-left">
-                                                    <Col md={3}>
-                                                        <Row>
-                                                            <FloatingLabel controlId={`team${i + 1}+Member3Surname`} label={`Member 3 Surname`} className="px-1">
-                                                                <Form.Control type="text" placeholder={`Member 3 Surname`} />
-                                                            </FloatingLabel>
-                                                        </Row>
-                                                    </Col>
-                                                    <Col md={3}>
-                                                        <Row>
-                                                            <FloatingLabel controlId={`team${i + 1}+Member3Name`} label={`Member 3 Name`} className="px-1">
-                                                                <Form.Control type="text" placeholder={`Member 3 Name`} />
-                                                            </FloatingLabel>
-                                                        </Row>
-                                                    </Col>
-                                                    <Col md={3}>
-                                                        <Row>
-                                                            <FloatingLabel controlId={`team${i + 1}+Member3Lastname`} label={`Member 3 Lastname`} className="px-1">
-                                                                <Form.Control type="text" placeholder={`Member 3 Lastname`} />
-                                                            </FloatingLabel>
-                                                        </Row>
-                                                    </Col>
-                                                </Row>
-                                                {/* Member 4 */}
-                                                <Row className="mt-4">
-                                                    <Col md={3}>
-                                                        <Row>
-                                                            <FloatingLabel controlId={`team${i + 1}+Member4Surname`} label={`Member 4 Surname`} className="px-1">
-                                                                <Form.Control type="text" placeholder={`Member 4 Surname`} />
-                                                            </FloatingLabel>
-                                                        </Row>
-                                                    </Col>
-                                                    <Col md={3}>
-                                                        <Row>
-                                                            <FloatingLabel controlId={`team${i + 1}+Member4Name`} label={`Member 4 Name`} className="px-1">
-                                                                <Form.Control type="text" placeholder={`Team ${i + 1} Member 4 Name`} />
-                                                            </FloatingLabel>
-                                                        </Row>
-                                                    </Col>
-                                                    <Col md={3}>
-                                                        <Row>
-                                                            <FloatingLabel controlId={`team${i + 1}+Member4Lastname`} label={`Member 4 Lastname`} className="px-1">
-                                                                <Form.Control type="text" placeholder={`Member 4 Lastname`} />
-                                                            </FloatingLabel>
-                                                        </Row>
-                                                    </Col>
-                                                </Row>
+                                                <Accordion className="mt-4" alwaysOpen>
+                                                    <Accordion.Item eventKey="i">
+                                                        <Accordion.Header>Members Detail</Accordion.Header>
+                                                        <Accordion.Body>
+                                                            {/* Member 1 */}
+                                                            <Row className="mt-2 d-flex justify-content-left">
+                                                                <Col md={3}>
+                                                                    <Row>
+                                                                        <FloatingLabel controlId={`team${i + 1}+Member1Surname`} label={`Member 1 Surname`} className="px-1">
+                                                                            <Form.Control type="text" placeholder={`Member 1 Surname`} />
+                                                                        </FloatingLabel>
+                                                                    </Row>
+                                                                </Col>
+                                                                <Col md={3}>
+                                                                    <Row>
+                                                                        <FloatingLabel controlId={`team${i + 1}+Member1Name`} label={`Member 1 Name`} className="px-1">
+                                                                            <Form.Control type="text" placeholder={`Member 1 Name`} />
+                                                                        </FloatingLabel>
+                                                                    </Row>
+                                                                </Col>
+                                                                <Col md={3}>
+                                                                    <Row>
+                                                                        <FloatingLabel controlId={`team${i + 1}+Member1Lastname`} label={`Member 1 Lastname`} className="px-1">
+                                                                            <Form.Control type="text" placeholder={`Member 1 Lastname`} />
+                                                                        </FloatingLabel>
+                                                                    </Row>
+                                                                </Col>
+                                                            </Row>
+                                                            {/* Member 2 */}
+                                                            <Row className="mt-4 d-flex justify-content-left">
+                                                                <Col md={3}>
+                                                                    <Row>
+                                                                        <FloatingLabel controlId={`team${i + 1}+Member2Surname`} label={`Member 2 Surname`} className="px-1">
+                                                                            <Form.Control type="text" placeholder={`Member 2 Surname`} />
+                                                                        </FloatingLabel>
+                                                                    </Row>
+                                                                </Col>
+                                                                <Col md={3}>
+                                                                    <Row>
+                                                                        <FloatingLabel controlId={`team${i + 1}+Member2Name`} label={`Member 2 Name`} className="px-1">
+                                                                            <Form.Control type="text" placeholder={`Member 2 Name`} />
+                                                                        </FloatingLabel>
+                                                                    </Row>
+                                                                </Col>
+                                                                <Col md={3}>
+                                                                    <Row>
+                                                                        <FloatingLabel controlId={`team${i + 1}+Member2Lastname`} label={`Member 2 Lastname`} className="px-1">
+                                                                            <Form.Control type="text" placeholder={`Member 2 Lastname`} />
+                                                                        </FloatingLabel>
+                                                                    </Row>
+                                                                </Col>
+                                                            </Row>
+                                                            {/* Member 3 */}
+                                                            <Row className="mt-4 d-flex justify-content-left">
+                                                                <Col md={3}>
+                                                                    <Row>
+                                                                        <FloatingLabel controlId={`team${i + 1}+Member3Surname`} label={`Member 3 Surname`} className="px-1">
+                                                                            <Form.Control type="text" placeholder={`Member 3 Surname`} />
+                                                                        </FloatingLabel>
+                                                                    </Row>
+                                                                </Col>
+                                                                <Col md={3}>
+                                                                    <Row>
+                                                                        <FloatingLabel controlId={`team${i + 1}+Member3Name`} label={`Member 3 Name`} className="px-1">
+                                                                            <Form.Control type="text" placeholder={`Member 3 Name`} />
+                                                                        </FloatingLabel>
+                                                                    </Row>
+                                                                </Col>
+                                                                <Col md={3}>
+                                                                    <Row>
+                                                                        <FloatingLabel controlId={`team${i + 1}+Member3Lastname`} label={`Member 3 Lastname`} className="px-1">
+                                                                            <Form.Control type="text" placeholder={`Member 3 Lastname`} />
+                                                                        </FloatingLabel>
+                                                                    </Row>
+                                                                </Col>
+                                                            </Row>
+                                                            {/* Member 4 */}
+                                                            <Row className="mt-4">
+                                                                <Col md={3}>
+                                                                    <Row>
+                                                                        <FloatingLabel controlId={`team${i + 1}+Member4Surname`} label={`Member 4 Surname`} className="px-1">
+                                                                            <Form.Control type="text" placeholder={`Member 4 Surname`} />
+                                                                        </FloatingLabel>
+                                                                    </Row>
+                                                                </Col>
+                                                                <Col md={3}>
+                                                                    <Row>
+                                                                        <FloatingLabel controlId={`team${i + 1}+Member4Name`} label={`Member 4 Name`} className="px-1">
+                                                                            <Form.Control type="text" placeholder={`Team ${i + 1} Member 4 Name`} />
+                                                                        </FloatingLabel>
+                                                                    </Row>
+                                                                </Col>
+                                                                <Col md={3}>
+                                                                    <Row>
+                                                                        <FloatingLabel controlId={`team${i + 1}+Member4Lastname`} label={`Member 4 Lastname`} className="px-1">
+                                                                            <Form.Control type="text" placeholder={`Member 4 Lastname`} />
+                                                                        </FloatingLabel>
+                                                                    </Row>
+                                                                </Col>
+                                                            </Row>
+                                                        </Accordion.Body>
+                                                    </Accordion.Item>
+                                                </Accordion>
                                             </React.Fragment>
                                         )
                                     }
