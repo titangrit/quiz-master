@@ -19,11 +19,22 @@ export default class NewQuiz extends React.Component {
             numOfRounds: null,
             numOfTeams: null
         }
+
+        this.confirmExit = this.confirmExit.bind(this);
+        window.addEventListener("beforeunload", this.confirmExit);
+    }
+
+    confirmExit = (e) => {
+        var confirmationMessage = "\o/";
+
+        (e || window.event).returnValue = confirmationMessage; //Gecko + IE
+        return confirmationMessage;                            //Webkit, Safari, Chrome
     }
 
     nextStep = () => {
         if (this.state.createQuizStep >= ModifyQuizStep.LastStep) {
             // if last step is reached, return home
+            window.removeEventListener("beforeunload", this.confirmExit);
             window.location.replace("/");
         }
 

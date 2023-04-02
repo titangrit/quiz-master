@@ -242,7 +242,7 @@ export default class RoundInfo extends React.Component {
                                 </Row>
 
                                 <Row className="mb-6">
-                                    <Button variant="outline-danger" size="lg" type="null" onClick={() => { window.location.replace("/") }}>
+                                    <Button variant="outline-danger" size="lg" type="button" onClick={() => { window.location.replace("/") }}>
                                         Cancel
                                     </Button>
                                 </Row>
