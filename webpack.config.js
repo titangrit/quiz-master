@@ -12,11 +12,11 @@ module.exports = {
     // entry: "./src/client/index.js",
     entry: {
         index: {
-            import: './src/client/homePage/renderHomePage.js',
+            import: './client/homePage/renderHomePage.js',
             // dependOn: ['common', 'react'],
         },
         new_quiz: {
-            import: './src/client/newQuiz/renderNewQuiz.js',
+            import: './client/newQuiz/renderNewQuiz.js',
             // dependOn: ['common', 'react'],
         },
         // common: './src/client/common',

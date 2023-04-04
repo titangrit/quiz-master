@@ -16,7 +16,7 @@ export default class BasicInfo extends React.Component {
         super(props);
     }
 
-    handleSubmit = (event) => {
+    handleSubmit = async (event) => {
         const form = event.currentTarget;
         event.preventDefault();
         event.stopPropagation();
@@ -28,6 +28,18 @@ export default class BasicInfo extends React.Component {
 
         //@TODO call POST the data to backend
         const quizID = '0';
+
+        let data = { element: "barium" };
+
+        const responseP = await fetch("/new_quiz/basic_info", {
+            method: "POST",
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+        })
+
+        console.log(responseP);
+        const responseR = await responseP.json();
+        console.log(responseR);
 
         this.props.nextStep(quizID, quizEventName, numOfRounds, numOfTeams);
 
