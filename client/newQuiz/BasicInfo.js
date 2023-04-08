@@ -17,37 +17,37 @@ export default class BasicInfo extends React.Component {
     }
 
     handleSubmit = async (event) => {
-        const form = event.currentTarget;
         event.preventDefault();
         event.stopPropagation();
+        
+        const form = event.currentTarget;
         const quizEventName = form.quizEventName.value;
         const numOfTeams = form.numOfTeams.value;
         const numOfRounds = form.numOfRounds.value;
+        let quizID;
 
-        //@TODO error handling if data is not somehow supplied
+        // POST the data to server
+        try {
+            let basicInfo = {
+                QuizEventName: quizEventName,
+                NumberOfTeams: numOfTeams,
+                NumberOfRounds: numOfRounds
+            }
 
-        //@TODO call POST the data to backend
+            const response = await fetch("/quiz/basic_info", {
+                method: "POST",
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(basicInfo)
+            });
 
-        let data = {
-            quizEventName: quizEventName,
-            numOfTeams: numOfTeams,
-            numOfRounds: numOfRounds
+            const _response = await response.json();
+            quizID = _response.quizID;
+
+            this.props.nextStep(quizID, quizEventName, numOfRounds, numOfTeams);
+
+        } catch (err) {
+            console.error(err);
         }
-
-        const responseP = await fetch("/quiz/basic_info", {
-            method: "POST",
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(data)
-        })
-
-        console.log(responseP);
-        const responseR = await responseP.json();
-        console.log(responseR);
-
-        const quizID = responseR?.quizID;
-
-        this.props.nextStep(quizID, quizEventName, numOfRounds, numOfTeams);
-
     };
 
     render() {

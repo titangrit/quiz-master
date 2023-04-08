@@ -17,17 +17,57 @@ export default class TeamInfo extends React.Component {
         super(props);
     }
 
-    handleSubmit = (event) => {
-        const form = event.currentTarget;
+    handleSubmit = async (event) => {
         event.preventDefault();
         event.stopPropagation();
 
-        //@TODO extract the form data and POST to backend
+        const form = event.currentTarget;
+
+        // extract the form data
+        const teamsInfo = [];
         for (let i = 0; i < this.props.numOfTeams; i++) {
-            //@TODO error handling if data is not somehow supplied
+            const _teamInfo = {
+                TeamName: form[`team${i + 1}+Name`].value,
+                Member1: {
+                    Surname: form[`team${i + 1}+Member1Surname`].value,
+                    Name: form[`team${i + 1}+Member1Name`].value,
+                    Lastname: form[`team${i + 1}+Member1Lastname`].value
+                },
+                Member2: {
+                    Surname: form[`team${i + 1}+Member2Surname`].value,
+                    Name: form[`team${i + 1}+Member2Name`].value,
+                    Lastname: form[`team${i + 1}+Member2Lastname`].value
+                },
+                Member3: {
+                    Surname: form[`team${i + 1}+Member3Surname`].value,
+                    Name: form[`team${i + 1}+Member3Name`].value,
+                    Lastname: form[`team${i + 1}+Member3Lastname`].value
+                },
+                Member4: {
+                    Surname: form[`team${i + 1}+Member4Surname`].value,
+                    Name: form[`team${i + 1}+Member4Name`].value,
+                    Lastname: form[`team${i + 1}+Member4Lastname`].value
+                }
+            }
+            teamsInfo.push(_teamInfo);
         }
 
-        this.props.nextStep();
+        // POST the data to server
+        try {
+            const response = await fetch("/quiz/team_info", {
+                method: "POST",
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(teamsInfo)
+            });
+
+            const _response = await response.json();
+            assert(_response.status === 200);
+
+            this.props.nextStep();
+
+        } catch (err) {
+            console.error(err);
+        }
     };
 
     render() {

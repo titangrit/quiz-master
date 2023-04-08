@@ -20,6 +20,7 @@ export namespace CreateParam {
     };
 
     interface CreateRoundTypeInstanceParam {
+        RoundTypeID: string,
         RoundTypeName: string,
         NumQuestionsEachTeam: number,
         FullMarkEachQuestion: number,

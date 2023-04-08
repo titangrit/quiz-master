@@ -13,13 +13,59 @@ class QuestionInfoEachRound extends React.Component {
         super(props);
     }
 
-    handleSubmit = (event) => {
+    handleSubmit = async (event) => {
         event.preventDefault();
         event.stopPropagation();
-        const form = event.currentTarget;
-        //@TODO extract the form data and POST to backend
 
-        this.props.nextRound();
+        const form = event.currentTarget;
+
+        // extract the form data
+        const questionsInfo = {
+            RoundUUID: this.props.roundDetail["UUID"],
+            Questions: []
+        };
+        const totalNumQuestions = this.props.numOfTeams * this.props.roundDetail["NumQuestions"];
+        for (let i = 1; i <= totalNumQuestions; i++) {
+            const _question = {
+                SequenceNumber: i,
+                Description: form[`question${i}`].value,
+            };
+
+            if (this.props.roundDetail["IsAudioVisual"]) {
+                _question.MediaUUID = form[`mediaQuestion${i}`].value;
+            }
+
+            if (this.props.roundDetail["IsMCQ"]) {
+                _question.Option1 = form[`optionAQuestion${i}`].value;
+                _question.Option2 = form[`optionBQuestion${i}`].value;
+                _question.Option3 = form[`optionCQuestion${i}`].value;
+                _question.Option4 = form[`optionDQuestion${i}`].value;
+
+                const correctOption = form[`correctOptionQuestion${i}`].value;
+                _question.Answer = form[`option${correctOption}Question${i}`].value;
+            } else {
+                _question.Answer = form[`answerQuestion${i}`].value;
+            }
+
+            questionsInfo.Questions.push(_question);
+        }
+
+        // POST the data to server
+        try {
+            const response = await fetch("/quiz/question_info", {
+                method: "POST",
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(questionsInfo)
+            });
+
+            const _response = await response.json();
+            assert(_response.status === 200);
+
+            this.props.nextStep();
+
+        } catch (err) {
+            console.error(err);
+        }
     };
 
     render() {
@@ -115,7 +161,7 @@ class QuestionInfoEachRound extends React.Component {
                                                                         </Row>
                                                                         <Row className="mt-4 d-flex">
                                                                             <Col md={3}>
-                                                                                <FloatingLabel controlId={`correctOptionQuestion${i + 1}`} label="Correct Option" className="px-1">
+                                                                                <FloatingLabel controlId={`correctOptionQuestion${i}`} label="Correct Option" className="px-1">
                                                                                     <Form.Select aria-label="Floating label">
                                                                                         <option value="A">{`Option A`}</option>
                                                                                         <option value="B">{`Option B`}</option>

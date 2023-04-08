@@ -34,17 +34,49 @@ export default class RoundInfo extends React.Component {
 
     }
 
-    handleSubmit = (event) => {
-        const form = event.currentTarget;
+    handleSubmit = async (event) => {
         event.preventDefault();
         event.stopPropagation();
 
-        //@TODO extract the form data and POST to backend
+        const form = event.currentTarget;
+
+        // extract the form data
+        const roundsInfo = [];
         for (let i = 0; i < this.props.numOfRounds; i++) {
-            //@TODO error handling if data is not somehow supplied
+            const _roundInfo = {};
+            const roundTypeID = form[`round${i + 1}`].value;
+            if (roundTypeID === this.newRoundTypeID) {
+                _roundInfo.RoundTypeID = form[`round${i + 1}TypeID`].value;
+                _roundInfo.RoundTypeName = form[`round${i + 1}TypeName`].value;
+                _roundInfo.NumQuestionsEachTeam = form[`round${i + 1}NumQuestions`].value;
+                _roundInfo.FullMarkEachQuestion = form[`round${i + 1}FullMarkEachQ`].value;
+                _roundInfo.IsMCQ = form[`round${i + 1}IsMCQ`].value;
+                _roundInfo.IsAVRound = form[`round${i + 1}IsAVRound`].value;
+                _roundInfo.IsPassable = form[`round${i + 1}IsPassable`].value;
+                _roundInfo.TimerSeconds = form[`round${i + 1}TimerSeconds`].value;
+            } else {
+                _roundInfo.RoundTypeID = roundTypeID;
+            }
+
+            roundsInfo.push(_roundInfo);
         }
 
-        this.props.nextStep();
+        // POST the data to server
+        try {
+            const response = await fetch("/quiz/round_info", {
+                method: "POST",
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(roundsInfo)
+            });
+
+            const _response = await response.json();
+            assert(_response.status === 200);
+
+            this.props.nextStep();
+
+        } catch (err) {
+            console.error(err);
+        }
     };
 
     handleRoundTypeSelect = (event) => {

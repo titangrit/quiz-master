@@ -14,20 +14,6 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(httpLogger);
 app.use(express.static(path.join(__dirname, "..", "..", "public")))
 
-// app.get('/', (req, res, next) => {
-//     res.sendFile(path.join(__dirname, "..", "..", "public"))
-// })
-
-// app.post('/quiz/*', (req: Request, res: Response) => {
-//     requestHandler.handleRequest(req, res);
-//     res.status(404).send('8')
-// })
-
-// app.get('/quiz/*', (req: Request, res: Response) => {
-//     requestHandler.handleRequest(req, res);
-//     res.status(404).send('8')
-// })
-
 const requestHandler = new RequestHandler();
 app.route('/quiz/*').get(requestHandler.handleGET).post(requestHandler.handlePOST);
 

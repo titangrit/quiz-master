@@ -15,9 +15,9 @@ export class RequestHandler {
         switch (req.params[0]) {
             case 'basic_info':
                 let param: CreateParam.QuizInstance = {
-                    QuizEventName: req.body?.quizEventName,
-                    NumberOfRounds: req.body?.numOfRounds,
-                    NumberOfTeams: req.body?.numOfTeams
+                    QuizEventName: req.body.QuizEventName,
+                    NumberOfRounds: req.body.NumberOfRounds,
+                    NumberOfTeams: req.body.NumberOfTeams
                 };
 
                 const quizID = await db.createQuizInstance(param);
