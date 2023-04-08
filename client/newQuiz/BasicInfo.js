@@ -27,11 +27,14 @@ export default class BasicInfo extends React.Component {
         //@TODO error handling if data is not somehow supplied
 
         //@TODO call POST the data to backend
-        const quizID = '0';
 
-        let data = { element: "barium" };
+        let data = {
+            quizEventName: quizEventName,
+            numOfTeams: numOfTeams,
+            numOfRounds: numOfRounds
+        }
 
-        const responseP = await fetch("/new_quiz/basic_info", {
+        const responseP = await fetch("/quiz/basic_info", {
             method: "POST",
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(data)
@@ -40,6 +43,8 @@ export default class BasicInfo extends React.Component {
         console.log(responseP);
         const responseR = await responseP.json();
         console.log(responseR);
+
+        const quizID = responseR?.quizID;
 
         this.props.nextStep(quizID, quizEventName, numOfRounds, numOfTeams);
 
