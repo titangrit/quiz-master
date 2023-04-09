@@ -1,4 +1,4 @@
-import { DbHandler, CreateParam, UpdateParam, QuizStatus } from "../common";
+import { DbHandler, CreateParam, UpdateParam, GetResponseParam, QuizStatus } from "../common";
 import * as mysql from 'mysql2/promise';
 import { v4 as uuidv4 } from 'uuid';
 import assert from 'node:assert';
@@ -104,7 +104,7 @@ export class DbHandlerMySql extends DbHandler {
     }
 
     async createRoundTypeInstance(param: CreateParam.RoundTypeInstance): Promise<string> {
-        const statement = "INSERT INTO `ROUND_TYPE` (`ID`, `NAME`, `NUM_Q_EACH_TEAM`, `FULL_MARK_EACH_Q`, `IS_MULTIPLE_CHOICE`, `IS_AUDIO_VISUAL`, `TIMER_SECONDS`, `IS_PASSABLE`) "
+        const statement = "INSERT IGNORE INTO `ROUND_TYPE` (`ID`, `NAME`, `NUM_Q_EACH_TEAM`, `FULL_MARK_EACH_Q`, `IS_MULTIPLE_CHOICE`, `IS_AUDIO_VISUAL`, `TIMER_SECONDS`, `IS_PASSABLE`) "
             + "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
         const values = [param.RoundTypeID, param.RoundTypeName, param.NumQuestionsEachTeam, param.FullMarkEachQuestion, param.IsMCQ, param.IsAVRound, param.TimerSeconds, param.IsPassable];
         const sql = mysql.format(statement, values);
@@ -173,6 +173,27 @@ export class DbHandlerMySql extends DbHandler {
         return questionUUID;
     }
 
+    async associateTeamsToQuiz(param: CreateParam.AssociateTeamsToQuiz): Promise<void> {
+        const statement = "UPDATE QUIZ SET TEAM_1_UUID = ?, TEAM_2_UUID = ?, TEAM_3_UUID = ?, TEAM_4_UUID = ? WHERE ID = ?";
+        const values = [param.Team1UUID, param.Team2UUID, param.Team3UUID, param.Team4UUID, param.QuizID];
+        const sql = mysql.format(statement, values);
+
+        try {
+            let [result, fields] = await this.db_conn.execute(sql);
+
+            let _result = JSON.parse(JSON.stringify(result));
+            assert(_result.affectedRows === 1)
+
+            logger.info(`DbHandlerMySql->associateTeamsToQuiz :: Teams added to Quiz ID: ${param.QuizID}`);
+        } catch (err) {
+            logger.error(`DbHandlerMySql->associateTeamsToQuiz :: Failed to Add Teams to Quiz ID: ${param.QuizID}`);
+            logger.error(err);
+            throw err;
+        }
+
+        return;
+    }
+
     async updateQuizInstance(param: UpdateParam.QuizInstance): Promise<void> {
         throw new Error("Method not implemented.");
     }
@@ -187,6 +208,62 @@ export class DbHandlerMySql extends DbHandler {
     }
     async updateQuestionInstance(param: UpdateParam.QuestionInstance): Promise<void> {
         throw new Error("Method not implemented.");
+    }
+
+    async getRoundTypes(): Promise<GetResponseParam.RoundType[]> {
+        const roundTypes: GetResponseParam.RoundType[] = [];
+        const statement: string = "SELECT * FROM ROUND_TYPE";
+
+        try {
+            let [result, fields] = await this.db_conn.execute(statement);
+            let _result = JSON.parse(JSON.stringify(result));
+
+            logger.info(`DbHandlerMySql->getRoundTypes :: Round Types Returned: ${_result}`);
+        } catch (err) {
+            logger.error(`DbHandlerMySql->getRoundTypes :: Failed to Return Round Types`);
+            logger.error(err);
+            throw err;
+        }
+        return roundTypes;
+    }
+
+    async getRoundTypeByID(roundTypeID: string): Promise<GetResponseParam.RoundType> {
+        let roundType: GetResponseParam.RoundType;
+        const statement: string = "SELECT * FROM ROUND_TYPE WHERE ID = ?";
+        const values = [roundTypeID];
+        const sql = mysql.format(statement, values);
+
+        try {
+            let [result, fields] = await this.db_conn.execute(sql);
+            let _result = JSON.parse(JSON.stringify(result));
+            roundType = _result;
+
+            logger.info(`DbHandlerMySql->getRoundTypeByID :: Round Type Returned by ID: ${_result}`);
+        } catch (err) {
+            logger.error(`DbHandlerMySql->getRoundTypeByID :: Failed to Return Round Type by ID`);
+            logger.error(err);
+            throw err;
+        }
+        return roundType;
+    }
+
+    async getRoundsByQuizID(quizID: number): Promise<GetResponseParam.Round[]> {
+        const rounds: GetResponseParam.Round[] = [];
+        const statement: string = "SELECT * FROM ROUND WHERE QUIZ_ID = ?";
+        const values = [quizID];
+        const sql = mysql.format(statement, values);
+
+        try {
+            let [result, fields] = await this.db_conn.execute(sql);
+            let _result = JSON.parse(JSON.stringify(result));
+
+            logger.info(`DbHandlerMySql->getRoundsByQuizID :: Rounds Returned: ${_result}`);
+        } catch (err) {
+            logger.error(`DbHandlerMySql->getRoundsByQuizID :: Failed to Return Rounds`);
+            logger.error(err);
+            throw err;
+        }
+        return rounds;
     }
 
 }

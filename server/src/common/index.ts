@@ -1,2 +1,2 @@
-export { DbHandler, CreateParam, UpdateParam } from "./dbHandler";
+export { DbHandler, CreateParam, UpdateParam, GetResponseParam } from "./dbHandler";
 export { QuizStatus } from "./constants";

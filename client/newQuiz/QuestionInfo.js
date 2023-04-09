@@ -64,7 +64,7 @@ class QuestionInfoEachRound extends React.Component {
             this.props.nextStep();
 
         } catch (err) {
-            console.error(err);
+            throw err;
         }
     };
 
@@ -226,65 +226,89 @@ export default class QuestionInfo extends React.Component {
 
         this.state = {
             roundCounter: 1,
-
         }
 
         this.roundDetails = [];
         this.getRoundDetails();
     }
 
-    getRoundDetails = () => {
+    getRoundDetails = async () => {
         // @TODO get the round type details for the quiz
-        const roundDetails = [
-            {
-                UUID: '0',
-                SeqNum: '2',
-                ID: "ROUND_Y",
-                Name: "Round Type Y",
-                NumQuestions: 3,
-                IsMCQ: true,
-                IsAudioVisual: true
-            },
-            {
-                UUID: '1',
-                SeqNum: '4',
-                ID: "ROUND_Z",
-                Name: "Round Type Z+",
-                NumQuestions: 4,
-                IsMCQ: false,
-                IsAudioVisual: false
-            },
-            {
-                UUID: '2',
-                SeqNum: '1',
-                ID: "ROUND_X",
-                Name: "Round Type X",
-                NumQuestions: 2,
-                IsMCQ: true,
-                IsAudioVisual: false
-            },
-            {
-                UUID: '3',
-                SeqNum: '3',
-                ID: "ROUND_Z",
-                Name: "Round Type Z",
-                NumQuestions: 2,
-                IsMCQ: false,
-                IsAudioVisual: true
+        // const roundDetails = [
+        //     {
+        //         UUID: '0',
+        //         SeqNum: '2',
+        //         ID: "ROUND_Y",
+        //         Name: "Round Type Y",
+        //         NumQuestions: 3,
+        //         IsMCQ: true,
+        //         IsAudioVisual: true
+        //     },
+        //     {
+        //         UUID: '1',
+        //         SeqNum: '4',
+        //         ID: "ROUND_Z",
+        //         Name: "Round Type Z+",
+        //         NumQuestions: 4,
+        //         IsMCQ: false,
+        //         IsAudioVisual: false
+        //     },
+        //     {
+        //         UUID: '2',
+        //         SeqNum: '1',
+        //         ID: "ROUND_X",
+        //         Name: "Round Type X",
+        //         NumQuestions: 2,
+        //         IsMCQ: true,
+        //         IsAudioVisual: false
+        //     },
+        //     {
+        //         UUID: '3',
+        //         SeqNum: '3',
+        //         ID: "ROUND_Z",
+        //         Name: "Round Type Z",
+        //         NumQuestions: 2,
+        //         IsMCQ: false,
+        //         IsAudioVisual: true
+        //     }
+        // ]
+
+        try {
+            const response = await fetch("/quiz/quiz_round_details", {
+                method: "GET",
+                headers: { 'Content-Type': 'application/json' }
+            });
+
+            const _response = await response.json();
+            assert(_response.status === 200);
+
+            for (let roundType of _response.QuizRoundTypes) {
+                let _detail = {
+                    UUID: roundType.UUID,
+                    SeqNum: roundType.SequenceNumber,
+                    ID: roundType.RoundTypeID,
+                    Name: roundType.RoundTypeName,
+                    NumQuestions: roundType.NumQuestionsEachTeam,
+                    IsMCQ: roundType.IsMCQ,
+                    IsAudioVisual: roundType.IsAVRound,
+                }
+                this.roundDetails.push(_detail);
             }
-        ]
+        } catch (err) {
+            throw err;
+        }
 
         // @TODO error handling if this.props.numOfRounds does not equal roundDetails.length
+        assert(this.props.numOfRounds === this.roundDetails.length);
 
-        const roundDetailsSorted = roundDetails.sort((a, b) => {
-            if (a.SeqNum > b.SeqNum) {
-                return 1;
-            } else {
-                return -1;
-            }
-        })
-
-        this.roundDetails.push(...roundDetailsSorted);
+        // const roundDetailsSorted = roundDetails.sort((a, b) => {
+        //     if (a.SeqNum > b.SeqNum) {
+        //         return 1;
+        //     } else {
+        //         return -1;
+        //     }
+        // })
+        // this.roundDetails.push(...roundDetailsSorted);
     };
 
     nextRound = () => {

@@ -24,32 +24,37 @@ export default class TeamInfo extends React.Component {
         const form = event.currentTarget;
 
         // extract the form data
-        const teamsInfo = [];
+        const teamsInfo = {
+            QuizID: this.props.quizEventID,
+            Teams: []
+        };
         for (let i = 0; i < this.props.numOfTeams; i++) {
             const _teamInfo = {
                 TeamName: form[`team${i + 1}+Name`].value,
-                Member1: {
-                    Surname: form[`team${i + 1}+Member1Surname`].value,
-                    Name: form[`team${i + 1}+Member1Name`].value,
-                    Lastname: form[`team${i + 1}+Member1Lastname`].value
-                },
-                Member2: {
-                    Surname: form[`team${i + 1}+Member2Surname`].value,
-                    Name: form[`team${i + 1}+Member2Name`].value,
-                    Lastname: form[`team${i + 1}+Member2Lastname`].value
-                },
-                Member3: {
-                    Surname: form[`team${i + 1}+Member3Surname`].value,
-                    Name: form[`team${i + 1}+Member3Name`].value,
-                    Lastname: form[`team${i + 1}+Member3Lastname`].value
-                },
-                Member4: {
-                    Surname: form[`team${i + 1}+Member4Surname`].value,
-                    Name: form[`team${i + 1}+Member4Name`].value,
-                    Lastname: form[`team${i + 1}+Member4Lastname`].value
-                }
+                Members: [
+                    {
+                        Surname: form[`team${i + 1}+Member1Surname`].value,
+                        Name: form[`team${i + 1}+Member1Name`].value,
+                        Lastname: form[`team${i + 1}+Member1Lastname`].value
+                    },
+                    {
+                        Surname: form[`team${i + 1}+Member2Surname`].value,
+                        Name: form[`team${i + 1}+Member2Name`].value,
+                        Lastname: form[`team${i + 1}+Member2Lastname`].value
+                    },
+                    {
+                        Surname: form[`team${i + 1}+Member3Surname`].value,
+                        Name: form[`team${i + 1}+Member3Name`].value,
+                        Lastname: form[`team${i + 1}+Member3Lastname`].value
+                    },
+                    {
+                        Surname: form[`team${i + 1}+Member4Surname`].value,
+                        Name: form[`team${i + 1}+Member4Name`].value,
+                        Lastname: form[`team${i + 1}+Member4Lastname`].value
+                    }
+                ]
             }
-            teamsInfo.push(_teamInfo);
+            teamsInfo.Teams.push(_teamInfo);
         }
 
         // POST the data to server
@@ -66,7 +71,7 @@ export default class TeamInfo extends React.Component {
             this.props.nextStep();
 
         } catch (err) {
-            console.error(err);
+            throw err;
         }
     };
 

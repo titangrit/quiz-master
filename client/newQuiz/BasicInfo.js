@@ -19,12 +19,16 @@ export default class BasicInfo extends React.Component {
     handleSubmit = async (event) => {
         event.preventDefault();
         event.stopPropagation();
-        
+
         const form = event.currentTarget;
         const quizEventName = form.quizEventName.value;
         const numOfTeams = form.numOfTeams.value;
         const numOfRounds = form.numOfRounds.value;
-        let quizID;
+        let quizEventID;
+
+        if (numOfTeams > 4) {
+            throw "Number of teams cannot be more than 4";
+        }
 
         // POST the data to server
         try {
@@ -41,12 +45,13 @@ export default class BasicInfo extends React.Component {
             });
 
             const _response = await response.json();
-            quizID = _response.quizID;
+            assert(_response.status === 200);
+            quizEventID = _response.quizID;
 
-            this.props.nextStep(quizID, quizEventName, numOfRounds, numOfTeams);
+            this.props.nextStep(quizEventID, quizEventName, numOfRounds, numOfTeams);
 
         } catch (err) {
-            console.error(err);
+            throw err;
         }
     };
 

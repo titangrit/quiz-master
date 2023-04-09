@@ -41,7 +41,10 @@ export default class RoundInfo extends React.Component {
         const form = event.currentTarget;
 
         // extract the form data
-        const roundsInfo = [];
+        const roundsInfo = {
+            QuizID: this.props.quizEventID,
+            Rounds: []
+        };
         for (let i = 0; i < this.props.numOfRounds; i++) {
             const _roundInfo = {};
             const roundTypeID = form[`round${i + 1}`].value;
@@ -58,7 +61,7 @@ export default class RoundInfo extends React.Component {
                 _roundInfo.RoundTypeID = roundTypeID;
             }
 
-            roundsInfo.push(_roundInfo);
+            roundsInfo.Rounds.push(_roundInfo);
         }
 
         // POST the data to server
@@ -75,7 +78,7 @@ export default class RoundInfo extends React.Component {
             this.props.nextStep();
 
         } catch (err) {
-            console.error(err);
+            throw err;
         }
     };
 
@@ -122,7 +125,7 @@ export default class RoundInfo extends React.Component {
     }
 
     //@TODO get the list of defined round types and append to this.roundTypes list
-    getRoundTypes = () => {
+    getRoundTypes = async () => {
         this.roundTypes.push({
             ID: "ROUND_X",
             Name: "Round Type X",
@@ -143,6 +146,33 @@ export default class RoundInfo extends React.Component {
             TimerSeconds: 15,
             IsPassable: false
         });
+
+        // get available Round Types
+        try {
+            const response = await fetch("/quiz/round_types", {
+                method: "GET",
+                headers: { 'Content-Type': 'application/json' }
+            });
+
+            const _response = await response.json();
+            assert(_response.status === 200);
+
+            for (let roundType of _response.RoundTypes) {
+                let _type = {
+                    ID: roundType.RoundTypeID,
+                    Name: roundType.RoundTypeName,
+                    NumQuestions: roundType.NumQuestionsEachTeam,
+                    QFullMark: roundType.FullMarkEachQuestion,
+                    IsMCQ: roundType.IsMCQ,
+                    IsAudioVisual: roundType.IsAVRound,
+                    TimerSeconds: roundType.TimerSeconds,
+                    IsPassable: roundType.IsPassable
+                }
+                this.roundTypes.push(_type);
+            }
+        } catch (err) {
+            throw err;
+        }
     }
 
     render() {
