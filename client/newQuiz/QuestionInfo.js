@@ -274,7 +274,7 @@ export default class QuestionInfo extends React.Component {
         // ]
 
         try {
-            const response = await fetch("/quiz/quiz_round_details", {
+            const response = await fetch("/quiz/quiz_round_details?quizID=" + this.props.quizEventID, {
                 method: "GET",
                 headers: { 'Content-Type': 'application/json' }
             });

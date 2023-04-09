@@ -9,13 +9,14 @@ export class RequestHandler {
 
         if (req.params[0] === 'round_types') {
 
-            const roundTypes = await db.getRoundTypes();
+            const roundTypes: GetResponseParam.RoundType[] = await db.getRoundTypes();
             res.json({ RoundTypes: roundTypes });
 
         } else if (req.params[0] === 'quiz_round_details') {
-            const quizID: number = 0;
-            const _rounds: GetResponseParam.Round[] = await db.getRoundsByQuizID(quizID);
+            const _quizID = req.query.quizID as string;
+            const quizID = parseInt(_quizID);
 
+            const _rounds: GetResponseParam.Round[] = await db.getRoundsByQuizID(quizID);
             const rounds = _rounds.sort((x, y) => {
                 if (x.SequenceNumber > y.SequenceNumber) {
                     return 1;
