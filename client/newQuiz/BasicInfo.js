@@ -44,8 +44,12 @@ export default class BasicInfo extends React.Component {
                 body: JSON.stringify(basicInfo)
             });
 
+            if (response.status !== 200) {
+                throw "Failed to Create Quiz";
+            };
+
             const _response = await response.json();
-            assert(_response.status === 200);
+
             quizEventID = _response.quizID;
 
             this.props.nextStep(quizEventID, quizEventName, numOfRounds, numOfTeams);

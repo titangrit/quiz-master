@@ -58,10 +58,11 @@ class QuestionInfoEachRound extends React.Component {
                 body: JSON.stringify(questionsInfo)
             });
 
-            const _response = await response.json();
-            assert(_response.status === 200);
+            if (response.status !== 200) {
+                throw "Failed to Set Question Info";
+            };
 
-            this.props.nextStep();
+            this.props.nextRound();
 
         } catch (err) {
             throw err;
@@ -226,10 +227,10 @@ export default class QuestionInfo extends React.Component {
 
         this.state = {
             roundCounter: 1,
+            roundDetailsObtained: false
         }
 
         this.roundDetails = [];
-        this.getRoundDetails();
     }
 
     getRoundDetails = async () => {
@@ -279,8 +280,11 @@ export default class QuestionInfo extends React.Component {
                 headers: { 'Content-Type': 'application/json' }
             });
 
+            if (response.status !== 200) {
+                throw "Failed to Get Round Details";
+            };
+
             const _response = await response.json();
-            assert(_response.status === 200);
 
             for (let roundType of _response.QuizRoundTypes) {
                 let _detail = {
@@ -299,7 +303,9 @@ export default class QuestionInfo extends React.Component {
         }
 
         // @TODO error handling if this.props.numOfRounds does not equal roundDetails.length
-        assert(this.props.numOfRounds === this.roundDetails.length);
+        if (this.props.numOfRounds != this.roundDetails.length) {
+            throw "Failed to Get Round Details";
+        };
 
         // const roundDetailsSorted = roundDetails.sort((a, b) => {
         //     if (a.SeqNum > b.SeqNum) {
@@ -323,7 +329,24 @@ export default class QuestionInfo extends React.Component {
         })
     }
 
+    async componentDidMount() {
+        if (!this.state.roundDetailsObtained) {
+            await this.getRoundDetails();
+            this.setState({
+                roundDetailsObtained: true
+            });
+        }
+    }
+
     render() {
+        if (!this.state.roundDetailsObtained) {
+            return (
+                <div>
+                    Fetching round details...
+                </div>
+            );
+        }
+
         return (
             <QuestionInfoEachRound
                 quizEventName={this.props.quizEventName}

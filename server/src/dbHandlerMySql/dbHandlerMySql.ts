@@ -68,11 +68,10 @@ export class DbHandlerMySql extends DbHandler {
             let [result, fields] = await this.db_conn.execute(sql);
 
             let _result = JSON.parse(JSON.stringify(result));
-            assert(memberUUID === _result.insertId)
+            assert(_result.affectedRows === 1, "DbHandlerMySql->createMemberInstance :: Failed to Create Member Instance");
 
             logger.info(`DbHandlerMySql->createMemberInstance :: Member Instance Successfully Created; UUID: ${memberUUID}`);
         } catch (err) {
-            logger.error("DbHandlerMySql->createMemberInstance :: Failed to Create Member Instance");
             logger.error(err);
             throw err;
         }
@@ -91,11 +90,10 @@ export class DbHandlerMySql extends DbHandler {
             let [result, fields] = await this.db_conn.execute(sql);
 
             let _result = JSON.parse(JSON.stringify(result));
-            assert(teamUUID === _result.insertId)
+            assert(_result.affectedRows === 1, "DbHandlerMySql->createTeamInstance :: Failed to Create Team Instance");
 
             logger.info(`DbHandlerMySql->createTeamInstance :: Team Instance Successfully Created; UUID: ${teamUUID}`);
         } catch (err) {
-            logger.error("DbHandlerMySql->createTeamInstance :: Failed to Create Team Instance");
             logger.error(err);
             throw err;
         }
@@ -113,11 +111,10 @@ export class DbHandlerMySql extends DbHandler {
             let [result, fields] = await this.db_conn.execute(sql);
 
             let _result = JSON.parse(JSON.stringify(result));
-            assert(param.RoundTypeID === _result.insertId)
+            assert(_result.affectedRows === 1, "DbHandlerMySql->createRoundTypeInstance :: Failed to Create RoundType Instance");
 
             logger.info(`DbHandlerMySql->createRoundTypeInstance :: RoundType Instance Successfully Created; UUID: ${_result.insertId}`);
         } catch (err) {
-            logger.error("DbHandlerMySql->createRoundTypeInstance :: Failed to Create RoundType Instance");
             logger.error(err);
             throw err;
         }
@@ -128,7 +125,7 @@ export class DbHandlerMySql extends DbHandler {
     async createRoundInstance(param: CreateParam.RoundInstance): Promise<string> {
         let roundUUID: string = uuidv4();
 
-        const statement = "INSERT INTO `ROUND` (`UUID`, `ROUND_TYPE_ID`, `QUIZ_ID`, `SEQUENCE_NUM) VALUES (?, ?, ?, ?)";
+        const statement = "INSERT INTO `ROUND` (`UUID`, `ROUND_TYPE_ID`, `QUIZ_ID`, `SEQUENCE_NUM`) VALUES (?, ?, ?, ?)";
         const values = [roundUUID, param.RoundTypeID, param.QuizID, param.SequenceNumber];
         const sql = mysql.format(statement, values);
 
@@ -136,11 +133,10 @@ export class DbHandlerMySql extends DbHandler {
             let [result, fields] = await this.db_conn.execute(sql);
 
             let _result = JSON.parse(JSON.stringify(result));
-            assert(roundUUID === _result.insertId)
+            assert(_result.affectedRows === 1, "DbHandlerMySql->createRoundInstance :: Failed to Create Round Instance");
 
             logger.info(`DbHandlerMySql->createRoundInstance :: Round Instance Successfully Created; UUID: ${roundUUID}`);
         } catch (err) {
-            logger.error("DbHandlerMySql->createRoundInstance :: Failed to Create Round Instance");
             logger.error(err);
             throw err;
         }
@@ -161,11 +157,10 @@ export class DbHandlerMySql extends DbHandler {
             let [result, fields] = await this.db_conn.execute(sql);
 
             let _result = JSON.parse(JSON.stringify(result));
-            assert(questionUUID === _result.insertId)
+            assert(_result.affectedRows === 1, "DbHandlerMySql->createQuestionInstance :: Failed to Create Question Instance");
 
             logger.info(`DbHandlerMySql->createQuestionInstance :: Question Instance Successfully Created; UUID: ${questionUUID}`);
         } catch (err) {
-            logger.error("DbHandlerMySql->createQuestionInstance :: Failed to Create Question Instance");
             logger.error(err);
             throw err;
         }
@@ -182,11 +177,10 @@ export class DbHandlerMySql extends DbHandler {
             let [result, fields] = await this.db_conn.execute(sql);
 
             let _result = JSON.parse(JSON.stringify(result));
-            assert(_result.affectedRows === 1)
+            assert(_result.affectedRows === 1, `DbHandlerMySql->associateTeamsToQuiz :: Failed to Add Teams to Quiz ID: ${param.QuizID}`);
 
             logger.info(`DbHandlerMySql->associateTeamsToQuiz :: Teams added to Quiz ID: ${param.QuizID}`);
         } catch (err) {
-            logger.error(`DbHandlerMySql->associateTeamsToQuiz :: Failed to Add Teams to Quiz ID: ${param.QuizID}`);
             logger.error(err);
             throw err;
         }
@@ -218,10 +212,23 @@ export class DbHandlerMySql extends DbHandler {
             let [result, fields] = await this.db_conn.execute(statement);
             let _result = JSON.parse(JSON.stringify(result));
 
-            logger.info(`DbHandlerMySql->getRoundTypes :: Round Types Returned: ${_result}`);
+            for (let eachRoundType of _result) {
+                const roundType: GetResponseParam.RoundType = {
+                    RoundTypeID: eachRoundType.ID,
+                    RoundTypeName: eachRoundType.NAME,
+                    NumQuestionsEachTeam: eachRoundType.NUM_Q_EACH_TEAM,
+                    FullMarkEachQuestion: eachRoundType.FULL_MARK_EACH_Q,
+                    IsMCQ: eachRoundType.IS_MULTIPLE_CHOICE,
+                    IsAVRound: eachRoundType.IS_AUDIO_VISUAL,
+                    IsPassable: eachRoundType.IS_PASSABLE,
+                    TimerSeconds: eachRoundType.TIMER_SECONDS
+                }
+                roundTypes.push(roundType);
+            }
+
+            logger.info(`DbHandlerMySql->getRoundTypes :: Round Types Returned: ${roundTypes.length}`);
         } catch (err) {
-            logger.error(`DbHandlerMySql->getRoundTypes :: Failed to Return Round Types`);
-            logger.error(err);
+            logger.error(`DbHandlerMySql->getRoundTypes :: Failed to Return Round Types`, err);
             throw err;
         }
         return roundTypes;
@@ -236,11 +243,22 @@ export class DbHandlerMySql extends DbHandler {
         try {
             let [result, fields] = await this.db_conn.execute(sql);
             let _result = JSON.parse(JSON.stringify(result));
-            roundType = _result;
 
-            logger.info(`DbHandlerMySql->getRoundTypeByID :: Round Type Returned by ID: ${_result}`);
+            assert(_result.length === 1, `DbHandlerMySql->getRoundTypeByID :: Failed to Return Round Type by ID`);
+
+            roundType = {
+                RoundTypeID: _result[0].ID,
+                RoundTypeName: _result[0].NAME,
+                NumQuestionsEachTeam: _result[0].NUM_Q_EACH_TEAM,
+                FullMarkEachQuestion: _result[0].FULL_MARK_EACH_Q,
+                IsMCQ: _result[0].IS_MULTIPLE_CHOICE,
+                IsAVRound: _result[0].IS_AUDIO_VISUAL,
+                IsPassable: _result[0].IS_PASSABLE,
+                TimerSeconds: _result[0].TIMER_SECONDS
+            }
+
+            logger.info(`DbHandlerMySql->getRoundTypeByID :: Round Type by ID Returned: ${roundType}`);
         } catch (err) {
-            logger.error(`DbHandlerMySql->getRoundTypeByID :: Failed to Return Round Type by ID`);
             logger.error(err);
             throw err;
         }
@@ -257,9 +275,19 @@ export class DbHandlerMySql extends DbHandler {
             let [result, fields] = await this.db_conn.execute(sql);
             let _result = JSON.parse(JSON.stringify(result));
 
-            logger.info(`DbHandlerMySql->getRoundsByQuizID :: Rounds Returned: ${_result}`);
+            assert(_result.length > 0, `DbHandlerMySql->getRoundsByQuizID :: Failed to Return Rounds`);
+
+            for (let eachRound of _result) {
+                const round: GetResponseParam.Round = {
+                    UUID: eachRound.UUID,
+                    RoundTypeID: eachRound.ROUND_TYPE_ID,
+                    SequenceNumber: eachRound.SEQUENCE_NUM
+                }
+                rounds.push(round);
+            }
+
+            logger.info(`DbHandlerMySql->getRoundsByQuizID :: Rounds Returned: ${rounds.length}`);
         } catch (err) {
-            logger.error(`DbHandlerMySql->getRoundsByQuizID :: Failed to Return Rounds`);
             logger.error(err);
             throw err;
         }

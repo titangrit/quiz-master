@@ -34,7 +34,6 @@ export class RequestHandler {
                     RoundTypeID: _round.RoundTypeID,
                     RoundTypeName: _roundType.RoundTypeName,
                     NumQuestionsEachTeam: _roundType.NumQuestionsEachTeam,
-                    FullMarkEachQuestion: _roundType.FullMarkEachQuestion,
                     IsMCQ: _roundType.IsMCQ,
                     IsAVRound: _roundType.IsAVRound
                 }
@@ -44,7 +43,7 @@ export class RequestHandler {
             res.json({ QuizRoundTypes: quizRoundTypes });
 
         } else {
-            res.status(404);
+            res.status(404).send();
         }
     }
 
@@ -132,7 +131,7 @@ export class RequestHandler {
 
             await db.associateTeamsToQuiz(param);
 
-            res.status(200);
+            res.status(200).send();
 
         } else if (req.params[0] === 'round_info') {
 
@@ -165,7 +164,7 @@ export class RequestHandler {
                 await db.createRoundInstance(param);
             }
 
-            res.status(200);
+            res.status(200).send();
 
         } else if (req.params[0] === 'question_info') {
 
@@ -188,10 +187,10 @@ export class RequestHandler {
                 await db.createQuestionInstance(param);
             }
 
-            res.status(200);
+            res.status(200).send();
 
         } else {
-            res.status(404);
+            res.status(404).send();
         }
     }
 }

@@ -16,6 +16,10 @@ export default class RoundInfo extends React.Component {
     constructor(props) {
         super(props);
 
+        this.state = {
+            roundTypesObtained: false
+        }
+
         this.newRoundTypeID = "NEW";
         this.newRoundTypeName = "Define New Round Type";
 
@@ -29,9 +33,6 @@ export default class RoundInfo extends React.Component {
             TimerSeconds: 60,
             IsPassable: true
         }];
-
-        this.getRoundTypes();
-
     }
 
     handleSubmit = async (event) => {
@@ -53,9 +54,9 @@ export default class RoundInfo extends React.Component {
                 _roundInfo.RoundTypeName = form[`round${i + 1}TypeName`].value;
                 _roundInfo.NumQuestionsEachTeam = form[`round${i + 1}NumQuestions`].value;
                 _roundInfo.FullMarkEachQuestion = form[`round${i + 1}FullMarkEachQ`].value;
-                _roundInfo.IsMCQ = form[`round${i + 1}IsMCQ`].value;
-                _roundInfo.IsAVRound = form[`round${i + 1}IsAVRound`].value;
-                _roundInfo.IsPassable = form[`round${i + 1}IsPassable`].value;
+                _roundInfo.IsMCQ = form[`round${i + 1}IsMCQ`].checked;
+                _roundInfo.IsAVRound = form[`round${i + 1}IsAVRound`].checked;
+                _roundInfo.IsPassable = form[`round${i + 1}IsPassable`].checked;
                 _roundInfo.TimerSeconds = form[`round${i + 1}TimerSeconds`].value;
             } else {
                 _roundInfo.RoundTypeID = roundTypeID;
@@ -72,8 +73,9 @@ export default class RoundInfo extends React.Component {
                 body: JSON.stringify(roundsInfo)
             });
 
-            const _response = await response.json();
-            assert(_response.status === 200);
+            if (response.status !== 200) {
+                throw "Failed to Set Round Info";
+            };
 
             this.props.nextStep();
 
@@ -116,11 +118,11 @@ export default class RoundInfo extends React.Component {
         isAVRound.disabled = selectedRoundID == this.newRoundTypeID ? false : true;
 
         const roundTypeID = document.getElementById(`round${index}TypeID`);
-        roundTypeID.value = round.ID;
+        roundTypeID.value = selectedRoundID == this.newRoundTypeID ? '' : round.ID;
         roundTypeID.disabled = selectedRoundID == this.newRoundTypeID ? false : true;
 
         const roundTypeName = document.getElementById(`round${index}TypeName`);
-        roundTypeName.value = round.Name;
+        roundTypeName.value = selectedRoundID == this.newRoundTypeID ? '' : round.Name;
         roundTypeName.disabled = selectedRoundID == this.newRoundTypeID ? false : true;
     }
 
@@ -154,8 +156,11 @@ export default class RoundInfo extends React.Component {
                 headers: { 'Content-Type': 'application/json' }
             });
 
+            if (response.status !== 200) {
+                throw "Failed to Get Available Round Types";
+            };
+
             const _response = await response.json();
-            assert(_response.status === 200);
 
             for (let roundType of _response.RoundTypes) {
                 let _type = {
@@ -175,7 +180,22 @@ export default class RoundInfo extends React.Component {
         }
     }
 
+    async componentDidMount() {
+        await this.getRoundTypes();
+        this.setState({
+            roundTypesObtained: true
+        })
+    }
+
     render() {
+        if (!this.state.roundTypesObtained) {
+            return (
+                <div>
+                    Fetching available round types...
+                </div>
+            );
+        }
+
         return (
             <React.Fragment>
                 <Container className="mt-4">

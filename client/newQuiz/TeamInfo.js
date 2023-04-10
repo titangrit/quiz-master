@@ -65,8 +65,9 @@ export default class TeamInfo extends React.Component {
                 body: JSON.stringify(teamsInfo)
             });
 
-            const _response = await response.json();
-            assert(_response.status === 200);
+            if (response.status !== 200) {
+                throw "Failed to Set Team Info";
+            };
 
             this.props.nextStep();
 
