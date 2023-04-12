@@ -1,4 +1,4 @@
-export enum QuizStatus {
+export enum QuizLifeCycleStatusCode {
     Draft = 1,
     Ready = 2,
     Running = 3,

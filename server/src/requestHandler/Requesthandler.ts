@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { DbHandlerMySql } from "../dbHandlerMySql";
-import { CreateParam, GetResponseParam, UpdateParam } from "../common";
+import { CreateParam, GetResponseParam, UpdateParam, ViewQuizData } from "../common";
 
 export class RequestHandler {
 
@@ -41,6 +41,146 @@ export class RequestHandler {
             }
 
             res.json({ QuizRoundTypes: quizRoundTypes });
+
+        } else if (req.params[0] === 'quiz_data') {
+            const _quizID = req.query.quizID as string;
+            const quizID = parseInt(_quizID);
+
+            const viewQuizData: ViewQuizData.Quiz = {} as ViewQuizData.Quiz;
+
+            // Basic Detail
+            const quiz: GetResponseParam.Quiz = await db.getQuizByID(quizID);
+            viewQuizData.QuizID = quiz.QuizID;
+            viewQuizData.QuizEventName = quiz.QuizEventname;
+            viewQuizData.LifecycleStatusCode = quiz.LifeycleStatusCode;
+
+            // Teams Detail
+            const teamUUIDs = [quiz.Team1UUID, quiz.Team2UUID, quiz.Team3UUID, quiz.Team4UUID];
+            const teams: GetResponseParam.Team[] = [];
+            for (let teamUUID of teamUUIDs) {
+                if (!teamUUID) {
+                    break;
+                }
+                const team: GetResponseParam.Team = await db.getTeamByUUID(teamUUID as string);
+                teams.push(team);
+            }
+
+            viewQuizData.Teams = [];
+            if (!!teams[0]) {
+                viewQuizData.Teams.push({
+                    TeamName: teams[0].TeamName,
+                    Member1: teams[0].Member1,
+                    Member2: teams[0].Member2,
+                    Member3: teams[0].Member3,
+                    Member4: teams[0].Member4,
+
+                });
+            }
+            if (!!teams[1]) {
+                viewQuizData.Teams.push({
+                    TeamName: teams[1].TeamName,
+                    Member1: teams[1].Member1,
+                    Member2: teams[1].Member2,
+                    Member3: teams[1].Member3,
+                    Member4: teams[1].Member4,
+
+                });
+            }
+            if (!!teams[2]) {
+
+                viewQuizData.Teams.push({
+                    TeamName: teams[2].TeamName,
+                    Member1: teams[2].Member1,
+                    Member2: teams[2].Member2,
+                    Member3: teams[2].Member3,
+                    Member4: teams[2].Member4,
+
+                });
+            }
+            if (!!teams[3]) {
+                viewQuizData.Teams.push({
+                    TeamName: teams[3].TeamName,
+                    Member1: teams[3].Member1,
+                    Member2: teams[3].Member2,
+                    Member3: teams[3].Member3,
+                    Member4: teams[3].Member4,
+
+                });
+            }
+
+            // Rounds Detail
+            viewQuizData.Rounds = [];
+
+            let _rounds: GetResponseParam.Round[] = await db.getRoundsByQuizID(quizID);
+            _rounds = _rounds.sort((x, y) => {
+                if (x.SequenceNumber > y.SequenceNumber) {
+                    return 1;
+                } else {
+                    return -1;
+                }
+            })
+
+            for (let round of _rounds) {
+                // Round type detail
+                const _roundType: GetResponseParam.RoundType = await db.getRoundTypeByID(round.RoundTypeID);
+
+                // Questions Detail
+                let _questions: GetResponseParam.Question[] = await db.getQuestionsByRoundUUID(round.UUID);
+                _questions = _questions.sort((x, y) => {
+                    if (x.SequenceNumber > y.SequenceNumber) {
+                        return 1;
+                    } else {
+                        return -1;
+                    }
+                });
+
+                const questions: ViewQuizData.Question[] = [];
+
+                for (let question of _questions) {
+
+                    let correctOption: string;
+                    if (question.Answer === question.Option1) {
+                        correctOption = "A";
+                    } else if (question.Answer === question.Option2) {
+                        correctOption = "B";
+                    } else if (question.Answer === question.Option3) {
+                        correctOption = "C";
+                    } else if (question.Answer === question.Option4) {
+                        correctOption = "D";
+                    } else {
+                        correctOption = '';
+                    }
+
+                    const q: ViewQuizData.Question = {
+                        SequenceNumber: question.SequenceNumber,
+                        Description: question.Description,
+                        Answer: question.Answer,
+                        Option1: question.Option1,
+                        Option2: question.Option2,
+                        Option3: question.Option3,
+                        Option4: question.Option4,
+                        CorrectOption: correctOption
+                    }
+
+                    questions.push(q);
+                }
+
+                viewQuizData.Rounds.push({
+                    SequenceNumber: round.SequenceNumber,
+                    RoundTypeID: _roundType.RoundTypeID,
+                    RoundTypeName: _roundType.RoundTypeName,
+                    FullMarkEachQuestion: _roundType.FullMarkEachQuestion,
+                    NumQuestionsEachTeam: _roundType.NumQuestionsEachTeam,
+                    IsMCQ: _roundType.IsMCQ,
+                    IsAVRound: _roundType.IsAVRound,
+                    IsPassable: _roundType.IsPassable,
+                    TimerSeconds: _roundType.TimerSeconds,
+                    Questions: questions
+                })
+
+            }
+
+            res.json(viewQuizData);
 
         } else {
             res.status(404).send();

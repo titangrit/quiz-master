@@ -234,46 +234,6 @@ export default class QuestionInfo extends React.Component {
     }
 
     getRoundDetails = async () => {
-        // @TODO get the round type details for the quiz
-        // const roundDetails = [
-        //     {
-        //         UUID: '0',
-        //         SeqNum: '2',
-        //         ID: "ROUND_Y",
-        //         Name: "Round Type Y",
-        //         NumQuestions: 3,
-        //         IsMCQ: true,
-        //         IsAudioVisual: true
-        //     },
-        //     {
-        //         UUID: '1',
-        //         SeqNum: '4',
-        //         ID: "ROUND_Z",
-        //         Name: "Round Type Z+",
-        //         NumQuestions: 4,
-        //         IsMCQ: false,
-        //         IsAudioVisual: false
-        //     },
-        //     {
-        //         UUID: '2',
-        //         SeqNum: '1',
-        //         ID: "ROUND_X",
-        //         Name: "Round Type X",
-        //         NumQuestions: 2,
-        //         IsMCQ: true,
-        //         IsAudioVisual: false
-        //     },
-        //     {
-        //         UUID: '3',
-        //         SeqNum: '3',
-        //         ID: "ROUND_Z",
-        //         Name: "Round Type Z",
-        //         NumQuestions: 2,
-        //         IsMCQ: false,
-        //         IsAudioVisual: true
-        //     }
-        // ]
-
         try {
             const response = await fetch("/quiz/quiz_round_details?quizID=" + this.props.quizEventID, {
                 method: "GET",
@@ -302,19 +262,10 @@ export default class QuestionInfo extends React.Component {
             throw err;
         }
 
-        // @TODO error handling if this.props.numOfRounds does not equal roundDetails.length
         if (this.props.numOfRounds != this.roundDetails.length) {
             throw "Failed to Get Round Details";
         };
 
-        // const roundDetailsSorted = roundDetails.sort((a, b) => {
-        //     if (a.SeqNum > b.SeqNum) {
-        //         return 1;
-        //     } else {
-        //         return -1;
-        //     }
-        // })
-        // this.roundDetails.push(...roundDetailsSorted);
     };
 
     nextRound = () => {
@@ -342,7 +293,7 @@ export default class QuestionInfo extends React.Component {
         if (!this.state.roundDetailsObtained) {
             return (
                 <div>
-                    Fetching round details...
+                    Fetching Round Details...
                 </div>
             );
         }

@@ -191,7 +191,7 @@ export default class RoundInfo extends React.Component {
         if (!this.state.roundTypesObtained) {
             return (
                 <div>
-                    Fetching available round types...
+                    Fetching Available Round Types...
                 </div>
             );
         }

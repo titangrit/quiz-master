@@ -1,2 +1,3 @@
 export { DbHandler, CreateParam, UpdateParam, GetResponseParam } from "./dbHandler";
-export { QuizStatus } from "./constants";
+export { QuizLifeCycleStatusCode } from "./constants";
+export { ViewQuizData } from "./types";

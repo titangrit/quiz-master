@@ -35,7 +35,8 @@ export default class NewQuiz extends React.Component {
         if (this.state.createQuizStep >= ModifyQuizStep.LastStep) {
             // if last step is reached, return home
             window.removeEventListener("beforeunload", this.confirmExit);
-            window.location.replace("/");
+            // window.location.replace("/");
+            window.location.replace(`/view_quiz.html?quizID=${this.state.quizEventID}`);
         }
 
         this.setState({

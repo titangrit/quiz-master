@@ -1,3 +1,5 @@
+import { QuizLifeCycleStatusCode } from "./constants";
+
 export namespace CreateParam {
     interface CreateQuizInstanceParam {
         QuizEventName: string,
@@ -141,8 +143,58 @@ export namespace GetResponseParam {
         SequenceNumber: number
     };
 
+    interface getQuizResponseParam {
+        QuizID: number,
+        QuizEventname: string,
+        StartDateTime: Date,
+        EndDateTime: Date,
+        LifeycleStatusCode: QuizLifeCycleStatusCode,
+        NumberOfRounds: number,
+        NumberOfTeams: number,
+        CurrentRoundSeq: number,
+        CurrentQuestionSeq?: number,
+        Team1UUID?: string,
+        Team2UUID?: string,
+        Team3UUID?: string,
+        Team4UUID?: string
+    }
+
+    interface member {
+        Surname: string,
+        Name: string,
+        LastName: string
+    }
+
+    interface getTeamResponseParam {
+        TeamName: string,
+        Member1: member,
+        Member2: member,
+        Member3: member,
+        Member4: member
+    }
+
+    interface getQuestionResponseParam {
+        SequenceNumber: number,
+        Description: string,
+        Option1: string,
+        Option2: string,
+        Option3: string,
+        Option4: string,
+        Answer: string,
+        RoundUUID: string,
+        MediaUUID: string,
+        TargetTeamUUID: string,
+        ActualTeamUUID: string,
+        AnswerGiven: string,
+        ActualMarkGiven: number
+    }
+
     export type RoundType = getRoundTypeResponseParam;
     export type Round = getRoundResponseParam;
+    export type Quiz = getQuizResponseParam;
+    export type Member = member;
+    export type Team = getTeamResponseParam;
+    export type Question = getQuestionResponseParam;
 }
 
 export abstract class DbHandler {
@@ -166,5 +218,8 @@ export abstract class DbHandler {
     abstract getRoundTypes(): Promise<GetResponseParam.RoundType[]>;
     abstract getRoundTypeByID(roundTypeID: string): Promise<GetResponseParam.RoundType>;
     abstract getRoundsByQuizID(quizID: number): Promise<GetResponseParam.Round[]>;
+    abstract getQuizByID(quizID: number): Promise<GetResponseParam.Quiz>;
+    abstract getTeamByUUID(teamUUID: string): Promise<GetResponseParam.Team>;
+    abstract getQuestionsByRoundUUID(roundUUID: string): Promise<GetResponseParam.Question[]>;
 
 }
