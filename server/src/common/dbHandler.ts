@@ -162,7 +162,7 @@ export namespace GetResponseParam {
     interface member {
         Surname: string,
         Name: string,
-        LastName: string
+        Lastname: string
     }
 
     interface getTeamResponseParam {

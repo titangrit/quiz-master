@@ -14,6 +14,9 @@ import Button from "react-bootstrap/Button";
 export default class BasicInfo extends React.Component {
     constructor(props) {
         super(props);
+        this.state = {
+            errorOccured: false
+        }
     }
 
     handleSubmit = async (event) => {
@@ -45,6 +48,9 @@ export default class BasicInfo extends React.Component {
             });
 
             if (response.status !== 200) {
+                this.setState({
+                    errorOccured: true
+                });
                 throw "Failed to Create Quiz";
             };
 
@@ -60,6 +66,16 @@ export default class BasicInfo extends React.Component {
     };
 
     render() {
+        if (this.state.errorOccured) {
+            return (
+                <React.Fragment>
+                    <div>
+                        An Error Occured! Check server log.
+                    </div>
+                </React.Fragment>
+            );
+        }
+
         return (
             <React.Fragment>
                 <Container className="mt-4">

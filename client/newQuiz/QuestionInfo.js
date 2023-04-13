@@ -227,7 +227,8 @@ export default class QuestionInfo extends React.Component {
 
         this.state = {
             roundCounter: 1,
-            roundDetailsObtained: false
+            roundDetailsObtained: false,
+            errorOccured: false
         }
 
         this.roundDetails = [];
@@ -259,6 +260,9 @@ export default class QuestionInfo extends React.Component {
                 this.roundDetails.push(_detail);
             }
         } catch (err) {
+            this.setState({
+                errorOccured: true
+            });
             throw err;
         }
 
@@ -290,6 +294,16 @@ export default class QuestionInfo extends React.Component {
     }
 
     render() {
+        if (this.state.errorOccured) {
+            return (
+                <React.Fragment>
+                    <div>
+                        An Error Occured! Check server log.
+                    </div>
+                </React.Fragment>
+            );
+        }
+
         if (!this.state.roundDetailsObtained) {
             return (
                 <div>

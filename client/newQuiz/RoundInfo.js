@@ -17,7 +17,8 @@ export default class RoundInfo extends React.Component {
         super(props);
 
         this.state = {
-            roundTypesObtained: false
+            roundTypesObtained: false,
+            errorOccured: false
         }
 
         this.newRoundTypeID = "NEW";
@@ -74,6 +75,9 @@ export default class RoundInfo extends React.Component {
             });
 
             if (response.status !== 200) {
+                this.setState({
+                    errorOccured: true
+                });
                 throw "Failed to Set Round Info";
             };
 
@@ -126,30 +130,10 @@ export default class RoundInfo extends React.Component {
         roundTypeName.disabled = selectedRoundID == this.newRoundTypeID ? false : true;
     }
 
-    //@TODO get the list of defined round types and append to this.roundTypes list
+    /**
+     * get the list of defined round types and append to this.roundTypes list
+     */
     getRoundTypes = async () => {
-        this.roundTypes.push({
-            ID: "ROUND_X",
-            Name: "Round Type X",
-            NumQuestions: 3,
-            QFullMark: 10,
-            IsMCQ: true,
-            IsAudioVisual: false,
-            TimerSeconds: 60,
-            IsPassable: true
-        });
-        this.roundTypes.push({
-            ID: "ROUND_Y",
-            Name: "Round Type Y",
-            NumQuestions: 4,
-            QFullMark: 10,
-            IsMCQ: true,
-            IsAudioVisual: true,
-            TimerSeconds: 15,
-            IsPassable: false
-        });
-
-        // get available Round Types
         try {
             const response = await fetch("/quiz/round_types", {
                 method: "GET",
@@ -176,6 +160,9 @@ export default class RoundInfo extends React.Component {
                 this.roundTypes.push(_type);
             }
         } catch (err) {
+            this.setState({
+                errorOccured: true
+            });
             throw err;
         }
     }
@@ -188,6 +175,16 @@ export default class RoundInfo extends React.Component {
     }
 
     render() {
+        if (this.state.errorOccured) {
+            return (
+                <React.Fragment>
+                    <div>
+                        An Error Occured! Check server log.
+                    </div>
+                </React.Fragment>
+            );
+        }
+
         if (!this.state.roundTypesObtained) {
             return (
                 <div>

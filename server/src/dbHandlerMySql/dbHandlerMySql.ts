@@ -275,7 +275,7 @@ export class DbHandlerMySql extends DbHandler {
             let [result, fields] = await this.db_conn.execute(sql);
             let _result = JSON.parse(JSON.stringify(result));
 
-            assert(_result.length > 0, `DbHandlerMySql->getRoundsByQuizID :: Failed to Return Rounds`);
+            // assert(_result.length > 0, `DbHandlerMySql->getRoundsByQuizID :: Failed to Return Rounds`); There can be quiz with no rounds created yet
 
             for (let eachRound of _result) {
                 const round: GetResponseParam.Round = {
@@ -368,22 +368,22 @@ export class DbHandlerMySql extends DbHandler {
                 Member1: {
                     Surname: '',
                     Name: '',
-                    LastName: ''
+                    Lastname: ''
                 },
                 Member2: {
                     Surname: '',
                     Name: '',
-                    LastName: ''
+                    Lastname: ''
                 },
                 Member3: {
                     Surname: '',
                     Name: '',
-                    LastName: ''
+                    Lastname: ''
                 },
                 Member4: {
                     Surname: '',
                     Name: '',
-                    LastName: ''
+                    Lastname: ''
                 },
             };
 
@@ -406,7 +406,7 @@ export class DbHandlerMySql extends DbHandler {
                 let member: GetResponseParam.Member = {
                     Surname: _result[0].SURNAME,
                     Name: _result[0].NAME,
-                    LastName: _result[0].LAST_NAME
+                    Lastname: _result[0].LASTNAME
                 }
 
                 members.push(member)

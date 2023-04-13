@@ -15,6 +15,9 @@ import Accordion from 'react-bootstrap/Accordion';
 export default class TeamInfo extends React.Component {
     constructor(props) {
         super(props);
+        this.state = {
+            errorOccured: false
+        }
     }
 
     handleSubmit = async (event) => {
@@ -66,6 +69,9 @@ export default class TeamInfo extends React.Component {
             });
 
             if (response.status !== 200) {
+                this.setState({
+                    errorOccured: true
+                });
                 throw "Failed to Set Team Info";
             };
 
@@ -77,6 +83,15 @@ export default class TeamInfo extends React.Component {
     };
 
     render() {
+        if (this.state.errorOccured) {
+            return (
+                <React.Fragment>
+                    <div>
+                        An Error Occured! Check server log.
+                    </div>
+                </React.Fragment>
+            );
+        }
 
         return (
             <React.Fragment>

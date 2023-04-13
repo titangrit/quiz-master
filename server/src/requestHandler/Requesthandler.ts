@@ -229,7 +229,7 @@ export class RequestHandler {
                     // create members
                     const memberUUIDs = [];
                     for (let _m = 0; _m < 4; _m++) {
-                        if (!teams[_t].Members[_m].Name) {
+                        if (!teams[_t].Members[_m].Surname && !teams[_t].Members[_m].Name && !teams[_t].Members[_m].Lastname) {
                             continue;
                         }
                         let param: CreateParam.MemberInstance = {

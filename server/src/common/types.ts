@@ -4,7 +4,7 @@ export namespace ViewQuizData {
     export interface Member {
         Surname: string,
         Name: string,
-        LastName: string
+        Lastname: string
     }
 
     export interface Team {
