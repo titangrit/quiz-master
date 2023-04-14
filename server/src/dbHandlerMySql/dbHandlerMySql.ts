@@ -1,4 +1,4 @@
-import { DbHandler, CreateParam, UpdateParam, GetResponseParam, QuizLifeCycleStatusCode } from "../common";
+import { DbHandler, CreateParam, UpdateParam, GetResponseParam, QuizLifeCycleStatusCode, QuizMasterSchema } from "../common";
 import * as mysql from 'mysql2/promise';
 import { v4 as uuidv4 } from 'uuid';
 import assert from 'node:assert';
@@ -168,18 +168,90 @@ export class DbHandlerMySql extends DbHandler {
         return questionUUID;
     }
 
-    async associateTeamsToQuiz(param: CreateParam.AssociateTeamsToQuiz): Promise<void> {
-        const statement = "UPDATE QUIZ SET TEAM_1_UUID = ?, TEAM_2_UUID = ?, TEAM_3_UUID = ?, TEAM_4_UUID = ? WHERE ID = ?";
-        const values = [param.Team1UUID, param.Team2UUID, param.Team3UUID, param.Team4UUID, param.QuizID];
+    async updateQuizInstance(quizID: number, param: UpdateParam.QuizInstance): Promise<void> {
+
+        let statement = "UPDATE QUIZ SET ";
+        let values: any = [];
+
+        if (!!param.QuizEventName) {
+            statement += `${QuizMasterSchema.Quiz.QuizEventname} = ?,`;
+            values.push(param.QuizEventName);
+        }
+
+        if (!!param.StartDate) {
+            statement += `${QuizMasterSchema.Quiz.StartDateTime} = ?,`;
+            values.push(param.StartDate);
+        }
+
+        if (!!param.EndDate) {
+            statement += `${QuizMasterSchema.Quiz.EndDateTime} = ?,`;
+            values.push(param.EndDate);
+        }
+
+        if (!!param.LifecycleStatusCode) {
+            statement += `${QuizMasterSchema.Quiz.LifeycleStatusCode} = ?,`;
+            values.push(param.LifecycleStatusCode);
+        }
+
+        if (!!param.NumberOfRounds) {
+            statement += `${QuizMasterSchema.Quiz.NumberOfRounds} = ?,`;
+            values.push(param.NumberOfRounds);
+        }
+
+        if (!!param.NumberOfTeams) {
+            statement += `${QuizMasterSchema.Quiz.NumberOfTeams} = ?,`;
+            values.push(param.NumberOfTeams);
+        }
+
+        if (!!param.CurrentRoundSeq) {
+            statement += `${QuizMasterSchema.Quiz.CurrentRoundSeq} = ?,`;
+            values.push(param.CurrentRoundSeq);
+        }
+
+        if (!!param.CurrentQuestionSeq) {
+            statement += `${QuizMasterSchema.Quiz.CurrentQuestionSeq} = ?,`;
+            values.push(param.CurrentQuestionSeq);
+        }
+
+        if (!!param.Team1UUID) {
+            statement += `${QuizMasterSchema.Quiz.Team1UUID} = ?,`;
+            values.push(param.Team1UUID);
+        }
+
+        if (!!param.Team2UUID) {
+            statement += `${QuizMasterSchema.Quiz.Team2UUID} = ?,`;
+            values.push(param.Team2UUID);
+        }
+
+        if (!!param.Team3UUID) {
+            statement += `${QuizMasterSchema.Quiz.Team3UUID} = ?,`;
+            values.push(param.Team3UUID);
+        }
+
+        if (!!param.Team4UUID) {
+            statement += `${QuizMasterSchema.Quiz.Team4UUID} = ?,`;
+            values.push(param.Team4UUID);
+        }
+
+        if (values.length === 0) {
+            logger.info(`DbHandlerMySql->updateQuizInstance :: No Value Passed to Update Quiz: ${quizID}`);
+            return;
+        }
+
+        statement = statement.slice(0, -1); // remove the last ','
+
+        statement += " WHERE ID = ?";
+        values.push(quizID);
+
         const sql = mysql.format(statement, values);
 
         try {
             let [result, fields] = await this.db_conn.execute(sql);
 
             let _result = JSON.parse(JSON.stringify(result));
-            assert(_result.affectedRows === 1, `DbHandlerMySql->associateTeamsToQuiz :: Failed to Add Teams to Quiz ID: ${param.QuizID}`);
+            assert(_result.affectedRows === 1, `DbHandlerMySql->updateQuizInstance :: Failed to Update Quiz ${quizID}: ${JSON.stringify(param)}`);
 
-            logger.info(`DbHandlerMySql->associateTeamsToQuiz :: Teams added to Quiz ID: ${param.QuizID}`);
+            logger.info(`DbHandlerMySql->updateQuizInstance :: Quiz ${quizID} Updated: ${JSON.stringify(param)}`);
         } catch (err) {
             logger.error(err);
             throw err;
@@ -188,9 +260,6 @@ export class DbHandlerMySql extends DbHandler {
         return;
     }
 
-    async updateQuizInstance(param: UpdateParam.QuizInstance): Promise<void> {
-        throw new Error("Method not implemented.");
-    }
     async updateMemberInstance(param: UpdateParam.MemberInstance): Promise<void> {
         throw new Error("Method not implemented.");
     }

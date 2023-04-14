@@ -50,29 +50,28 @@ export namespace CreateParam {
         MediaUUID: string
     };
 
-    interface AssociateTeamsToQuizParam {
-        QuizID: number,
-        Team1UUID: string,
-        Team2UUID: string,
-        Team3UUID: string,
-        Team4UUID: string
-    };
-
     export type QuizInstance = CreateQuizInstanceParam;
     export type MemberInstance = CreateMemberInstanceParam;
     export type TeamInstance = CreateTeamInstanceParam;
     export type RoundTypeInstance = CreateRoundTypeInstanceParam;
     export type RoundInstance = CreateRoundInstanceParam;
     export type QuestionInstance = CreateQuestionInstanceParam;
-    export type AssociateTeamsToQuiz = AssociateTeamsToQuizParam;
 }
 
 export namespace UpdateParam {
     interface updateQuizInstanceParam {
-        QuizID: string,
-        QuizEventName: string,
-        NumberOfRounds: number,
-        NumberOfTeams: number
+        QuizEventName?: string,
+        StartDate?: Date,
+        EndDate?: Date,
+        LifecycleStatusCode?: number,
+        NumberOfRounds?: number,
+        NumberOfTeams?: number,
+        CurrentRoundSeq?: number,
+        CurrentQuestionSeq?: number,
+        Team1UUID?: string,
+        Team2UUID?: string,
+        Team3UUID?: string,
+        Team4UUID?: string
     };
 
     interface updateMemberInstanceParam {
@@ -205,9 +204,7 @@ export abstract class DbHandler {
     abstract createRoundInstance(param: CreateParam.RoundInstance): Promise<string>;
     abstract createQuestionInstance(param: CreateParam.QuestionInstance): Promise<string>;
 
-    abstract associateTeamsToQuiz(param: CreateParam.AssociateTeamsToQuiz): Promise<void>;
-
-    abstract updateQuizInstance(param: UpdateParam.QuizInstance): Promise<void>;
+    abstract updateQuizInstance(quizID: number, param: UpdateParam.QuizInstance): Promise<void>;
     abstract updateMemberInstance(param: UpdateParam.MemberInstance): Promise<void>;
     abstract updateTeamInstance(param: UpdateParam.TeamInstance): Promise<void>;
     // Do not support, it will cause inconsistency to past quizzes

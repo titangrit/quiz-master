@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { DbHandlerMySql } from "../dbHandlerMySql";
-import { CreateParam, GetResponseParam, UpdateParam, ViewQuizData } from "../common";
+import { CreateParam, GetResponseParam, UpdateParam, ViewQuizData, QuizLifeCycleStatusCode } from "../common";
 
 export class RequestHandler {
 
@@ -267,8 +267,7 @@ export class RequestHandler {
                 }
 
                 // associate teams to quiz
-                let param: CreateParam.AssociateTeamsToQuiz = {} as CreateParam.AssociateTeamsToQuiz;
-                param.QuizID = quizID;
+                let param: UpdateParam.QuizInstance = {};
                 let i = 0;
                 if (teamUUIDs.length > i) {
                     param.Team1UUID = teamUUIDs[i];
@@ -286,7 +285,7 @@ export class RequestHandler {
                     param.Team4UUID = teamUUIDs[i];
                 }
 
-                await db.associateTeamsToQuiz(param);
+                await db.updateQuizInstance(quizID, param);
 
                 res.status(200).send();
             } catch (err) {
@@ -351,6 +350,20 @@ export class RequestHandler {
 
                     await db.createQuestionInstance(param);
                 }
+
+                res.status(200).send();
+            } catch (err) {
+                res.status(500).send();
+            }
+
+        } else if (req.params[0] === 'ready') {
+            try {
+                const quizID = req.body.quizID;
+                const param: UpdateParam.QuizInstance = {
+                    LifecycleStatusCode: QuizLifeCycleStatusCode.Ready
+                }
+
+                await db.updateQuizInstance(quizID, param);
 
                 res.status(200).send();
             } catch (err) {

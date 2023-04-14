@@ -31,11 +31,30 @@ export default class NewQuiz extends React.Component {
         return confirmationMessage;                            //Webkit, Safari, Chrome
     }
 
-    nextStep = () => {
+    nextStep = async () => {
         if (this.state.createQuizStep >= ModifyQuizStep.LastStep) {
-            // if last step is reached, return home
+            // if last step is reached:
+            // 1. Set the quiz LifecycleStatusCode to Ready
+            // 2. Navigate to View Quiz
+
+            // Set the quiz LifecycleStatus to Ready
+            try {
+                const response = await fetch("/quiz/ready", {
+                    method: "POST",
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        quizID: this.state.quizEventID
+                    })
+                });
+
+                this.props.nextRound();
+
+            } catch (err) {
+                console.log(err);
+            }
+
+            // Navigate to View Quiz
             window.removeEventListener("beforeunload", this.confirmExit);
-            // window.location.replace("/");
             window.location.replace(`/view_quiz.html?quizID=${this.state.quizEventID}`);
         }
 
