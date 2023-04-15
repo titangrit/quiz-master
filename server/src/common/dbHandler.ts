@@ -216,6 +216,7 @@ export abstract class DbHandler {
     abstract getRoundTypeByID(roundTypeID: string): Promise<GetResponseParam.RoundType>;
     abstract getRoundsByQuizID(quizID: number): Promise<GetResponseParam.Round[]>;
     abstract getQuizByID(quizID: number): Promise<GetResponseParam.Quiz>;
+    abstract getAllQuizzes(): Promise<GetResponseParam.Quiz[]>;
     abstract getTeamByUUID(teamUUID: string): Promise<GetResponseParam.Team>;
     abstract getQuestionsByRoundUUID(roundUUID: string): Promise<GetResponseParam.Question[]>;
 

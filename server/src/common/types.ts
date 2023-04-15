@@ -47,3 +47,14 @@ export namespace ViewQuizData {
         Rounds: Round[]
     }
 }
+
+export namespace GetAllQuizzes {
+    export interface Quiz {
+        QuizID: number,
+        QuizEventName: string,
+        LifecycleStatusCode: QuizLifeCycleStatusCode,
+        CompletedOnDate: string
+    }
+
+    export type Quizzes = Quiz[];
+}

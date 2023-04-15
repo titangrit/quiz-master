@@ -7,10 +7,10 @@ const Activity = {
 }
 
 const QuizStatus = {
-    Draft: '1',
-    Ready: '2',
-    Running: '3',
-    Completed: '4'
+    Draft: 1,
+    Ready: 2,
+    Running: 3,
+    Completed: 4
 }
 
 const QuizAction = {

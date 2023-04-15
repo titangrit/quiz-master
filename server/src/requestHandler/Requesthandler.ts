@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { DbHandlerMySql } from "../dbHandlerMySql";
-import { CreateParam, GetResponseParam, UpdateParam, ViewQuizData, QuizLifeCycleStatusCode } from "../common";
+import { CreateParam, GetResponseParam, UpdateParam, ViewQuizData, GetAllQuizzes, QuizLifeCycleStatusCode } from "../common";
 
 export class RequestHandler {
 
@@ -190,6 +190,35 @@ export class RequestHandler {
                 }
 
                 res.json(viewQuizData);
+            } catch (err) {
+                res.status(500).send();
+            }
+
+        } else if (req.params[0] === 'all_quizzes') {
+
+            let allQuizzes: GetAllQuizzes.Quizzes = [];
+            try {
+                const quizzes = await db.getAllQuizzes();
+                for (let quiz of quizzes) {
+                    allQuizzes.push({
+                        QuizID: quiz.QuizID,
+                        QuizEventName: quiz.QuizEventname,
+                        LifecycleStatusCode: quiz.LifeycleStatusCode,
+                        CompletedOnDate: quiz.EndDateTime?.toLocaleDateString()
+                    })
+                }
+
+                // Sort descending by quiz ID
+                allQuizzes = allQuizzes.sort((x, y) => {
+                    if (x.QuizID < y.QuizID) {
+                        return 1;
+                    } else {
+                        return -1;
+                    }
+                });
+
+                res.json(allQuizzes);
+
             } catch (err) {
                 res.status(500).send();
             }

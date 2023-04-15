@@ -1,26 +1,14 @@
 import React from "react";
-import { QuizStatus, QuizAction } from "./../common";
-import "./HomePage.css";
-
-/**
- * Renders the quiz event name as banner
- */
-class Logo extends React.Component {
-
-    constructor(props) {
-        super(props);
-    }
-
-    appName = 'QuizMaster';
-
-    render() {
-        return (
-            <div className="logo-homepage">
-                <h1>{this.appName}</h1>
-            </div>
-        )
-    }
-}
+import { QuizStatus } from "./../common";
+import "./../common/HomePage.css";
+import { HomeNavbar } from "../common";
+import "bootstrap/dist/css/bootstrap.min.css";
+import Container from "react-bootstrap/Container";
+import Row from "react-bootstrap/Row";
+import Col from "react-bootstrap/Col";
+import Button from "react-bootstrap/Button";
+import Spinner from 'react-bootstrap/Spinner';
+import Card from 'react-bootstrap/Card';
 
 /**
  * Renders the home page
@@ -28,109 +16,275 @@ class Logo extends React.Component {
 export default class HomePage extends React.Component {
     constructor(props) {
         super(props);
+        this.state = {
+            availableQuizzesObtained: false,
+            errorOccurred: false
+        }
+
+        this.quizzes = [];
     }
 
-    getAllQuizzes() {
-        // TODO: API call to get the list of available quizzes
-        let quizzes = [];
-        quizzes.push({
-            name: "quiz1",
-            date: new Date(),
-            status: QuizStatus.Draft,
-            action1: QuizAction.Start,
-            action2: QuizAction.Edit
-        })
-        quizzes.push({
-            name: "quiz2",
-            date: new Date(),
-            status: QuizStatus.Draft,
-            action1: QuizAction.Start,
-            action2: QuizAction.Edit
-        })
-        quizzes.push({
-            name: "quiz3",
-            date: new Date(),
-            status: QuizStatus.Ready,
-            action1: QuizAction.Edit
-        })
-        quizzes.push({
-            name: "quiz4",
-            date: new Date(),
-            status: QuizStatus.Ready,
-            action1: QuizAction.Resume
-        })
-        quizzes.push({
-            name: "very very long text very very long text very very long text very very long text very very long text very very long text very very long text very very long text",
-            date: new Date(),
-            status: QuizStatus.Running,
-            action1: QuizAction.Resume
-        })
-        quizzes.push({
-            name: "quiz6",
-            date: new Date(),
-            status: QuizStatus.Running,
-            action1: QuizAction.Resume
-        })
-        quizzes.push({
-            name: "quiz7",
-            date: new Date(),
-            status: QuizStatus.Completed,
-            action1: QuizAction.ViewResult
-        })
-        quizzes.push({
-            name: "quiz8",
-            date: new Date(),
-            status: QuizStatus.Completed,
-            action1: QuizAction.ViewResult
-        })
+    getAllQuizzes = async () => {
+        try {
+            const response = await fetch("/quiz/all_quizzes", {
+                method: "GET",
+                headers: { 'Content-Type': 'application/json' }
+            });
 
-        return quizzes;
+            if (response.status !== 200) {
+                this.setState({
+                    errorOccured: true
+                })
+                throw "Failed to Get Quizzes";
+            }
+
+            this.quizzes = await response.json();
+
+        } catch (err) {
+            throw err;
+        }
+
+        this.quizzes.push({
+            QuizEventName: "very very long text very very long text very very long text very very long text very very long text very very long text very very long text very very long text",
+            LifecycleStatusCode: QuizStatus.Running
+        })
+        this.quizzes.push({
+            QuizEventName: "quiz6",
+            LifecycleStatusCode: QuizStatus.Running
+        })
+        this.quizzes.push({
+            QuizEventName: "quiz7",
+            CompletedOnDate: new Date().toLocaleDateString(),
+            LifecycleStatusCode: QuizStatus.Completed
+        })
+        this.quizzes.push({
+            QuizEventName: "quiz8",
+            CompletedOnDate: new Date().toLocaleDateString(),
+            date: new Date(),
+            LifecycleStatusCode: QuizStatus.Completed
+        })
     }
 
-    displayQuizzes() {
-        let quizzes = this.getAllQuizzes();
-        if (quizzes.length > 0) {
+    getQuizCards = () => {
+        if (this.quizzes.length > 0) {
             return (
-                <div className="quizzes-table-container">
-                    {quizzes.map((item, index) => {
+                <React.Fragment>
+                    {this.quizzes.map((quiz, index) => {
+                        let status;
+                        let theme = "light";
+                        let buttons = [];
+                        if (quiz.LifecycleStatusCode === QuizStatus.Draft) {
+                            status = "In Draft";
+                            theme = "light";
+                            buttons.push(
+                                <Row className="d-flex justify-content-left">
+                                    <Col md={3} className="mx-3">
+                                        <Row>
+                                            <Button
+                                                variant="light"
+                                                className="custom-button"
+                                                onClick={() => { document.location.href = "/edit_quiz.html?quizID=" + quiz.QuizID }}
+                                            >
+                                                Edit
+                                            </Button>
+                                        </Row>
+                                    </Col>
+                                    <Col md={3} className="mx-3">
+                                        <Row>
+                                            <Button
+                                                variant="light"
+                                                className="custom-button"
+                                                onClick={() => { document.location.href = "/view_quiz.html?quizID=" + quiz.QuizID }}
+                                            >
+                                                View
+                                            </Button>
+                                        </Row>
+                                    </Col>
+                                </Row>
+                            );
+                        } else if (quiz.LifecycleStatusCode === QuizStatus.Ready) {
+                            status = "Ready to Start";
+                            theme = "info";
+                            buttons.push(
+                                <Row className="d-flex justify-content-left">
+                                    <Col md={3} className="mx-3">
+                                        <Row>
+                                            <Button variant="light"
+                                                className="custom-button"
+                                            >
+                                                Start
+                                            </Button>
+                                        </Row>
+                                    </Col>
+                                    <Col md={3} className="mx-3">
+                                        <Row>
+                                            <Button
+                                                variant="light"
+                                                className="custom-button"
+                                                onClick={() => { document.location.href = "/edit_quiz.html?quizID=" + quiz.QuizID }}
+                                            >
+                                                Edit
+                                            </Button>
+                                        </Row>
+                                    </Col>
+                                    <Col md={3} className="mx-3">
+                                        <Row>
+                                            <Button
+                                                variant="light"
+                                                className="custom-button"
+                                                onClick={() => { document.location.href = "/view_quiz.html?quizID=" + quiz.QuizID }}
+                                            >
+                                                View
+                                            </Button>
+                                        </Row>
+                                    </Col>
+                                </Row>
+                            );
+                        } else if (quiz.LifecycleStatusCode === QuizStatus.Running) {
+                            status = "Started";
+                            theme = "info";
+                            buttons.push(
+                                <Row className="d-flex justify-content-left">
+                                    <Col md={3} className="mx-3">
+                                        <Row>
+                                            <Button
+                                                variant="light"
+                                                className="custom-button"
+                                            >
+                                                Resume
+                                            </Button>
+                                        </Row>
+                                    </Col>
+                                    <Col md={3} className="mx-3">
+                                        <Row>
+                                            <Button
+                                                variant="light"
+                                                className="custom-button"
+                                                onClick={() => { document.location.href = "/view_quiz.html?quizID=" + quiz.QuizID }}
+                                            >
+                                                View
+                                            </Button>
+                                        </Row>
+                                    </Col>
+                                </Row>
+                            );
+                        } else if (quiz.LifecycleStatusCode === QuizStatus.Completed) {
+                            status = "Completed";
+                            theme = "primary";
+                            buttons.push(
+                                <Row className="d-flex justify-content-left">
+                                    <Col md={3} className="mx-3">
+                                        <Row>
+                                            <Button
+                                                variant="light"
+                                                className="custom-button"
+                                            >
+                                                Result
+                                            </Button>
+                                        </Row>
+                                    </Col>
+                                    <Col md={3} className="mx-3">
+                                        <Row>
+                                            <Button
+                                                variant="light"
+                                                className="custom-button"
+                                                onClick={() => { document.location.href = "/view_quiz.html?quizID=" + quiz.QuizID }}
+                                            >
+                                                View
+                                            </Button>
+                                        </Row>
+                                    </Col>
+                                    <Col md={3} className="mx-3">
+                                        <Row>
+                                            <Button
+                                                variant="light"
+                                                className="custom-button"
+                                            >
+                                                Delete</Button>
+                                        </Row>
+                                    </Col>
+                                </Row>
+                            );
+                        }
+
                         return (
-                            <div className="quiz-row">
-                                <p className="quiz-description">
-                                    {item.date.toLocaleDateString() + " | " + item.name}
-                                </p>
-                                <div className="quiz-action">{item.action1}</div>
-                                {item.action2 ? <div className="quiz-action">{item.action2}</div> : null}
-                            </div>
+                            <Card key={index} className="mb-2" bg={theme} text={theme === 'light' ? 'dark' : 'white'}>
+                                <Card.Header>{status}</Card.Header>
+                                <Card.Body>
+                                    <Card.Title>{quiz.QuizEventName}</Card.Title>
+                                    <Card.Text>
+                                        {!!quiz.CompletedOnDate && `Completed on ${quiz.CompletedOnDate}`}
+                                    </Card.Text>
+
+                                    {buttons}
+                                </Card.Body>
+                            </Card>
                         )
                     })}
-                </div>
+                </React.Fragment>
             );
+
         } else {
             return (
-                <p className="quiz-name">No items to display</p>
+                <p>No quiz found... Create one!</p>
             );
         }
     }
 
-    createQuiz() {
-        ;
+    async componentDidMount() {
+        if (!this.state.availableQuizzesObtained) {
+            await this.getAllQuizzes();
+            this.setState({
+                availableQuizzesObtained: true
+            });
+        }
     }
 
     render() {
-
         return (
-            <div>
-                <Logo />
+            <React.Fragment>
+                <HomeNavbar />
+                <Container fluid>
+                    {/* Logo */}
+                    <Row className="mt-2 mb-2 d-flex justify-content-center">
+                        <h1 style={{ color: '#333' }} className="d-flex justify-content-center">QuizMaster</h1>
+                    </Row>
 
-                <div className="home-main-content">
-                    <button className="new-quiz-button" onClick={() => { document.location.href = "new_quiz.html"; }}>New Quiz Event</button>
-                    <div className="available-quizzes">
-                        <p className="quizzes-table-title">Quizzes</p>
-                        {this.displayQuizzes()}
-                    </div>
+                    <Row className="d-flex justify-content-center">
+                        <Col md={5}>
+                            {/* New quiz button */}
+                            <Button variant="light"
+                                className="custom-button mt-4 mb-4"
+                                size="lg"
+                                type="button"
+                                onClick={() => { document.location.href = "new_quiz.html" }}
+                            >
+                                New Quiz Event
+                            </Button>
 
-                </div>
-            </div>
+                            {/* Error occurred message */}
+                            {this.state.errorOccurred &&
+                                <p style={{ color: 'red' }}>An error occurred. Try refreshing the page or check server log to fix the issue.</p>
+                            }
+
+                            {/* Loading message */}
+                            {!this.state.availableQuizzesObtained &&
+                                <h3><Spinner animation="border" role="status" /> Loading Available Quizzes...</h3>
+                            }
+
+                            {/* Available quizzes */}
+                            {this.state.availableQuizzesObtained &&
+                                <React.Fragment>
+                                    <h4>Quizzes</h4>
+                                    <Container className="quizzes-table-container mt-3 mb-3" fluid>
+                                        {this.getQuizCards()}
+                                    </Container>
+                                </React.Fragment>
+                            }
+                        </Col>
+                    </Row>
+                </Container >
+            </React.Fragment>
         );
     }
 }

@@ -1,4 +1,4 @@
-body {
+/* body {
     height: 100vh;
     overflow-y: hidden;
     overflow-x: auto;
@@ -6,7 +6,7 @@ body {
     background: -o-linear-gradient(45deg, #00dbde, #fc00ff);
     background: -moz-linear-gradient(45deg, #00dbde, #fc00ff);
     background: linear-gradient(45deg, #00dbde, #fc00ff)
-}
+} */
 
 div.bgCircle {
     width: 360px;
@@ -76,7 +76,7 @@ div.bgCircle {
     font-size: large;
     font-weight: bold;
     text-align: center;
-    color: #333;
+    color: #333333;
 }
 
 .home-main-content {
@@ -87,7 +87,7 @@ div.bgCircle {
     margin: auto;
 }
 
-.new-quiz-button {
+.custom-button {
     align-items: center;
     background-color: #fff;
     border-radius: 12px;
@@ -115,7 +115,7 @@ div.bgCircle {
     touch-action: manipulation;
 }
 
-.new-quiz-button:hover {
+.custom-button:hover {
     box-shadow: #121212 0 0 0 3px, transparent 0 0 0 0;
 }
 
@@ -131,14 +131,14 @@ div.bgCircle {
 }
 
 .quizzes-table-container {
-    background-color: #fff;
-    border-radius: 12px;
-    width: 700px;
-    height: 400px;
+    /* background-color: #fff; */
+    /* border-radius: 12px; */
+    /* width: 700px; */
+    height: 50vh;
     overflow-x: hidden;
     overflow-y: auto;
-    text-align: center;
-    padding: 10px;
+    /* text-align: center; */
+    /* padding: 10px; */
 }
 
 .quizzes-table {

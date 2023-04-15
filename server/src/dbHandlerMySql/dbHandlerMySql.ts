@@ -419,6 +419,46 @@ export class DbHandlerMySql extends DbHandler {
         return quiz;
     }
 
+    async getAllQuizzes(): Promise<GetResponseParam.Quiz[]> {
+        const quizzes: GetResponseParam.Quiz[] = [];
+        let quiz: GetResponseParam.Quiz = {} as GetResponseParam.Quiz;
+
+        try {
+            const sql: string = "SELECT * FROM QUIZ";
+
+            let [result, fields] = await this.db_conn.execute(sql);
+            let _result = JSON.parse(JSON.stringify(result));
+
+            for (let entry of _result) {
+                quiz = {
+                    QuizID: entry[QuizMasterSchema.Quiz.QuizID],
+                    QuizEventname: entry[QuizMasterSchema.Quiz.QuizEventname],
+                    StartDateTime: entry[QuizMasterSchema.Quiz.StartDateTime],
+                    EndDateTime: entry[QuizMasterSchema.Quiz.EndDateTime],
+                    LifeycleStatusCode: entry[QuizMasterSchema.Quiz.LifeycleStatusCode],
+                    NumberOfRounds: entry[QuizMasterSchema.Quiz.NumberOfRounds],
+                    NumberOfTeams: entry[QuizMasterSchema.Quiz.NumberOfTeams],
+                    CurrentRoundSeq: entry[QuizMasterSchema.Quiz.CurrentRoundSeq],
+                    CurrentQuestionSeq: entry[QuizMasterSchema.Quiz.CurrentQuestionSeq],
+                    Team1UUID: entry[QuizMasterSchema.Quiz.Team1UUID],
+                    Team2UUID: entry[QuizMasterSchema.Quiz.Team2UUID],
+                    Team3UUID: entry[QuizMasterSchema.Quiz.Team2UUID],
+                    Team4UUID: entry[QuizMasterSchema.Quiz.Team4UUID]
+
+                };
+                quizzes.push(quiz);
+            }
+
+            logger.info(`DbHandlerMySql->getAllQuizzes :: Quizzes Returned: ${quizzes.length}`);
+
+        } catch (err) {
+            logger.error(err);
+            throw err;
+        }
+
+        return quizzes;
+    }
+
     async getTeamByUUID(teamUUID: string): Promise<GetResponseParam.Team> {
         let team: GetResponseParam.Team;
 

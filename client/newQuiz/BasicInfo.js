@@ -1,4 +1,5 @@
 import React from "react";
+import "./../common/HomePage.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import Container from "react-bootstrap/Container";
 import Row from "react-bootstrap/Row";
@@ -118,13 +119,24 @@ export default class BasicInfo extends React.Component {
                                 </Row>
 
                                 <Row className="mb-4">
-                                    <Button variant="primary" size="lg" type="submit">
+                                    <Button
+                                        variant="light"
+                                        size="lg"
+                                        type="submit"
+                                        className="custom-button"
+                                    >
                                         Save and Continue
                                     </Button>
                                 </Row>
 
-                                <Row className="mb-6">
-                                    <Button variant="outline-danger" size="lg" type="button" onClick={() => { window.location.replace("/") }}>
+                                <Row className="mb-5">
+                                    <Button
+                                        variant="danger"
+                                        size="lg"
+                                        type="button"
+                                        className="custom-button"
+                                        onClick={() => { window.location.replace("/") }}
+                                    >
                                         Cancel
                                     </Button>
                                 </Row>
