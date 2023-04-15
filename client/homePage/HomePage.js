@@ -1,6 +1,6 @@
 import React from "react";
 import { QuizStatus } from "./../common";
-import "./../common/HomePage.css";
+import "./../common/style.css";
 import { HomeNavbar } from "../common";
 import "bootstrap/dist/css/bootstrap.min.css";
 import Container from "react-bootstrap/Container";
@@ -264,7 +264,7 @@ export default class HomePage extends React.Component {
 
                             {/* Error occurred message */}
                             {this.state.errorOccurred &&
-                                <p style={{ color: 'red' }}>An error occurred. Try refreshing the page or check server log to fix the issue.</p>
+                                <p style={{ color: 'red' }}>An error occurred. Try refreshing the page or check the server log.</p>
                             }
 
                             {/* Loading message */}

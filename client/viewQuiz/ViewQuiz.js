@@ -1,5 +1,6 @@
 import React from "react";
 import { HomeNavbar } from "../common";
+import "./../common/style.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import Container from "react-bootstrap/Container";
 import Row from "react-bootstrap/Row";
@@ -9,6 +10,7 @@ import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import Accordion from 'react-bootstrap/Accordion';
 import { FormLabel } from "react-bootstrap";
+import Spinner from 'react-bootstrap/Spinner';
 
 /**
  * View quiz component
@@ -70,9 +72,7 @@ export default class ViewQuiz extends React.Component {
             return (
                 <React.Fragment>
                     <HomeNavbar />
-                    <div>
-                        An Error Occured! Check server log.
-                    </div>
+                    <p style={{ color: 'red' }}>An error occurred. Check the server log.</p>
                 </React.Fragment>
             );
         }
@@ -81,9 +81,7 @@ export default class ViewQuiz extends React.Component {
             return (
                 <React.Fragment>
                     <HomeNavbar />
-                    <div>
-                        Fetching Quiz Details...
-                    </div>
+                    <h3><Spinner animation="border" role="status" />Loading Quiz Details...</h3>
                 </React.Fragment>
             );
         }
@@ -504,7 +502,7 @@ export default class ViewQuiz extends React.Component {
                     <Row className="mt-4 mb-4 d-flex justify-content-center">
                         <Col md={3}>
                             <Row className="mt-4 mb-4">
-                                <Button variant="primary" size="lg" type="button" onClick={() => { window.location.replace("/") }}>
+                                <Button variant="light" size="lg" type="button" className="custom-button" onClick={() => { window.location.replace("/") }}>
                                     Close
                                 </Button>
                             </Row>

@@ -85,9 +85,7 @@ export default class TeamInfo extends React.Component {
         if (this.state.errorOccured) {
             return (
                 <React.Fragment>
-                    <div>
-                        An Error Occured! Check server log.
-                    </div>
+                    <p style={{ color: 'red' }}>An error occurred. Check the server log.</p>
                 </React.Fragment>
             );
         }
@@ -236,19 +234,19 @@ export default class TeamInfo extends React.Component {
                         <Row className="mt-5 mb-5 d-flex justify-content-center">
                             <Col md={3}>
                                 <Row className="mb-4">
-                                    <Button variant="primary" size="lg" type="submit">
+                                    <Button variant="light" size="lg" type="submit" className="custom-button">
                                         Save and Continue
                                     </Button>
                                 </Row>
 
                                 <Row className="mb-4">
-                                    <Button variant="secondary" size="lg" type="button" onClick={() => { this.props.nextStep() }}>
+                                    <Button variant="secondary" size="lg" type="button" className="custom-button" onClick={() => { this.props.nextStep() }}>
                                         Skip
                                     </Button>
                                 </Row>
 
                                 <Row className="mb-6">
-                                    <Button variant="outline-danger" size="lg" type="button" onClick={() => { window.location.replace("/") }}>
+                                    <Button variant="danger" size="lg" type="button" className="custom-button" onClick={() => { window.location.replace("/") }}>
                                         Cancel
                                     </Button>
                                 </Row>

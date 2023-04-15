@@ -7,6 +7,7 @@ import FloatingLabel from 'react-bootstrap/FloatingLabel';
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import { FormLabel } from "react-bootstrap";
+import Spinner from 'react-bootstrap/Spinner';
 
 /**
  * Fill round information
@@ -176,19 +177,13 @@ export default class RoundInfo extends React.Component {
     render() {
         if (this.state.errorOccured) {
             return (
-                <React.Fragment>
-                    <div>
-                        An Error Occured! Check server log.
-                    </div>
-                </React.Fragment>
+                <p style={{ color: 'red' }}>An error occurred. Check the server log.</p>
             );
         }
 
         if (!this.state.roundTypesObtained) {
             return (
-                <div>
-                    Fetching Available Round Types...
-                </div>
+                <h3><Spinner animation="border" role="status" />Loading Available Round Types...</h3>
             );
         }
 
@@ -314,13 +309,13 @@ export default class RoundInfo extends React.Component {
                         <Row className="mt-5 mb-5 d-flex justify-content-center">
                             <Col md={3}>
                                 <Row className="mb-4">
-                                    <Button variant="primary" size="lg" type="submit">
+                                    <Button variant="light" size="lg" type="submit" className="custom-button">
                                         Save and Continue
                                     </Button>
                                 </Row>
 
                                 <Row className="mb-6">
-                                    <Button variant="outline-danger" size="lg" type="button" onClick={() => { window.location.replace("/") }}>
+                                    <Button variant="danger" size="lg" type="button" className="custom-button" onClick={() => { window.location.replace("/") }}>
                                         Cancel
                                     </Button>
                                 </Row>

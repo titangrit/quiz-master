@@ -1,4 +1,5 @@
 import React from "react";
+import "./../common/style.css";
 import { ModifyQuizStep } from "../common";
 import { HomeNavbar } from "../common";
 import BasicInfo from "./BasicInfo";
