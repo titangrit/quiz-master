@@ -32,7 +32,7 @@ module.exports = {
         publicPath: "/",
     },
     optimization: {
-        minimize: !!PROD,
+        minimize: !!PROD ? true : false,
         minimizer: [
             new TerserPlugin({ parallel: true })
         ]
@@ -54,12 +54,6 @@ module.exports = {
                     "css-loader"
                 ]
             },
-        ],
-    },
-    optimization: {
-        minimize: !!PROD ? true : false,
-        minimizer: [
-            new TerserPlugin(),
         ],
     }
 }

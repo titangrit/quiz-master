@@ -4,8 +4,9 @@
   "description": "A live quiz presentation app",
   "main": "main.js",
   "scripts": {
-    "dev": "webpack --mode development",
-    "prod": "webpack --mode production",
+    "ui:dev": "webpack --mode development",
+    "ui:prod": "webpack --mode production",
+    "build": "rimraf ./server/dist && tsc",
     "start": "node ./server/dist/main.js",
     "start:dev": "npx nodemon",
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -44,6 +45,7 @@
     "babel-loader": "^9.1.0",
     "css-loader": "^6.7.3",
     "nodemon": "^2.0.22",
+    "rimraf": "^5.0.0",
     "style-loader": "^3.3.1",
     "ts-node": "^10.9.1",
     "typescript": "^5.0.3",
