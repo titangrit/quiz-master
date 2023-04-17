@@ -180,7 +180,7 @@ export default class TeamInfo extends React.Component {
                             <p className="fs-3 d-inline">Teams Detail </p>
                         </Col>
                         <Col md="auto" className="d-inline">
-                            <p className="fs-4 d-inline">{!!this.isEdit ? `{ Edit Quiz | ${this.props.quizEventName}}` : `{ New Quiz | ${this.props.quizEventName}}`}</p>
+                            <p className="fs-4 d-inline">{!!this.isEdit ? `{ Edit Quiz | ${this.props.quizEventName} }` : `{ New Quiz | ${this.props.quizEventName} }`}</p>
                         </Col>
                     </Row>
 

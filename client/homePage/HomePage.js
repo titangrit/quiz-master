@@ -255,7 +255,7 @@ export default class HomePage extends React.Component {
                             {/* New quiz button */}
                             <Button variant="light"
                                 className="custom-button mt-4 mb-4"
-                                size="lg"
+                                // size="lg"
                                 type="button"
                                 onClick={() => { document.location.href = "new_quiz.html" }}
                             >

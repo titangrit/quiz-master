@@ -417,9 +417,11 @@ export class RequestHandler {
                     }
                     if (!!req.body.NumberOfRounds) {
                         param.NumberOfRounds = req.body.NumberOfRounds;
+                        param.LifecycleStatusCode = QuizLifeCycleStatusCode.Draft;
                     }
                     if (!!req.body.NumberOfTeams) {
                         param.NumberOfTeams = req.body.NumberOfTeams;
+                        param.LifecycleStatusCode = QuizLifeCycleStatusCode.Draft; // repeated but necessary!
                     }
 
                     await db.updateQuizInstance(quizID, param);

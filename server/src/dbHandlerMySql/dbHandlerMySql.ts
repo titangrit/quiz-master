@@ -326,7 +326,7 @@ export class DbHandlerMySql extends DbHandler {
                 TimerSeconds: _result[0].TIMER_SECONDS
             }
 
-            logger.info(`DbHandlerMySql->getRoundTypeByID :: Round Type by ID Returned: ${roundType}`);
+            logger.info(`DbHandlerMySql->getRoundTypeByID :: Round Type by ID Returned: ${roundType.RoundTypeID}`);
         } catch (err) {
             logger.error(err);
             throw err;
@@ -355,7 +355,7 @@ export class DbHandlerMySql extends DbHandler {
                 rounds.push(round);
             }
 
-            logger.info(`DbHandlerMySql->getRoundsByQuizID :: Rounds Returned: ${rounds.length}`);
+            logger.info(`DbHandlerMySql->getRoundsByQuizID :: ${rounds.length} Rounds Returned for Quiz: ${quizID}`);
         } catch (err) {
             logger.error(err);
             throw err;
@@ -582,7 +582,7 @@ export class DbHandlerMySql extends DbHandler {
             }
 
             if (questions.length) {
-                logger.info(`DbHandlerMySql->getQuestionsByRoundUUID :: Questions by Round UUID Returned: ${roundUUID}`);
+                logger.info(`DbHandlerMySql->getQuestionsByRoundUUID :: ${questions.length} Questions Returned for Round: ${roundUUID}`);
             } else {
                 logger.info(`DbHandlerMySql->getQuestionsByRoundUUID :: No Question Found For Round UUID: ${roundUUID}`);
             }
