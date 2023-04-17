@@ -1,4 +1,4 @@
-import { DbHandler, CreateParam, UpdateParam, GetResponseParam, QuizLifeCycleStatusCode, QuizMasterSchema } from "../common";
+import { DbHandler, CreateParam, UpdateParam, GetParam, QuizLifeCycleStatusCode, QuizMasterSchema } from "../common";
 import * as mysql from 'mysql2/promise';
 import { v4 as uuidv4 } from 'uuid';
 import assert from 'node:assert';
@@ -173,62 +173,62 @@ export class DbHandlerMySql extends DbHandler {
         let statement = "UPDATE QUIZ SET ";
         let values: any = [];
 
-        if (!!param.QuizEventName) {
+        if (param?.QuizEventName !== undefined) {
             statement += `${QuizMasterSchema.Quiz.QuizEventname} = ?,`;
             values.push(param.QuizEventName);
         }
 
-        if (!!param.StartDate) {
+        if (param?.StartDate !== undefined) {
             statement += `${QuizMasterSchema.Quiz.StartDateTime} = ?,`;
             values.push(param.StartDate);
         }
 
-        if (!!param.EndDate) {
+        if (param?.EndDate !== undefined) {
             statement += `${QuizMasterSchema.Quiz.EndDateTime} = ?,`;
             values.push(param.EndDate);
         }
 
-        if (!!param.LifecycleStatusCode) {
+        if (param?.LifecycleStatusCode !== undefined) {
             statement += `${QuizMasterSchema.Quiz.LifeycleStatusCode} = ?,`;
             values.push(param.LifecycleStatusCode);
         }
 
-        if (!!param.NumberOfRounds) {
+        if (param?.NumberOfRounds !== undefined) {
             statement += `${QuizMasterSchema.Quiz.NumberOfRounds} = ?,`;
             values.push(param.NumberOfRounds);
         }
 
-        if (!!param.NumberOfTeams) {
+        if (param?.NumberOfTeams !== undefined) {
             statement += `${QuizMasterSchema.Quiz.NumberOfTeams} = ?,`;
             values.push(param.NumberOfTeams);
         }
 
-        if (!!param.CurrentRoundSeq) {
+        if (param?.CurrentRoundSeq !== undefined) {
             statement += `${QuizMasterSchema.Quiz.CurrentRoundSeq} = ?,`;
             values.push(param.CurrentRoundSeq);
         }
 
-        if (!!param.CurrentQuestionSeq) {
+        if (param?.CurrentQuestionSeq !== undefined) {
             statement += `${QuizMasterSchema.Quiz.CurrentQuestionSeq} = ?,`;
             values.push(param.CurrentQuestionSeq);
         }
 
-        if (!!param.Team1UUID) {
+        if (param?.Team1UUID !== undefined) {
             statement += `${QuizMasterSchema.Quiz.Team1UUID} = ?,`;
             values.push(param.Team1UUID);
         }
 
-        if (!!param.Team2UUID) {
+        if (param?.Team2UUID !== undefined) {
             statement += `${QuizMasterSchema.Quiz.Team2UUID} = ?,`;
             values.push(param.Team2UUID);
         }
 
-        if (!!param.Team3UUID) {
+        if (param?.Team3UUID !== undefined) {
             statement += `${QuizMasterSchema.Quiz.Team3UUID} = ?,`;
             values.push(param.Team3UUID);
         }
 
-        if (!!param.Team4UUID) {
+        if (param?.Team4UUID !== undefined) {
             statement += `${QuizMasterSchema.Quiz.Team4UUID} = ?,`;
             values.push(param.Team4UUID);
         }
@@ -273,8 +273,8 @@ export class DbHandlerMySql extends DbHandler {
         throw new Error("Method not implemented.");
     }
 
-    async getRoundTypes(): Promise<GetResponseParam.RoundType[]> {
-        const roundTypes: GetResponseParam.RoundType[] = [];
+    async getRoundTypes(): Promise<GetParam.RoundType[]> {
+        const roundTypes: GetParam.RoundType[] = [];
         const statement: string = "SELECT * FROM ROUND_TYPE";
 
         try {
@@ -282,7 +282,7 @@ export class DbHandlerMySql extends DbHandler {
             let _result = JSON.parse(JSON.stringify(result));
 
             for (let eachRoundType of _result) {
-                const roundType: GetResponseParam.RoundType = {
+                const roundType: GetParam.RoundType = {
                     RoundTypeID: eachRoundType.ID,
                     RoundTypeName: eachRoundType.NAME,
                     NumQuestionsEachTeam: eachRoundType.NUM_Q_EACH_TEAM,
@@ -303,8 +303,8 @@ export class DbHandlerMySql extends DbHandler {
         return roundTypes;
     }
 
-    async getRoundTypeByID(roundTypeID: string): Promise<GetResponseParam.RoundType> {
-        let roundType: GetResponseParam.RoundType;
+    async getRoundTypeByID(roundTypeID: string): Promise<GetParam.RoundType> {
+        let roundType: GetParam.RoundType;
         const statement: string = "SELECT * FROM ROUND_TYPE WHERE ID = ?";
         const values = [roundTypeID];
         const sql = mysql.format(statement, values);
@@ -334,8 +334,8 @@ export class DbHandlerMySql extends DbHandler {
         return roundType;
     }
 
-    async getRoundsByQuizID(quizID: number): Promise<GetResponseParam.Round[]> {
-        const rounds: GetResponseParam.Round[] = [];
+    async getRoundsByQuizID(quizID: number): Promise<GetParam.Round[]> {
+        const rounds: GetParam.Round[] = [];
         const statement: string = "SELECT * FROM ROUND WHERE QUIZ_ID = ?";
         const values = [quizID];
         const sql = mysql.format(statement, values);
@@ -347,7 +347,7 @@ export class DbHandlerMySql extends DbHandler {
             // assert(_result.length > 0, `DbHandlerMySql->getRoundsByQuizID :: Failed to Return Rounds`); There can be quiz with no rounds created yet
 
             for (let eachRound of _result) {
-                const round: GetResponseParam.Round = {
+                const round: GetParam.Round = {
                     UUID: eachRound.UUID,
                     RoundTypeID: eachRound.ROUND_TYPE_ID,
                     SequenceNumber: eachRound.SEQUENCE_NUM
@@ -363,8 +363,8 @@ export class DbHandlerMySql extends DbHandler {
         return rounds;
     }
 
-    async getQuizByID(quizID: number): Promise<GetResponseParam.Quiz> {
-        let quiz: GetResponseParam.Quiz;
+    async getQuizByID(quizID: number): Promise<GetParam.Quiz> {
+        let quiz: GetParam.Quiz;
 
         try {
             const statement: string = "SELECT * FROM QUIZ WHERE ID = ?";
@@ -382,7 +382,7 @@ export class DbHandlerMySql extends DbHandler {
                 LifeycleStatusCode: _result[0].LIFECYCLE_STATUS,
                 NumberOfRounds: _result[0].NUM_OF_ROUNDS,
                 NumberOfTeams: _result[0].NUM_OF_TEAMS,
-            } as GetResponseParam.Quiz;
+            } as GetParam.Quiz;
 
             if (!!_result[0].START_DATE_TIME) {
                 quiz.StartDateTime = new Date(_result[0].START_DATE_TIME);
@@ -419,9 +419,9 @@ export class DbHandlerMySql extends DbHandler {
         return quiz;
     }
 
-    async getAllQuizzes(): Promise<GetResponseParam.Quiz[]> {
-        const quizzes: GetResponseParam.Quiz[] = [];
-        let quiz: GetResponseParam.Quiz = {} as GetResponseParam.Quiz;
+    async getAllQuizzes(): Promise<GetParam.Quiz[]> {
+        const quizzes: GetParam.Quiz[] = [];
+        let quiz: GetParam.Quiz = {} as GetParam.Quiz;
 
         try {
             const sql: string = "SELECT * FROM QUIZ";
@@ -459,8 +459,8 @@ export class DbHandlerMySql extends DbHandler {
         return quizzes;
     }
 
-    async getTeamByUUID(teamUUID: string): Promise<GetResponseParam.Team> {
-        let team: GetResponseParam.Team;
+    async getTeamByUUID(teamUUID: string): Promise<GetParam.Team> {
+        let team: GetParam.Team;
 
         try {
             const statement: string = "SELECT * FROM TEAM WHERE UUID = ?";
@@ -475,21 +475,25 @@ export class DbHandlerMySql extends DbHandler {
             team = {
                 TeamName: _result[0].TEAM_NAME,
                 Member1: {
+                    UUID: '',
                     Surname: '',
                     Name: '',
                     Lastname: ''
                 },
                 Member2: {
+                    UUID: '',
                     Surname: '',
                     Name: '',
                     Lastname: ''
                 },
                 Member3: {
+                    UUID: '',
                     Surname: '',
                     Name: '',
                     Lastname: ''
                 },
                 Member4: {
+                    UUID: '',
                     Surname: '',
                     Name: '',
                     Lastname: ''
@@ -497,7 +501,7 @@ export class DbHandlerMySql extends DbHandler {
             };
 
             let memberUUIDs = [_result[0].MEMBER_1_UUID, _result[0].MEMBER_2_UUID, _result[0].MEMBER_3_UUID, _result[0].MEMBER_4_UUID];
-            let members: GetResponseParam.Member[] = [];
+            let members: GetParam.Member[] = [];
 
             for (let memberUUID of memberUUIDs) {
                 if (!memberUUID) {
@@ -512,7 +516,8 @@ export class DbHandlerMySql extends DbHandler {
 
                 assert(_result.length === 1, `DbHandlerMySql->getTeamByUUID :: Failed to Return Member UUID ${memberUUID}`);
 
-                let member: GetResponseParam.Member = {
+                let member: GetParam.Member = {
+                    UUID: _result[0].UUID,
                     Surname: _result[0].SURNAME,
                     Name: _result[0].NAME,
                     Lastname: _result[0].LASTNAME
@@ -547,8 +552,8 @@ export class DbHandlerMySql extends DbHandler {
         return team;
     }
 
-    async getQuestionsByRoundUUID(roundUUID: string): Promise<GetResponseParam.Question[]> {
-        const questions: GetResponseParam.Question[] = [];
+    async getQuestionsByRoundUUID(roundUUID: string): Promise<GetParam.Question[]> {
+        const questions: GetParam.Question[] = [];
         try {
             const statement: string = "SELECT * FROM QUESTION WHERE ROUND_UUID = ?";
             const values = [roundUUID];
@@ -558,7 +563,7 @@ export class DbHandlerMySql extends DbHandler {
             let _result = JSON.parse(JSON.stringify(result));
 
             for (let _question of _result) {
-                const question: GetResponseParam.Question = {
+                const question: GetParam.Question = {
                     RoundUUID: _question.ROUND_UUID,
                     SequenceNumber: _question.SEQUENCE_NUM,
                     Description: _question.DESCRIPTION,
@@ -589,4 +594,55 @@ export class DbHandlerMySql extends DbHandler {
         return questions;
     }
 
+    async deleteMemberInstance(memberUUID: string): Promise<void> {
+        const statement: string = "DELETE FROM MEMBER WHERE UUID = ?";
+        const values = [memberUUID];
+        const sql = mysql.format(statement, values);
+
+        try {
+            let [result, fields] = await this.db_conn.execute(sql);
+            let _result = JSON.parse(JSON.stringify(result));
+
+            assert(_result.affectedRows === 1, `DbHandlerMySql->deleteMemberInstance :: Failed to Delete Member Instance: ${memberUUID}`);
+
+            logger.info(`DbHandlerMySql->deleteMemberInstance :: Member Instance Successfully Deleted: ${memberUUID}`);
+        } catch (err) {
+            logger.error(err);
+            throw err;
+        }
+        return;
+    }
+
+    async deleteTeamInstance(teamUUID: string): Promise<void> {
+        try {
+            const team: GetParam.Team = await this.getTeamByUUID(teamUUID);
+            if (!!team.Member1.UUID) {
+                await this.deleteMemberInstance(team.Member1.UUID);
+            }
+            if (!!team.Member2.UUID) {
+                await this.deleteMemberInstance(team.Member2.UUID);
+            }
+            if (!!team.Member3.UUID) {
+                await this.deleteMemberInstance(team.Member3.UUID);
+            }
+            if (!!team.Member4.UUID) {
+                await this.deleteMemberInstance(team.Member4.UUID);
+            }
+
+            const statement: string = "DELETE FROM TEAM WHERE UUID = ?";
+            const values = [teamUUID];
+            const sql = mysql.format(statement, values);
+
+            let [result, fields] = await this.db_conn.execute(sql);
+            let _result = JSON.parse(JSON.stringify(result));
+
+            assert(_result.affectedRows === 1, `DbHandlerMySql->deleteTeamInstance :: Failed to Delete Team Instance: ${teamUUID}`);
+
+            logger.info(`DbHandlerMySql->deleteTeamInstance :: Team Instance Successfully Deleted: ${teamUUID}`);
+        } catch (err) {
+            logger.error(err);
+            throw err;
+        }
+        return;
+    }
 }

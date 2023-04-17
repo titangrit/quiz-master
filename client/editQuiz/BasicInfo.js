@@ -98,21 +98,22 @@ export default class BasicInfo extends React.Component {
                 headers: { 'Content-Type': 'application/json' }
             });
 
-            if (response.status !== 200) {
+            if (response.status === 200) {
+                const _response = await response.json();
+
+                this.setState({
+                    quizEventName: _response.QuizEventName,
+                    numOfRounds: _response.NumberOfRounds,
+                    numOfTeams: _response.NumberOfTeams
+                });
+            } else if (response.status === 404) {
+                // Do nothing
+            } else {
                 this.setState({
                     errorOccured: true
                 });
                 throw "Failed to Load Quiz Basic Detail";
-            };
-
-            const _response = await response.json();
-
-            this.setState({
-                quizEventName: _response.QuizEventName,
-                numOfRounds: _response.NumberOfRounds,
-                numOfTeams: _response.NumberOfTeams
-            });
-
+            }
         } catch (err) {
             throw err;
         }

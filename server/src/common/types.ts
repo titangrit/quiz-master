@@ -67,3 +67,18 @@ export type QuizBasicInfo = {
     NumberOfTeams: number,
     NumberOfRounds: number
 }
+
+export namespace QuizTeamsDetail {
+    export type Member = {
+        Surname: string,
+        Name: string,
+        LastName: string
+    }
+
+    export type Team = {
+        TeamName: string,
+        Members: [Member, Member, Member, Member]
+    }
+
+    export type Teams = [Team, Team, Team, Team]
+}

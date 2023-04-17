@@ -1,6 +1,9 @@
 import { Request, Response } from 'express';
 import { DbHandlerMySql } from "../dbHandlerMySql";
-import { CreateParam, GetResponseParam, UpdateParam, ViewQuizData, GetAllQuizzes, QuizLifeCycleStatusCode, QuizBasicInfo } from "../common";
+import {
+    CreateParam, GetParam, UpdateParam, ViewQuizData, GetAllQuizzes, QuizLifeCycleStatusCode, QuizBasicInfo,
+    QuizTeamsDetail
+} from "../common";
 
 export class RequestHandler {
 
@@ -10,7 +13,7 @@ export class RequestHandler {
         if (req.params[0] === 'round_types') {
 
             try {
-                const roundTypes: GetResponseParam.RoundType[] = await db.getRoundTypes();
+                const roundTypes: GetParam.RoundType[] = await db.getRoundTypes();
                 res.json({ RoundTypes: roundTypes });
             } catch (err) {
                 res.status(500).send();
@@ -21,7 +24,7 @@ export class RequestHandler {
             const quizID = parseInt(_quizID);
 
             try {
-                const _rounds: GetResponseParam.Round[] = await db.getRoundsByQuizID(quizID);
+                const _rounds: GetParam.Round[] = await db.getRoundsByQuizID(quizID);
                 const rounds = _rounds.sort((x, y) => {
                     if (x.SequenceNumber > y.SequenceNumber) {
                         return 1;
@@ -58,7 +61,7 @@ export class RequestHandler {
                 const viewQuizData: ViewQuizData.Quiz = {} as ViewQuizData.Quiz;
 
                 // Basic Detail
-                const quiz: GetResponseParam.Quiz = await db.getQuizByID(quizID);
+                const quiz: GetParam.Quiz = await db.getQuizByID(quizID);
                 viewQuizData.QuizID = quiz.QuizEventID;
                 viewQuizData.QuizEventName = quiz.QuizEventname;
                 viewQuizData.LifecycleStatusCode = quiz.LifeycleStatusCode;
@@ -67,12 +70,12 @@ export class RequestHandler {
 
                 // Teams Detail
                 const teamUUIDs = [quiz.Team1UUID, quiz.Team2UUID, quiz.Team3UUID, quiz.Team4UUID];
-                const teams: GetResponseParam.Team[] = [];
+                const teams: GetParam.Team[] = [];
                 for (let teamUUID of teamUUIDs) {
                     if (!teamUUID) {
                         break;
                     }
-                    const team: GetResponseParam.Team = await db.getTeamByUUID(teamUUID as string);
+                    const team: GetParam.Team = await db.getTeamByUUID(teamUUID as string);
                     teams.push(team);
                 }
 
@@ -122,7 +125,7 @@ export class RequestHandler {
                 // Rounds Detail
                 viewQuizData.Rounds = [];
 
-                let _rounds: GetResponseParam.Round[] = await db.getRoundsByQuizID(quizID);
+                let _rounds: GetParam.Round[] = await db.getRoundsByQuizID(quizID);
                 _rounds = _rounds.sort((x, y) => {
                     if (x.SequenceNumber > y.SequenceNumber) {
                         return 1;
@@ -133,10 +136,10 @@ export class RequestHandler {
 
                 for (let round of _rounds) {
                     // Round type detail
-                    const _roundType: GetResponseParam.RoundType = await db.getRoundTypeByID(round.RoundTypeID);
+                    const _roundType: GetParam.RoundType = await db.getRoundTypeByID(round.RoundTypeID);
 
                     // Questions Detail
-                    let _questions: GetResponseParam.Question[] = await db.getQuestionsByRoundUUID(round.UUID);
+                    let _questions: GetParam.Question[] = await db.getQuestionsByRoundUUID(round.UUID);
                     _questions = _questions.sort((x, y) => {
                         if (x.SequenceNumber > y.SequenceNumber) {
                             return 1;
@@ -231,13 +234,164 @@ export class RequestHandler {
                 const _quizID = req.query.quizID as string;
                 const quizID = parseInt(_quizID);
 
-                const quizData: GetResponseParam.Quiz = await db.getQuizByID(quizID);
+                let quizData: GetParam.Quiz;
+                try {
+                    quizData = await db.getQuizByID(quizID);
+                } catch (e) {
+                    res.status(404).send();
+                    return;
+                }
                 const response: QuizBasicInfo = {
                     QuizEventID: quizData.QuizEventID,
                     QuizEventName: quizData.QuizEventname,
                     NumberOfTeams: quizData.NumberOfTeams,
                     NumberOfRounds: quizData.NumberOfRounds
                 }
+                res.json(response);
+            } catch (err) {
+                res.status(500).send();
+            }
+
+        } else if (req.params[0] === 'team_info') {
+
+            try {
+                const _quizID = req.query.quizID as string;
+                const quizID = parseInt(_quizID);
+                let quiz: GetParam.Quiz;
+
+                try {
+                    quiz = await db.getQuizByID(quizID);
+                } catch (e) {
+                    res.status(404).send();
+                    return;
+                }
+
+                const member: QuizTeamsDetail.Member = {
+                    Surname: '',
+                    Name: '',
+                    LastName: ''
+                }
+
+                const Team: QuizTeamsDetail.Team = {
+                    TeamName: '',
+                    Members: [member, member, member, member]
+                }
+
+                const response: QuizTeamsDetail.Teams = [Team, Team, Team, Team];
+
+                if (!!quiz.Team1UUID) {
+                    const team: GetParam.Team = await db.getTeamByUUID(quiz.Team1UUID);
+                    response[0] = {
+                        TeamName: team.TeamName,
+                        Members: [
+                            {
+                                Surname: team.Member1.Surname,
+                                Name: team.Member1.Name,
+                                LastName: team.Member1.Lastname
+                            },
+                            {
+                                Surname: team.Member2.Surname,
+                                Name: team.Member2.Name,
+                                LastName: team.Member2.Lastname
+                            },
+                            {
+                                Surname: team.Member3.Surname,
+                                Name: team.Member3.Name,
+                                LastName: team.Member3.Lastname
+                            },
+                            {
+                                Surname: team.Member4.Surname,
+                                Name: team.Member4.Name,
+                                LastName: team.Member4.Lastname
+                            }
+                        ]
+                    }
+                }
+                if (!!quiz.Team2UUID) {
+                    const team: GetParam.Team = await db.getTeamByUUID(quiz.Team2UUID);
+                    response[1] = {
+                        TeamName: team.TeamName,
+                        Members: [
+                            {
+                                Surname: team.Member1.Surname,
+                                Name: team.Member1.Name,
+                                LastName: team.Member1.Lastname
+                            },
+                            {
+                                Surname: team.Member2.Surname,
+                                Name: team.Member2.Name,
+                                LastName: team.Member2.Lastname
+                            },
+                            {
+                                Surname: team.Member3.Surname,
+                                Name: team.Member3.Name,
+                                LastName: team.Member3.Lastname
+                            },
+                            {
+                                Surname: team.Member4.Surname,
+                                Name: team.Member4.Name,
+                                LastName: team.Member4.Lastname
+                            }
+                        ]
+                    }
+                }
+                if (!!quiz.Team3UUID) {
+                    const team: GetParam.Team = await db.getTeamByUUID(quiz.Team3UUID);
+                    response[2] = {
+                        TeamName: team.TeamName,
+                        Members: [
+                            {
+                                Surname: team.Member1.Surname,
+                                Name: team.Member1.Name,
+                                LastName: team.Member1.Lastname
+                            },
+                            {
+                                Surname: team.Member2.Surname,
+                                Name: team.Member2.Name,
+                                LastName: team.Member2.Lastname
+                            },
+                            {
+                                Surname: team.Member3.Surname,
+                                Name: team.Member3.Name,
+                                LastName: team.Member3.Lastname
+                            },
+                            {
+                                Surname: team.Member4.Surname,
+                                Name: team.Member4.Name,
+                                LastName: team.Member4.Lastname
+                            }
+                        ]
+                    }
+                }
+                if (!!quiz.Team4UUID) {
+                    const team: GetParam.Team = await db.getTeamByUUID(quiz.Team4UUID);
+                    response[3] = {
+                        TeamName: team.TeamName,
+                        Members: [
+                            {
+                                Surname: team.Member1.Surname,
+                                Name: team.Member1.Name,
+                                LastName: team.Member1.Lastname
+                            },
+                            {
+                                Surname: team.Member2.Surname,
+                                Name: team.Member2.Name,
+                                LastName: team.Member2.Lastname
+                            },
+                            {
+                                Surname: team.Member3.Surname,
+                                Name: team.Member3.Name,
+                                LastName: team.Member3.Lastname
+                            },
+                            {
+                                Surname: team.Member4.Surname,
+                                Name: team.Member4.Name,
+                                LastName: team.Member4.Lastname
+                            }
+                        ]
+                    }
+                }
+
                 res.json(response);
             } catch (err) {
                 res.status(500).send();
@@ -290,6 +444,21 @@ export class RequestHandler {
             try {
                 const quizID = req.body.QuizID;
                 const teams = req.body.Teams;
+
+                // delete existing teams and members for edit scenario to create them from scratch
+                const quiz: GetParam.Quiz = await db.getQuizByID(quizID);
+                if (!!quiz.Team1UUID) {
+                    await db.deleteTeamInstance(quiz.Team1UUID);
+                }
+                if (!!quiz.Team2UUID) {
+                    await db.deleteTeamInstance(quiz.Team2UUID);
+                }
+                if (!!quiz.Team3UUID) {
+                    await db.deleteTeamInstance(quiz.Team3UUID);
+                }
+                if (!!quiz.Team4UUID) {
+                    await db.deleteTeamInstance(quiz.Team4UUID);
+                }
 
                 // create teams
                 const teamUUIDs = [];

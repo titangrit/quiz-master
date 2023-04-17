@@ -124,7 +124,7 @@ export namespace UpdateParam {
     export type QuestionInstance = updateQuestionInstanceParam;
 }
 
-export namespace GetResponseParam {
+export namespace GetParam {
     interface getRoundTypeResponseParam {
         RoundTypeID: string,
         RoundTypeName: string,
@@ -159,6 +159,7 @@ export namespace GetResponseParam {
     }
 
     interface member {
+        UUID: string,
         Surname: string,
         Name: string,
         Lastname: string
@@ -212,12 +213,15 @@ export abstract class DbHandler {
     abstract updateRoundInstance(param: UpdateParam.RoundInstance): Promise<void>;
     abstract updateQuestionInstance(param: UpdateParam.QuestionInstance): Promise<void>;
 
-    abstract getRoundTypes(): Promise<GetResponseParam.RoundType[]>;
-    abstract getRoundTypeByID(roundTypeID: string): Promise<GetResponseParam.RoundType>;
-    abstract getRoundsByQuizID(quizID: number): Promise<GetResponseParam.Round[]>;
-    abstract getQuizByID(quizID: number): Promise<GetResponseParam.Quiz>;
-    abstract getAllQuizzes(): Promise<GetResponseParam.Quiz[]>;
-    abstract getTeamByUUID(teamUUID: string): Promise<GetResponseParam.Team>;
-    abstract getQuestionsByRoundUUID(roundUUID: string): Promise<GetResponseParam.Question[]>;
+    abstract getRoundTypes(): Promise<GetParam.RoundType[]>;
+    abstract getRoundTypeByID(roundTypeID: string): Promise<GetParam.RoundType>;
+    abstract getRoundsByQuizID(quizID: number): Promise<GetParam.Round[]>;
+    abstract getQuizByID(quizID: number): Promise<GetParam.Quiz>;
+    abstract getAllQuizzes(): Promise<GetParam.Quiz[]>;
+    abstract getTeamByUUID(teamUUID: string): Promise<GetParam.Team>;
+    abstract getQuestionsByRoundUUID(roundUUID: string): Promise<GetParam.Question[]>;
+
+    abstract deleteMemberInstance(memberUUID: string): Promise<void>;
+    abstract deleteTeamInstance(teamUUID: string): Promise<void>;
 
 }

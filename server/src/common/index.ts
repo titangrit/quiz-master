@@ -1,3 +1,3 @@
-export { DbHandler, CreateParam, UpdateParam, GetResponseParam } from "./dbHandler";
+export { DbHandler, CreateParam, UpdateParam, GetParam } from "./dbHandler";
 export { QuizLifeCycleStatusCode, QuizMasterSchema } from "./constants";
-export { ViewQuizData, GetAllQuizzes, QuizBasicInfo } from "./types";
+export { ViewQuizData, GetAllQuizzes, QuizBasicInfo, QuizTeamsDetail } from "./types";
