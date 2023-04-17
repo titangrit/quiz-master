@@ -23,6 +23,7 @@ export default class BasicInfo extends React.Component {
         }
 
         if (!this.props.quizEventID) {
+            // New quiz
             this.state.basicDetailObtained = true
         }
     }
@@ -142,10 +143,6 @@ export default class BasicInfo extends React.Component {
             );
         }
 
-        let currentQuizEventName = !!this.state.quizEventName ? this.state.quizEventName : null;
-        let currentnumOfRounds = !!this.state.numOfRounds ? this.state.numOfRounds : null;
-        let currentnumOfTeams = !!this.state.numOfTeams ? this.state.numOfTeams : null;
-
         return (
             <React.Fragment>
                 <Container className="mt-4">
@@ -163,12 +160,12 @@ export default class BasicInfo extends React.Component {
                             <Form onSubmit={this.handleSubmit}>
                                 <Row className="mb-4">
                                     <FloatingLabel controlId="quizEventName" label="Quiz Event Name *Required" className="px-1">
-                                        <Form.Control type="text" placeholder="Quiz Event Name" defaultValue={currentQuizEventName} required />
+                                        <Form.Control type="text" placeholder="Quiz Event Name" defaultValue={this.state.quizEventName} required />
                                     </FloatingLabel>
                                 </Row>
                                 <Row className="mb-4">
                                     <FloatingLabel controlId="numOfTeams" label="Number of Teams" className="px-1">
-                                        <Form.Select aria-label="Floating label" defaultValue={currentnumOfTeams}>
+                                        <Form.Select aria-label="Floating label" defaultValue={this.state.numOfTeams}>
                                             <option value="2">{`2 (Two)`}</option>
                                             <option value="3">{`3 (Three)`}</option>
                                             <option value="4">{`4 (Four)`}</option>
@@ -177,7 +174,7 @@ export default class BasicInfo extends React.Component {
                                 </Row>
                                 <Row className="mb-5">
                                     <FloatingLabel controlId="numOfRounds" label="Number of Quiz Rounds" className="px-1">
-                                        <Form.Select aria-label="Floating label" defaultValue={currentnumOfRounds}>
+                                        <Form.Select aria-label="Floating label" defaultValue={this.state.numOfRounds}>
                                             <option value="1">{`1 (One)`}</option>
                                             <option value="2">{`2 (Two)`}</option>
                                             <option value="3">{`3 (Three)`}</option>
