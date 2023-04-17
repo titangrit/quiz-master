@@ -6,6 +6,7 @@ import Col from "react-bootstrap/Col";
 import FloatingLabel from 'react-bootstrap/FloatingLabel';
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
+import Spinner from 'react-bootstrap/Spinner';
 
 /**
  * Fill quiz basic information
@@ -14,7 +15,15 @@ export default class BasicInfo extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            errorOccured: false
+            errorOccured: false,
+            basicDetailObtained: false,
+            quizEventName: null,
+            numOfRounds: null,
+            numOfTeams: null
+        }
+
+        if (!this.props.quizEventID) {
+            this.state.basicDetailObtained = true
         }
     }
 
@@ -24,8 +33,8 @@ export default class BasicInfo extends React.Component {
 
         const form = event.currentTarget;
         const quizEventName = form.quizEventName.value;
-        const numOfTeams = form.numOfTeams.value;
-        const numOfRounds = form.numOfRounds.value;
+        const numOfTeams = parseInt(form.numOfTeams.value);
+        const numOfRounds = parseInt(form.numOfRounds.value);
         let quizEventID;
 
         if (numOfTeams > 4) {
@@ -34,28 +43,46 @@ export default class BasicInfo extends React.Component {
 
         // POST the data to server
         try {
+            let sendModifyRequest = false;
+
             let basicInfo = {
-                QuizEventName: quizEventName,
-                NumberOfTeams: numOfTeams,
-                NumberOfRounds: numOfRounds
+                QuizEventID: this.props.quizEventID
             }
 
-            const response = await fetch("/quiz/basic_info", {
-                method: "POST",
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(basicInfo)
-            });
+            if (this.state.quizEventName !== quizEventName) {
+                basicInfo.QuizEventName = quizEventName;
+                sendModifyRequest = true;
+            }
+            if (this.state.numOfTeams !== numOfTeams) {
+                basicInfo.NumberOfTeams = numOfTeams;
+                sendModifyRequest = true;
+            }
+            if (this.state.numOfRounds !== numOfRounds) {
+                basicInfo.NumberOfRounds = numOfRounds;
+                sendModifyRequest = true;
+            }
 
-            if (response.status !== 200) {
-                this.setState({
-                    errorOccured: true
+            if (sendModifyRequest) {
+                const response = await fetch("/quiz/basic_info", {
+                    method: "POST",
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(basicInfo)
                 });
-                throw "Failed to Create Quiz";
-            };
 
-            const _response = await response.json();
+                if (response.status !== 200) {
+                    this.setState({
+                        errorOccured: true
+                    });
+                    throw "Failed to Edit Quiz Basic Detail";
+                };
 
-            quizEventID = _response.QuizEventID;
+                const _response = await response.json();
+
+                quizEventID = _response.QuizEventID;
+            } else {
+                // Edit quiz but nothing changed
+                quizEventID = this.props.quizEventID;
+            }
 
             this.props.nextStep(quizEventID, quizEventName, numOfRounds, numOfTeams);
 
@@ -64,12 +91,59 @@ export default class BasicInfo extends React.Component {
         }
     };
 
+    getBasicDetail = async () => {
+        try {
+            const response = await fetch("/quiz/basic_info?quizID=" + this.props.quizEventID, {
+                method: "GET",
+                headers: { 'Content-Type': 'application/json' }
+            });
+
+            if (response.status !== 200) {
+                this.setState({
+                    errorOccured: true
+                });
+                throw "Failed to Load Quiz Basic Detail";
+            };
+
+            const _response = await response.json();
+
+            this.setState({
+                quizEventName: _response.QuizEventName,
+                numOfRounds: _response.NumberOfRounds,
+                numOfTeams: _response.NumberOfTeams
+            });
+
+        } catch (err) {
+            throw err;
+        }
+    }
+
+    async componentDidMount() {
+        if (!this.state.quizDataObtained) {
+            await this.getBasicDetail();
+            this.setState({
+                basicDetailObtained: true
+            });
+
+        }
+    }
+
     render() {
         if (this.state.errorOccured) {
             return (
                 <p style={{ color: 'red' }}>An error occurred. Check the server log.</p>
             );
         }
+
+        if (!this.state.basicDetailObtained) {
+            return (
+                <h3><Spinner animation="border" role="status" />Loading Quiz Basic Detail...</h3>
+            );
+        }
+
+        let currentQuizEventName = !!this.state.quizEventName ? this.state.quizEventName : null;
+        let currentnumOfRounds = !!this.state.numOfRounds ? this.state.numOfRounds : null;
+        let currentnumOfTeams = !!this.state.numOfTeams ? this.state.numOfTeams : null;
 
         return (
             <React.Fragment>
@@ -79,7 +153,7 @@ export default class BasicInfo extends React.Component {
                             <p className="fs-3 d-inline">Basic Detail </p>
                         </Col>
                         <Col md="auto" className="d-inline">
-                            <p className="fs-4 d-inline">{`{ New Quiz }`}</p>
+                            <p className="fs-4 d-inline">{!!this.props.quizEventID ? `{ Edit Quiz }` : `{ New Quiz }`}</p>
                         </Col>
                     </Row>
 
@@ -88,12 +162,12 @@ export default class BasicInfo extends React.Component {
                             <Form onSubmit={this.handleSubmit}>
                                 <Row className="mb-4">
                                     <FloatingLabel controlId="quizEventName" label="Quiz Event Name *Required" className="px-1">
-                                        <Form.Control type="text" placeholder="Quiz Event Name" required />
+                                        <Form.Control type="text" placeholder="Quiz Event Name" defaultValue={currentQuizEventName} required />
                                     </FloatingLabel>
                                 </Row>
                                 <Row className="mb-4">
                                     <FloatingLabel controlId="numOfTeams" label="Number of Teams" className="px-1">
-                                        <Form.Select aria-label="Floating label">
+                                        <Form.Select aria-label="Floating label" defaultValue={currentnumOfTeams}>
                                             <option value="2">{`2 (Two)`}</option>
                                             <option value="3">{`3 (Three)`}</option>
                                             <option value="4">{`4 (Four)`}</option>
@@ -102,7 +176,7 @@ export default class BasicInfo extends React.Component {
                                 </Row>
                                 <Row className="mb-5">
                                     <FloatingLabel controlId="numOfRounds" label="Number of Quiz Rounds" className="px-1">
-                                        <Form.Select aria-label="Floating label">
+                                        <Form.Select aria-label="Floating label" defaultValue={currentnumOfRounds}>
                                             <option value="1">{`1 (One)`}</option>
                                             <option value="2">{`2 (Two)`}</option>
                                             <option value="3">{`3 (Three)`}</option>

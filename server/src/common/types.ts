@@ -43,6 +43,8 @@ export namespace ViewQuizData {
         QuizID: number,
         QuizEventName: string,
         LifecycleStatusCode: QuizLifeCycleStatusCode,
+        NumberOfTeams: number,
+        NumberOfRounds: number,
         Teams: Team[],
         Rounds: Round[]
     }
@@ -57,4 +59,11 @@ export namespace GetAllQuizzes {
     }
 
     export type Quizzes = Quiz[];
+}
+
+export type QuizBasicInfo = {
+    QuizEventID: number,
+    QuizEventName: string,
+    NumberOfTeams: number,
+    NumberOfRounds: number
 }

@@ -115,14 +115,14 @@ export default class ViewQuiz extends React.Component {
                                     <Col md={3}>
                                         <Row>
                                             <FloatingLabel controlId={`numOfTeams`} label={`Number of Teams`} className="px-1">
-                                                <Form.Control type="text" placeholder={`Number of Teams`} value={this.quizData.Teams.length} disabled />
+                                                <Form.Control type="text" placeholder={`Number of Teams`} value={this.quizData.NumberOfTeams} disabled />
                                             </FloatingLabel>
                                         </Row>
                                     </Col>
                                     <Col md={3}>
                                         <Row>
                                             <FloatingLabel controlId={`numOfRounds`} label={`Number of Rounds`} className="px-1">
-                                                <Form.Control type="text" placeholder={`Number of Rounds`} value={this.quizData.Rounds.length} disabled />
+                                                <Form.Control type="text" placeholder={`Number of Rounds`} value={this.quizData.NumberOfRounds} disabled />
                                             </FloatingLabel>
                                         </Row>
                                     </Col>

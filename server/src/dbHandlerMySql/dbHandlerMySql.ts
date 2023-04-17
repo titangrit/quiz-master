@@ -377,7 +377,7 @@ export class DbHandlerMySql extends DbHandler {
             assert(_result.length === 1, `DbHandlerMySql->getQuizByID :: Failed to Return Quiz ID ${quizID}`);
 
             quiz = {
-                QuizID: _result[0].ID,
+                QuizEventID: _result[0].ID,
                 QuizEventname: _result[0].EVENT_NAME,
                 LifeycleStatusCode: _result[0].LIFECYCLE_STATUS,
                 NumberOfRounds: _result[0].NUM_OF_ROUNDS,
@@ -431,7 +431,7 @@ export class DbHandlerMySql extends DbHandler {
 
             for (let entry of _result) {
                 quiz = {
-                    QuizID: entry[QuizMasterSchema.Quiz.QuizID],
+                    QuizEventID: entry[QuizMasterSchema.Quiz.QuizID],
                     QuizEventname: entry[QuizMasterSchema.Quiz.QuizEventname],
                     StartDateTime: entry[QuizMasterSchema.Quiz.StartDateTime],
                     EndDateTime: entry[QuizMasterSchema.Quiz.EndDateTime],

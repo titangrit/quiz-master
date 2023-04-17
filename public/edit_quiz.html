@@ -10,23 +10,14 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
-    <title>Edit Quiz | QuizMaster</title>
+    <title>QuizMaster | Edit Quiz</title>
 </head>
 
 <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>
     <div id="root"></div>
 
-    <script src="./dist/index.bundle.js"></script>
-
-    <script>
-        window.addEventListener("beforeunload", function (e) {
-            var confirmationMessage = "\o/";
-
-            (e || window.event).returnValue = confirmationMessage; //Gecko + IE
-            return confirmationMessage;                            //Webkit, Safari, Chrome
-        });
-    </script>
+    <script src="./dist/edit_quiz.bundle.js"></script>
 </body>
 
 </html>

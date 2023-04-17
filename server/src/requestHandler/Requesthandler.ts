@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { DbHandlerMySql } from "../dbHandlerMySql";
-import { CreateParam, GetResponseParam, UpdateParam, ViewQuizData, GetAllQuizzes, QuizLifeCycleStatusCode } from "../common";
+import { CreateParam, GetResponseParam, UpdateParam, ViewQuizData, GetAllQuizzes, QuizLifeCycleStatusCode, QuizBasicInfo } from "../common";
 
 export class RequestHandler {
 
@@ -59,9 +59,11 @@ export class RequestHandler {
 
                 // Basic Detail
                 const quiz: GetResponseParam.Quiz = await db.getQuizByID(quizID);
-                viewQuizData.QuizID = quiz.QuizID;
+                viewQuizData.QuizID = quiz.QuizEventID;
                 viewQuizData.QuizEventName = quiz.QuizEventname;
                 viewQuizData.LifecycleStatusCode = quiz.LifeycleStatusCode;
+                viewQuizData.NumberOfRounds = quiz.NumberOfRounds;
+                viewQuizData.NumberOfTeams = quiz.NumberOfTeams;
 
                 // Teams Detail
                 const teamUUIDs = [quiz.Team1UUID, quiz.Team2UUID, quiz.Team3UUID, quiz.Team4UUID];
@@ -201,7 +203,7 @@ export class RequestHandler {
                 const quizzes = await db.getAllQuizzes();
                 for (let quiz of quizzes) {
                     allQuizzes.push({
-                        QuizID: quiz.QuizID,
+                        QuizID: quiz.QuizEventID,
                         QuizEventName: quiz.QuizEventname,
                         LifecycleStatusCode: quiz.LifeycleStatusCode,
                         CompletedOnDate: quiz.EndDateTime?.toLocaleDateString()
@@ -223,6 +225,24 @@ export class RequestHandler {
                 res.status(500).send();
             }
 
+        } else if (req.params[0] === 'basic_info') {
+
+            try {
+                const _quizID = req.query.quizID as string;
+                const quizID = parseInt(_quizID);
+
+                const quizData: GetResponseParam.Quiz = await db.getQuizByID(quizID);
+                const response: QuizBasicInfo = {
+                    QuizEventID: quizData.QuizEventID,
+                    QuizEventName: quizData.QuizEventname,
+                    NumberOfTeams: quizData.NumberOfTeams,
+                    NumberOfRounds: quizData.NumberOfRounds
+                }
+                res.json(response);
+            } catch (err) {
+                res.status(500).send();
+            }
+
         } else {
             res.status(404).send();
         }
@@ -232,16 +252,35 @@ export class RequestHandler {
         const db = await DbHandlerMySql.getInstance();
 
         if (req.params[0] === 'basic_info') {
-
             try {
-                let param: CreateParam.QuizInstance = {
-                    QuizEventName: req.body.QuizEventName,
-                    NumberOfRounds: req.body.NumberOfRounds,
-                    NumberOfTeams: req.body.NumberOfTeams
-                };
+                if (!!req.body.QuizEventID) {
+                    // Edit quiz
+                    const quizID = req.body.QuizEventID;
 
-                const quizID = await db.createQuizInstance(param);
-                res.json({ quizID: quizID });
+                    let param: UpdateParam.QuizInstance = {} as UpdateParam.QuizInstance;
+                    if (!!req.body.QuizEventName) {
+                        param.QuizEventName = req.body.QuizEventName;
+                    }
+                    if (!!req.body.NumberOfRounds) {
+                        param.NumberOfRounds = req.body.NumberOfRounds;
+                    }
+                    if (!!req.body.NumberOfTeams) {
+                        param.NumberOfTeams = req.body.NumberOfTeams;
+                    }
+
+                    await db.updateQuizInstance(quizID, param);
+                    res.json({ QuizEventID: quizID });
+                } else {
+                    // New quiz
+                    let param: CreateParam.QuizInstance = {
+                        QuizEventName: req.body.QuizEventName,
+                        NumberOfRounds: req.body.NumberOfRounds,
+                        NumberOfTeams: req.body.NumberOfTeams
+                    };
+
+                    const quizID = await db.createQuizInstance(param);
+                    res.json({ QuizEventID: quizID });
+                }
             } catch (err) {
                 res.status(500).send();
             }

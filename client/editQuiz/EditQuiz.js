@@ -8,18 +8,21 @@ import RoundInfo from "./RoundInfo";
 import QuestionInfo from "./QuestionInfo";
 
 /**
- * Create quiz component
+ * Edit quiz component
  */
-export default class NewQuiz extends React.Component {
+export default class EditQuiz extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            createQuizStep: ModifyQuizStep.BasicInfo,
+            editQuizStep: ModifyQuizStep.BasicInfo,
             quizEventID: null,
             quizEventName: null,
             numOfRounds: null,
             numOfTeams: null
         }
+
+        const queryParams = new URLSearchParams(window.location.search)
+        this.state.quizEventID = queryParams.get('quizID');
 
         this.confirmExit = this.confirmExit.bind(this);
         window.addEventListener("beforeunload", this.confirmExit);
@@ -33,7 +36,7 @@ export default class NewQuiz extends React.Component {
     }
 
     nextStep = async () => {
-        if (this.state.createQuizStep >= ModifyQuizStep.LastStep) {
+        if (this.state.editQuizStep >= ModifyQuizStep.LastStep) {
             // if last step is reached:
             // 1. Set the quiz LifecycleStatusCode to Ready
             // 2. Navigate to View Quiz
@@ -57,14 +60,14 @@ export default class NewQuiz extends React.Component {
         }
 
         this.setState({
-            createQuizStep: this.state.createQuizStep + 1
+            editQuizStep: this.state.editQuizStep + 1
         })
     }
 
     nextAfterBasicInfo = (quizEventID, quizEventName, numOfRounds, numOfTeams) => {
-        const nextStep = this.state.createQuizStep + 1;
+        const nextStep = this.state.editQuizStep + 1;
         this.setState({
-            createQuizStep: nextStep,
+            editQuizStep: nextStep,
             quizEventID: quizEventID,
             quizEventName: quizEventName,
             numOfRounds: numOfRounds,
@@ -73,12 +76,13 @@ export default class NewQuiz extends React.Component {
     }
 
     render() {
-        switch (this.state.createQuizStep) {
+        switch (this.state.editQuizStep) {
             case ModifyQuizStep.BasicInfo:
                 return (
                     <React.Fragment>
                         <HomeNavbar />
                         <BasicInfo
+                            quizEventID={this.state.quizEventID}
                             nextStep={this.nextAfterBasicInfo}
                         />
                     </React.Fragment>

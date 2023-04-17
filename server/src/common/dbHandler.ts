@@ -143,7 +143,7 @@ export namespace GetResponseParam {
     };
 
     interface getQuizResponseParam {
-        QuizID: number,
+        QuizEventID: number,
         QuizEventname: string,
         StartDateTime: Date,
         EndDateTime: Date,
