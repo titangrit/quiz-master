@@ -21,4 +21,9 @@ export namespace QuizMasterSchema {
         Team3UUID = "TEAM_3_UUID",
         Team4UUID = "TEAM_4_UUID"
     }
+
+    export enum Round {
+        RoundTypeID = "ROUND_TYPE_ID",
+        SequenceNumber = "SEQUENCE_NUM"
+    }
 }

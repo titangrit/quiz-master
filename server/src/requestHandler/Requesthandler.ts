@@ -23,6 +23,10 @@ export class RequestHandler {
             const _quizID = req.query.quizID as string;
             const quizID = parseInt(_quizID);
 
+            if (Number.isNaN(quizID)) {
+                res.status(404).send();
+            }
+
             try {
                 const _rounds: GetParam.Round[] = await db.getRoundsByQuizID(quizID);
                 const rounds = _rounds.sort((x, y) => {
@@ -56,6 +60,10 @@ export class RequestHandler {
         } else if (req.params[0] === 'quiz_data') {
             const _quizID = req.query.quizID as string;
             const quizID = parseInt(_quizID);
+
+            if (Number.isNaN(quizID)) {
+                res.status(404).send();
+            }
 
             try {
                 const viewQuizData: ViewQuizData.Quiz = {} as ViewQuizData.Quiz;
@@ -234,6 +242,10 @@ export class RequestHandler {
                 const _quizID = req.query.quizID as string;
                 const quizID = parseInt(_quizID);
 
+                if (Number.isNaN(quizID)) {
+                    res.status(404).send();
+                }
+
                 let quizData: GetParam.Quiz;
                 try {
                     quizData = await db.getQuizByID(quizID);
@@ -257,6 +269,11 @@ export class RequestHandler {
             try {
                 const _quizID = req.query.quizID as string;
                 const quizID = parseInt(_quizID);
+
+                if (Number.isNaN(quizID)) {
+                    res.status(404).send();
+                }
+
                 let quiz: GetParam.Quiz;
 
                 try {
@@ -397,7 +414,23 @@ export class RequestHandler {
                 res.status(500).send();
             }
 
-        } else {
+        } else if (req.params[0] === 'rounds') {
+            try {
+                const _quizID = req.query.quizID as string;
+                const quizID = parseInt(_quizID);
+
+                if (Number.isNaN(quizID)) {
+                    res.status(404).send();
+                }
+
+                const currentRounds: GetParam.Round[] = await db.getRoundsByQuizID(quizID);
+                res.json(currentRounds);
+
+            } catch (err) {
+                res.status(500).send();
+            }
+        }
+        else {
             res.status(404).send();
         }
     }
@@ -554,13 +587,34 @@ export class RequestHandler {
                         await db.createRoundTypeInstance(param);
                     }
 
-                    let param: CreateParam.RoundInstance = {
-                        QuizID: quizID,
-                        RoundTypeID: rounds[_r].RoundTypeID,
-                        SequenceNumber: _r + 1
+                    let quizStatusAffected = false;
+
+                    if (!!rounds[_r].UUID) {
+                        // If round UUID is part of the payload, it is edit of this round
+                        let param: UpdateParam.RoundInstance = {
+                            RoundTypeID: rounds[_r].RoundTypeID
+                        }
+
+                        await db.updateRoundInstance(rounds[_r].UUID, param);
+
+                        quizStatusAffected = true;
+
+                    } else {
+                        // It is new round
+                        let param: CreateParam.RoundInstance = {
+                            QuizID: quizID,
+                            RoundTypeID: rounds[_r].RoundTypeID,
+                            SequenceNumber: rounds[_r].SequenceNumber
+                        }
+
+                        await db.createRoundInstance(param);
                     }
 
-                    await db.createRoundInstance(param);
+                    if (quizStatusAffected) {
+                        let param: UpdateParam.QuizInstance = {} as UpdateParam.QuizInstance;
+                        param.LifecycleStatusCode = QuizLifeCycleStatusCode.Draft;
+                        await db.updateQuizInstance(quizID, param);
+                    }
                 }
 
                 res.status(200).send();

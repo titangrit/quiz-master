@@ -22,8 +22,8 @@ export default class BasicInfo extends React.Component {
             numOfTeams: null
         }
 
-        if (!this.props.quizEventID) {
-            // New quiz
+        if (!this.props.isEdit) {
+            // New quiz, no need to try to obtain existing data
             this.state.basicDetailObtained = true
         }
     }
@@ -45,9 +45,10 @@ export default class BasicInfo extends React.Component {
         // POST the data to server
         try {
             let sendModifyRequest = false;
+            let basicInfo = {};
 
-            let basicInfo = {
-                QuizEventID: this.props.quizEventID
+            if (this.props.isEdit) {
+                basicInfo.QuizEventID = this.props.quizEventID;
             }
 
             if (this.state.quizEventName !== quizEventName) {
@@ -151,7 +152,7 @@ export default class BasicInfo extends React.Component {
                             <p className="fs-3 d-inline">Basic Detail </p>
                         </Col>
                         <Col md="auto" className="d-inline">
-                            <p className="fs-4 d-inline">{!!this.props.quizEventID ? `{ Edit Quiz }` : `{ New Quiz }`}</p>
+                            <p className="fs-4 d-inline">{!!this.props.isEdit ? `{ Edit Quiz }` : `{ New Quiz }`}</p>
                         </Col>
                     </Row>
 

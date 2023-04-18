@@ -57,7 +57,10 @@ export default class TeamInfo extends React.Component {
             emptyTeamDetail // Team 4
         ];
 
-        this.isEdit = false;
+        if (!this.props.isEdit) {
+            // New quiz, no need to try to obtain existing team data
+            this.state.teamsDetailObtained = true;
+        }
     }
 
     handleSubmit = async (event) => {
@@ -134,7 +137,6 @@ export default class TeamInfo extends React.Component {
 
             if (response.status === 200) {
                 this.teamsDetail = await response.json();
-                this.isEdit = true;
             } else if (response.status === 404) {
                 // Do nothing
             } else {
@@ -180,7 +182,7 @@ export default class TeamInfo extends React.Component {
                             <p className="fs-3 d-inline">Teams Detail </p>
                         </Col>
                         <Col md="auto" className="d-inline">
-                            <p className="fs-4 d-inline">{!!this.isEdit ? `{ Edit Quiz | ${this.props.quizEventName} }` : `{ New Quiz | ${this.props.quizEventName} }`}</p>
+                            <p className="fs-4 d-inline">{!!this.props.isEdit ? `{ Edit Quiz | ${this.props.quizEventName} }` : `{ New Quiz | ${this.props.quizEventName} }`}</p>
                         </Col>
                     </Row>
 

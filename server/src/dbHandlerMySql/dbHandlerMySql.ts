@@ -266,9 +266,48 @@ export class DbHandlerMySql extends DbHandler {
     async updateTeamInstance(param: UpdateParam.TeamInstance): Promise<void> {
         throw new Error("Method not implemented.");
     }
-    async updateRoundInstance(param: UpdateParam.RoundInstance): Promise<void> {
-        throw new Error("Method not implemented.");
+
+    async updateRoundInstance(roundUUID: string, param: UpdateParam.RoundInstance): Promise<void> {
+        let statement = "UPDATE ROUND SET ";
+        let values: any = [];
+
+        if (param?.RoundTypeID !== undefined) {
+            statement += `${QuizMasterSchema.Round.RoundTypeID} = ?,`;
+            values.push(param.RoundTypeID);
+        }
+
+        if (param?.SequenceNumber !== undefined) {
+            statement += `${QuizMasterSchema.Round.SequenceNumber} = ?,`;
+            values.push(param.SequenceNumber);
+        }
+
+        if (values.length === 0) {
+            logger.info(`DbHandlerMySql->updateRoundInstance :: No Value Passed to Update Round: ${roundUUID}`);
+            return;
+        }
+
+        statement = statement.slice(0, -1); // remove the last ','
+
+        statement += " WHERE UUID = ?";
+        values.push(roundUUID);
+
+        const sql = mysql.format(statement, values);
+
+        try {
+            let [result, fields] = await this.db_conn.execute(sql);
+
+            let _result = JSON.parse(JSON.stringify(result));
+            assert(_result.affectedRows === 1, `DbHandlerMySql->updateRoundInstance :: Failed to Update Round ${roundUUID}: ${JSON.stringify(param)}`);
+
+            logger.info(`DbHandlerMySql->updateRoundInstance :: Round ${roundUUID} Updated: ${JSON.stringify(param)}`);
+        } catch (err) {
+            logger.error(err);
+            throw err;
+        }
+
+        return;
     }
+
     async updateQuestionInstance(param: UpdateParam.QuestionInstance): Promise<void> {
         throw new Error("Method not implemented.");
     }

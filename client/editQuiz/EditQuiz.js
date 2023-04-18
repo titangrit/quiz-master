@@ -18,11 +18,15 @@ export default class EditQuiz extends React.Component {
             quizEventID: null,
             quizEventName: null,
             numOfRounds: null,
-            numOfTeams: null
+            numOfTeams: null,
+            isEdit: false,
         }
 
         const queryParams = new URLSearchParams(window.location.search)
         this.state.quizEventID = queryParams.get('quizID');
+        if (!!this.state.quizEventID) {
+            this.state.isEdit = true;
+        }
 
         this.confirmExit = this.confirmExit.bind(this);
         window.addEventListener("beforeunload", this.confirmExit);
@@ -82,6 +86,7 @@ export default class EditQuiz extends React.Component {
                     <React.Fragment>
                         <HomeNavbar />
                         <BasicInfo
+                            isEdit={this.state.isEdit}
                             quizEventID={this.state.quizEventID}
                             nextStep={this.nextAfterBasicInfo}
                         />
@@ -93,6 +98,7 @@ export default class EditQuiz extends React.Component {
                     <React.Fragment>
                         <HomeNavbar />
                         <TeamInfo
+                            isEdit={this.state.isEdit}
                             quizEventName={this.state.quizEventName}
                             quizEventID={this.state.quizEventID}
                             numOfTeams={this.state.numOfTeams}
@@ -106,6 +112,7 @@ export default class EditQuiz extends React.Component {
                     <React.Fragment>
                         <HomeNavbar />
                         <RoundInfo
+                            isEdit={this.state.isEdit}
                             quizEventName={this.state.quizEventName}
                             quizEventID={this.state.quizEventID}
                             numOfRounds={this.state.numOfRounds}
@@ -119,6 +126,7 @@ export default class EditQuiz extends React.Component {
                     <React.Fragment>
                         <HomeNavbar />
                         <QuestionInfo
+                            isEdit={this.state.isEdit}
                             quizEventName={this.state.quizEventName}
                             quizEventID={this.state.quizEventID}
                             numOfRounds={this.state.numOfRounds}

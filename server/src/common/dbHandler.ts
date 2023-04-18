@@ -101,8 +101,8 @@ export namespace UpdateParam {
     // };
 
     interface updateRoundInstanceParam {
-        UUID: string,
-        SequenceNumber: number
+        RoundTypeID?: string,
+        SequenceNumber?: number
     };
 
     interface updateQuestionInstanceParam {
@@ -210,7 +210,7 @@ export abstract class DbHandler {
     abstract updateTeamInstance(param: UpdateParam.TeamInstance): Promise<void>;
     // Do not support, it will cause inconsistency to past quizzes
     // abstract updateRoundTypeInstance(param: updateRoundTypeInstanceParam): Promise<void>;
-    abstract updateRoundInstance(param: UpdateParam.RoundInstance): Promise<void>;
+    abstract updateRoundInstance(roundUUID: string, param: UpdateParam.RoundInstance): Promise<void>;
     abstract updateQuestionInstance(param: UpdateParam.QuestionInstance): Promise<void>;
 
     abstract getRoundTypes(): Promise<GetParam.RoundType[]>;

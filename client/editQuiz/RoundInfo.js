@@ -18,6 +18,7 @@ export default class RoundInfo extends React.Component {
 
         this.state = {
             roundTypesObtained: false,
+            currentRoundsObtained: false,
             errorOccured: false
         }
 
@@ -34,6 +35,13 @@ export default class RoundInfo extends React.Component {
             TimerSeconds: 60,
             IsPassable: true
         }];
+
+        this.currentRounds = [];
+
+        if (!this.props.isEdit) {
+            // New quiz, no need to try to obtain existing round data
+            this.state.currentRoundsObtained = true;
+        }
     }
 
     handleSubmit = async (event) => {
@@ -47,10 +55,27 @@ export default class RoundInfo extends React.Component {
             QuizID: this.props.quizEventID,
             Rounds: []
         };
+
+        let sendModifyRequest = false;
+
         for (let i = 0; i < this.props.numOfRounds; i++) {
-            const _roundInfo = {};
+
             const roundTypeID = form[`round${i + 1}`].value;
+
+            const currentRound = this.currentRounds.find(round => round.SequenceNumber == i + 1);
+            if (this.props.isEdit && roundTypeID === currentRound?.RoundTypeID) {
+                // No change in round type for this round
+                continue;
+            }
+
+            const _roundInfo = {};
+            if (this.props.isEdit) {
+                // Existing round will come with its UUID
+                _roundInfo.UUID = currentRound?.UUID;
+            }
+
             if (roundTypeID === this.newRoundTypeID) {
+                _roundInfo.SequenceNumber = i + 1;
                 _roundInfo.RoundTypeID = form[`round${i + 1}TypeID`].value;
                 _roundInfo.RoundTypeName = form[`round${i + 1}TypeName`].value;
                 _roundInfo.NumQuestionsEachTeam = form[`round${i + 1}NumQuestions`].value;
@@ -60,30 +85,37 @@ export default class RoundInfo extends React.Component {
                 _roundInfo.IsPassable = form[`round${i + 1}IsPassable`].checked;
                 _roundInfo.TimerSeconds = form[`round${i + 1}TimerSeconds`].value;
             } else {
+                _roundInfo.SequenceNumber = i + 1;
                 _roundInfo.RoundTypeID = roundTypeID;
             }
 
             roundsInfo.Rounds.push(_roundInfo);
+            sendModifyRequest = true;
         }
 
         // POST the data to server
         try {
-            const response = await fetch("/quiz/round_info", {
-                method: "POST",
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(roundsInfo)
-            });
-
-            if (response.status !== 200) {
-                this.setState({
-                    errorOccured: true
+            if (sendModifyRequest) {
+                const response = await fetch("/quiz/round_info", {
+                    method: "POST",
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(roundsInfo)
                 });
-                throw "Failed to Set Round Info";
-            };
+
+                if (response.status !== 200) {
+                    this.setState({
+                        errorOccured: true
+                    });
+                    throw "Failed to Set Round Info";
+                };
+            }
 
             this.props.nextStep();
 
         } catch (err) {
+            this.setState({
+                errorOccured: true
+            });
             throw err;
         }
     };
@@ -131,7 +163,7 @@ export default class RoundInfo extends React.Component {
     }
 
     /**
-     * get the list of defined round types and append to this.roundTypes list
+     * Get the list of defined round types and append to this.roundTypes list
      */
     getRoundTypes = async () => {
         try {
@@ -167,11 +199,61 @@ export default class RoundInfo extends React.Component {
         }
     }
 
+    /**
+     * In case of edit, get the current rounds of quiz
+     */
+    getCurrentRounds = async () => {
+        try {
+            const response = await fetch("/quiz/rounds?quizID=" + this.props.quizEventID, {
+                method: "GET",
+                headers: { 'Content-Type': 'application/json' }
+            });
+
+            if (response.status === 200) {
+                this.currentRounds = await response.json();
+            } else if (response.status === 404) {
+                // Do nothing
+            } else {
+                throw "Failed to Get Current Rounds";
+            };
+
+        } catch (err) {
+            this.setState({
+                errorOccured: true
+            });
+            throw err;
+        }
+    }
+
     async componentDidMount() {
-        await this.getRoundTypes();
+        if (!this.state.currentRoundsObtained) {
+            await this.getCurrentRounds();
+        }
+
+        if (!this.state.roundTypesObtained) {
+            await this.getRoundTypes();
+        }
+
         this.setState({
+            currentRoundsObtained: true,
             roundTypesObtained: true
         })
+    }
+
+    componentDidUpdate() {
+        if (this.state.roundTypesObtained && this.state.currentRoundsObtained) {
+            for (let i = 0; i < this.props.numOfRounds; i++) {
+                const round = this.currentRounds.find(round => round.SequenceNumber == i + 1);
+                if (!round) {
+                    break;
+                }
+                const selection = document.getElementById(`round${i + 1}`);
+                selection.value = round.RoundTypeID;
+
+                const e = new Event("change", { bubbles: true });
+                selection.dispatchEvent(e);
+            }
+        }
     }
 
     render() {
@@ -181,7 +263,7 @@ export default class RoundInfo extends React.Component {
             );
         }
 
-        if (!this.state.roundTypesObtained) {
+        if (!this.state.roundTypesObtained || !this.state.currentRoundsObtained) {
             return (
                 <h3><Spinner animation="border" role="status" />Loading Available Round Types...</h3>
             );
@@ -195,7 +277,7 @@ export default class RoundInfo extends React.Component {
                             <p className="fs-3 d-inline">Quiz Rounds Detail </p>
                         </Col>
                         <Col md="auto" className="d-inline">
-                            <p className="fs-4 d-inline">{`{ New Quiz | ${this.props.quizEventName} }`}</p>
+                            <p className="fs-4 d-inline">{!!this.props.isEdit ? `{ Edit Quiz | ${this.props.quizEventName} }` : `{ New Quiz | ${this.props.quizEventName} }`}</p>
                         </Col>
                     </Row>
 
