@@ -29,14 +29,17 @@ export class RequestHandler {
             }
 
             try {
+                const quiz: GetParam.Quiz = await db.getQuizByID(quizID);
                 const _rounds: GetParam.Round[] = await db.getRoundsByQuizID(quizID);
-                const rounds = _rounds.sort((x, y) => {
+                let rounds = _rounds.sort((x, y) => {
                     if (x.SequenceNumber > y.SequenceNumber) {
                         return 1;
                     } else {
                         return -1;
                     }
                 });
+
+                rounds = rounds.slice(0, quiz.NumberOfRounds);
 
                 const quizRoundTypes = [];
                 for (let _round of rounds) {
@@ -131,6 +134,8 @@ export class RequestHandler {
                     });
                 }
 
+                viewQuizData.Teams = viewQuizData.Teams.slice(0, quiz.NumberOfTeams);
+
                 // Rounds Detail
                 viewQuizData.Rounds = [];
 
@@ -142,6 +147,8 @@ export class RequestHandler {
                         return -1;
                     }
                 })
+
+                _rounds = _rounds.slice(0, quiz.NumberOfRounds);
 
                 for (let round of _rounds) {
                     // Round type detail
@@ -157,7 +164,7 @@ export class RequestHandler {
                         }
                     });
 
-                    const questions: ViewQuizData.Question[] = [];
+                    let questions: ViewQuizData.Question[] = [];
 
                     for (let question of _questions) {
 
@@ -187,6 +194,8 @@ export class RequestHandler {
 
                         questions.push(q);
                     }
+
+                    questions = questions.slice(0, _roundType.NumQuestionsEachTeam * quiz.NumberOfTeams);
 
                     viewQuizData.Rounds.push({
                         SequenceNumber: round.SequenceNumber,
@@ -424,7 +433,18 @@ export class RequestHandler {
                     res.status(404).send();
                 }
 
-                const currentRounds: GetParam.Round[] = await db.getRoundsByQuizID(quizID);
+                let currentRounds: GetParam.Round[] = await db.getRoundsByQuizID(quizID);
+                currentRounds = currentRounds.sort((x, y) => {
+                    if (x.SequenceNumber > y.SequenceNumber) {
+                        return 1;
+                    } else {
+                        return -1;
+                    }
+                });
+
+                const quiz: GetParam.Quiz = await db.getQuizByID(quizID);
+                currentRounds = currentRounds.slice(0, quiz.NumberOfRounds);
+
                 res.json(currentRounds);
 
             } catch (err) {
@@ -439,8 +459,13 @@ export class RequestHandler {
                     res.status(404).send();
                 }
 
+                const round: GetParam.Round = await db.getRoundByUUID(roundUUID);
+                const roundType: GetParam.RoundType = await db.getRoundTypeByID(round.RoundTypeID);
+                const quiz: GetParam.Quiz = await db.getQuizByID(round.QuizID);
+                const totalNumQuestions = roundType.NumQuestionsEachTeam * quiz.NumberOfTeams;
+
                 const currentQuestions: GetParam.Question[] = await db.getQuestionsByRoundUUID(roundUUID);
-                const response: RoundQuestionsDetail.Questions = [];
+                let questions: RoundQuestionsDetail.Questions = [];
                 for (let question of currentQuestions) {
                     let correctOption;
                     switch (question.Answer) {
@@ -457,7 +482,7 @@ export class RequestHandler {
                             correctOption = "D";
                             break;
                     }
-                    response.push({
+                    questions.push({
                         UUID: question.UUID,
                         SequenceNumber: question.SequenceNumber,
                         Description: question.Description,
@@ -469,7 +494,17 @@ export class RequestHandler {
                         CorrectOption: correctOption
                     });
                 }
-                res.json(response);
+
+                questions = questions.sort((x, y) => {
+                    if (x.SequenceNumber > y.SequenceNumber) {
+                        return 1;
+                    } else {
+                        return -1;
+                    }
+                });
+                questions = questions.slice(0, totalNumQuestions);
+
+                res.json(questions);
 
             } catch (err) {
                 res.status(500).send();

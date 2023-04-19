@@ -135,6 +135,8 @@ class QuestionInfoEachRound extends React.Component {
             this.setState({
                 currentQuestionsObtained: false
             });
+            this.totalNumQuestions = 0;
+            this.currentQuestions = [];
             this.props.nextRound();
 
         } catch (err) {
@@ -169,8 +171,6 @@ class QuestionInfoEachRound extends React.Component {
     }
 
     async componentDidMount() {
-        this.totalNumQuestions = this.props.numOfTeams * this.props.roundDetail["NumQuestions"];
-
         if (!this.state.currentQuestionsObtained) {
             await this.getCurrentQuestions();
             this.setState({
@@ -180,8 +180,6 @@ class QuestionInfoEachRound extends React.Component {
     }
 
     async componentDidUpdate() {
-        this.totalNumQuestions = this.props.numOfTeams * this.props.roundDetail["NumQuestions"];
-
         if (!this.state.currentQuestionsObtained) {
             await this.getCurrentQuestions();
             this.setState({
@@ -228,6 +226,8 @@ class QuestionInfoEachRound extends React.Component {
     }
 
     render() {
+        this.totalNumQuestions = this.props.numOfTeams * this.props.roundDetail["NumQuestions"];
+
         if (this.state.errorOccured) {
             return (
                 <p style={{ color: 'red' }}>An error occurred. Check the server log.</p>

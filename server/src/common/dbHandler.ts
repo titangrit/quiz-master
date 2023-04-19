@@ -141,6 +141,7 @@ export namespace GetParam {
 
     interface getRoundResponseParam {
         UUID: string,
+        QuizID: number,
         RoundTypeID: string,
         SequenceNumber: number
     };
@@ -169,6 +170,7 @@ export namespace GetParam {
     }
 
     interface getTeamResponseParam {
+        UUID: string,
         TeamName: string,
         Member1: member,
         Member2: member,
@@ -224,6 +226,7 @@ export abstract class DbHandler {
     abstract getAllQuizzes(): Promise<GetParam.Quiz[]>;
     abstract getTeamByUUID(teamUUID: string): Promise<GetParam.Team>;
     abstract getQuestionsByRoundUUID(roundUUID: string): Promise<GetParam.Question[]>;
+    abstract getRoundByUUID(roundUUID: string): Promise<GetParam.Round>
 
     abstract deleteMemberInstance(memberUUID: string): Promise<void>;
     abstract deleteTeamInstance(teamUUID: string): Promise<void>;

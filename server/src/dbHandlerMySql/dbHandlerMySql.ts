@@ -470,6 +470,7 @@ export class DbHandlerMySql extends DbHandler {
             for (let eachRound of _result) {
                 const round: GetParam.Round = {
                     UUID: eachRound.UUID,
+                    QuizID: eachRound[QuizMasterSchema.Round.QuizID],
                     RoundTypeID: eachRound.ROUND_TYPE_ID,
                     SequenceNumber: eachRound.SEQUENCE_NUM
                 }
@@ -594,6 +595,7 @@ export class DbHandlerMySql extends DbHandler {
             assert(_result.length === 1, `DbHandlerMySql->getTeamByUUID :: Failed to Return Team UUID ${teamUUID}`);
 
             team = {
+                UUID: _result[0][QuizMasterSchema.Team.UUID],
                 TeamName: _result[0].TEAM_NAME,
                 Member1: {
                     UUID: '',
@@ -714,6 +716,36 @@ export class DbHandlerMySql extends DbHandler {
             throw err;
         }
         return questions;
+    }
+
+    async getRoundByUUID(roundUUID: string): Promise<GetParam.Round> {
+        let round: GetParam.Round;
+
+        try {
+            const statement: string = "SELECT * FROM ROUND WHERE UUID = ?";
+            const values = [roundUUID];
+            const sql = mysql.format(statement, values);
+
+            let [result, fields] = await this.db_conn.execute(sql);
+            let _result = JSON.parse(JSON.stringify(result));
+
+            assert(_result.length === 1, `DbHandlerMySql->getRoundByUUID :: Failed to Return Round UUID ${roundUUID}`);
+
+            round = {
+                UUID: _result[0][QuizMasterSchema.Round.UUID],
+                QuizID: _result[0][QuizMasterSchema.Round.QuizID],
+                RoundTypeID: _result[0][QuizMasterSchema.Round.RoundTypeID],
+                SequenceNumber: _result[0][QuizMasterSchema.Round.SequenceNumber]
+            };
+
+            logger.info(`DbHandlerMySql->getRoundByUUID :: Round Returned: ${JSON.stringify(round)}`);
+
+        } catch (err) {
+            logger.error(err);
+            throw err;
+        }
+
+        return round;
     }
 
     async deleteMemberInstance(memberUUID: string): Promise<void> {

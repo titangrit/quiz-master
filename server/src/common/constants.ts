@@ -24,6 +24,7 @@ export namespace QuizMasterSchema {
 
     export enum Round {
         UUID = "UUID",
+        QuizID = "QUIZ_ID",
         RoundTypeID = "ROUND_TYPE_ID",
         SequenceNumber = "SEQUENCE_NUM"
     }
@@ -41,5 +42,15 @@ export namespace QuizMasterSchema {
         ActualTeamUUID = "ACTUAL_TEAM_UUID",
         ActualMarkGiven = "ACTUAL_MARK_GIVEN",
         AnswerGiven = "ANSWER_GIVEN"
+    }
+
+    export enum Team {
+        UUID = "UUID",
+        TeamName = "TEAM_NAME",
+        Member1 = "MEMBER_1_UUID",
+        Member2 = "MEMBER_2_UUID",
+        Member3 = "MEMBER_3_UUID",
+        Member4 = "MEMBER_4_UUID",
+        TotalMark = "TOTAL_MARK"
     }
 }
