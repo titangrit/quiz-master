@@ -106,14 +106,17 @@ export namespace UpdateParam {
     };
 
     interface updateQuestionInstanceParam {
-        UUID: string,
-        Description: string,
-        Option1: string,
-        Option2: string,
-        Option3: string,
-        Option4: string,
-        Answer: string,
-        MediaUUID: string
+        Description?: string,
+        Option1?: string,
+        Option2?: string,
+        Option3?: string,
+        Option4?: string,
+        Answer?: string,
+        MediaUUID?: string,
+        TargetTeamUUID?: string,
+        ActualTeamUUID?: string,
+        ActualMarkGiven?: number,
+        AnswerGiven?: string
     };
 
     export type QuizInstance = updateQuizInstanceParam;
@@ -174,6 +177,7 @@ export namespace GetParam {
     }
 
     interface getQuestionResponseParam {
+        UUID: string,
         SequenceNumber: number,
         Description: string,
         Option1: string,
@@ -211,7 +215,7 @@ export abstract class DbHandler {
     // Do not support, it will cause inconsistency to past quizzes
     // abstract updateRoundTypeInstance(param: updateRoundTypeInstanceParam): Promise<void>;
     abstract updateRoundInstance(roundUUID: string, param: UpdateParam.RoundInstance): Promise<void>;
-    abstract updateQuestionInstance(param: UpdateParam.QuestionInstance): Promise<void>;
+    abstract updateQuestionInstance(questionUUID: string, param: UpdateParam.QuestionInstance): Promise<void>;
 
     abstract getRoundTypes(): Promise<GetParam.RoundType[]>;
     abstract getRoundTypeByID(roundTypeID: string): Promise<GetParam.RoundType>;

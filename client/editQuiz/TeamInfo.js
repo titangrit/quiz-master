@@ -170,7 +170,7 @@ export default class TeamInfo extends React.Component {
 
         if (!this.state.teamsDetailObtained) {
             return (
-                <h3><Spinner animation="border" role="status" />Loading Teams...</h3>
+                <h3><Spinner animation="border" role="status" /> Loading Teams...</h3>
             );
         }
 

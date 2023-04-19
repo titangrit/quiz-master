@@ -122,7 +122,7 @@ export default class BasicInfo extends React.Component {
     }
 
     async componentDidMount() {
-        if (!this.state.quizDataObtained) {
+        if (!this.state.basicDetailObtained) {
             await this.getBasicDetail();
             this.setState({
                 basicDetailObtained: true
@@ -140,7 +140,7 @@ export default class BasicInfo extends React.Component {
 
         if (!this.state.basicDetailObtained) {
             return (
-                <h3><Spinner animation="border" role="status" />Loading Quiz Basic Detail...</h3>
+                <h3><Spinner animation="border" role="status" /> Loading Quiz Basic Detail...</h3>
             );
         }
 

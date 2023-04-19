@@ -12,6 +12,18 @@ import Spinner from 'react-bootstrap/Spinner';
 class QuestionInfoEachRound extends React.Component {
     constructor(props) {
         super(props);
+        this.state = {
+            currentQuestionsObtained: false,
+            errorOccured: false
+        }
+
+        if (!this.props.isEdit) {
+            // New quiz, no need to try to obtain existing questions data
+            this.state.currentQuestionsObtained = true;
+        }
+
+        this.totalNumQuestions = 0;
+        this.currentQuestions = [];
     }
 
     handleSubmit = async (event) => {
@@ -25,52 +37,209 @@ class QuestionInfoEachRound extends React.Component {
             RoundUUID: this.props.roundDetail["UUID"],
             Questions: []
         };
-        const totalNumQuestions = this.props.numOfTeams * this.props.roundDetail["NumQuestions"];
-        for (let i = 1; i <= totalNumQuestions; i++) {
+
+        let sendModifyRequest = false;
+
+        for (let i = 1; i <= this.totalNumQuestions; i++) {
+
+            // if (this.props.isEdit) {
+            let modified = false;
+            const thisQuestion = this.currentQuestions.find(q => q.SequenceNumber == i);
+
             const _question = {
-                SequenceNumber: i,
-                Description: form[`question${i}`].value,
+                UUID: thisQuestion?.UUID,
+                SequenceNumber: i
             };
 
+            const desc = form[`question${i}`].value;
+            if (desc !== thisQuestion?.Description) {
+                _question.Description = desc;
+                modified = true;
+            }
+
             if (this.props.roundDetail["IsAudioVisual"]) {
-                _question.MediaUUID = form[`mediaQuestion${i}`].value;
+                // TODO actual implementation needed
+                const media = form[`mediaQuestion${i}`].value;
+                //     if (media !== thisQuestion?.MediaUUID) {
+                //         _question.MediaUUID = media;
+                //         modified = true;
+                //     }
             }
 
             if (this.props.roundDetail["IsMCQ"]) {
-                _question.Option1 = form[`optionAQuestion${i}`].value;
-                _question.Option2 = form[`optionBQuestion${i}`].value;
-                _question.Option3 = form[`optionCQuestion${i}`].value;
-                _question.Option4 = form[`optionDQuestion${i}`].value;
+                const option1 = form[`optionAQuestion${i}`].value;
+                if (option1 !== thisQuestion?.Option1) {
+                    _question.Option1 = option1;
+                    modified = true;
+                }
+
+                const option2 = form[`optionBQuestion${i}`].value;
+                if (option2 !== thisQuestion?.Option2) {
+                    _question.Option2 = option2;
+                    modified = true;
+                }
+
+                const option3 = form[`optionCQuestion${i}`].value;
+                if (option3 !== thisQuestion?.Option3) {
+                    _question.Option3 = option3;
+                    modified = true;
+                }
+
+                const option4 = form[`optionDQuestion${i}`].value;
+                if (option4 !== thisQuestion?.Option4) {
+                    _question.Option4 = option4;
+                    modified = true;
+                }
 
                 const correctOption = form[`correctOptionQuestion${i}`].value;
-                _question.Answer = form[`option${correctOption}Question${i}`].value;
+                if (correctOption !== thisQuestion?.CorrectOption) {
+                    _question.CorrectOption = correctOption;
+
+                    // must provide options also
+                    // easier to determine the Answer from the options
+                    _question.Option1 = option1;
+                    _question.Option2 = option2;
+                    _question.Option3 = option3;
+                    _question.Option4 = option4;
+
+                    modified = true;
+                }
             } else {
-                _question.Answer = form[`answerQuestion${i}`].value;
+                const answer = form[`answerQuestion${i}`].value;
+                if (answer !== thisQuestion?.Answer) {
+                    _question.Answer = answer;
+                    modified = true;
+                }
             }
 
-            questionsInfo.Questions.push(_question);
+            if (modified) {
+                questionsInfo.Questions.push(_question);
+                sendModifyRequest = true;
+            }
         }
 
         // POST the data to server
         try {
-            const response = await fetch("/quiz/question_info", {
-                method: "POST",
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(questionsInfo)
+            if (sendModifyRequest) {
+                const response = await fetch("/quiz/question_info", {
+                    method: "POST",
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(questionsInfo)
+                });
+
+                if (response.status !== 200) {
+                    throw "Failed to Set Question Info";
+                };
+            }
+
+            this.setState({
+                currentQuestionsObtained: false
             });
-
-            if (response.status !== 200) {
-                throw "Failed to Set Question Info";
-            };
-
             this.props.nextRound();
 
         } catch (err) {
+            this.setState({
+                errorOccured: true
+            });
             throw err;
         }
     };
 
+    getCurrentQuestions = async () => {
+        try {
+            const response = await fetch("/quiz/questions?roundUUID=" + this.props.roundDetail["UUID"], {
+                method: "GET",
+                headers: { 'Content-Type': 'application/json' }
+            });
+
+            if (response.status === 200) {
+                this.currentQuestions = await response.json();
+            } else if (response.status === 404) {
+                // Do nothing
+            } else {
+                throw "Failed to Get Current Questions";
+            };
+
+        } catch (err) {
+            this.setState({
+                errorOccured: true
+            });
+            throw err;
+        }
+    }
+
+    async componentDidMount() {
+        this.totalNumQuestions = this.props.numOfTeams * this.props.roundDetail["NumQuestions"];
+
+        if (!this.state.currentQuestionsObtained) {
+            await this.getCurrentQuestions();
+            this.setState({
+                currentQuestionsObtained: true
+            });
+        }
+    }
+
+    async componentDidUpdate() {
+        this.totalNumQuestions = this.props.numOfTeams * this.props.roundDetail["NumQuestions"];
+
+        if (!this.state.currentQuestionsObtained) {
+            await this.getCurrentQuestions();
+            this.setState({
+                currentQuestionsObtained: true
+            });
+        }
+
+        if (this.state.currentQuestionsObtained) {
+            for (let i = 0; i < this.totalNumQuestions; i++) {
+                const question = this.currentQuestions.find(question => question.SequenceNumber == i + 1);
+                if (!question) {
+                    break;
+                }
+
+                const desc = document.getElementById(`question${i + 1}`);
+                desc.value = question.Description;
+
+                if (this.props.roundDetail["IsMCQ"]) {
+                    const optionA = document.getElementById(`optionAQuestion${i + 1}`);
+                    optionA.value = question.Option1;
+
+                    const optionB = document.getElementById(`optionBQuestion${i + 1}`);
+                    optionB.value = question.Option2;
+
+                    const optionC = document.getElementById(`optionCQuestion${i + 1}`);
+                    optionC.value = question.Option3;
+
+                    const optionD = document.getElementById(`optionDQuestion${i + 1}`);
+                    optionD.value = question.Option4;
+
+                    const correctOption = document.getElementById(`correctOptionQuestion${i + 1}`);
+                    correctOption.value = question.CorrectOption;
+
+                } else {
+                    const answer = document.getElementById(`answerQuestion${i + 1}`);
+                    answer.value = question.Answer;
+                }
+
+                if (this.props.roundDetail["IsAudioVisual"]) {
+                    // TODO display media
+                }
+            }
+        }
+    }
+
     render() {
+        if (this.state.errorOccured) {
+            return (
+                <p style={{ color: 'red' }}>An error occurred. Check the server log.</p>
+            );
+        }
+
+        if (!this.state.currentQuestionsObtained) {
+            return (
+                <h3><Spinner animation="border" role="status" /> Loading Questions...</h3>
+            );
+        }
+
         return (
             <React.Fragment>
                 <Container className="mt-4">
@@ -79,7 +248,7 @@ class QuestionInfoEachRound extends React.Component {
                             <p className="fs-3 d-inline">{`Round ${this.props.roundDetail["SeqNum"]} Questions | ${this.props.roundDetail["Name"]}`}</p>
                         </Col>
                         <Col md="auto" className="d-inline">
-                            <p className="fs-4 d-inline">{`{ New Quiz | ${this.props.quizEventName} }`}</p>
+                            <p className="fs-4 d-inline">{!!this.props.isEdit ? `{ Edit Quiz | ${this.props.quizEventName} }` : `{ New Quiz | ${this.props.quizEventName} }`}</p>
                         </Col>
                     </Row>
 
@@ -88,8 +257,7 @@ class QuestionInfoEachRound extends React.Component {
                             (
                                 () => {
                                     let content = [];
-                                    const totalNumQuestions = this.props.numOfTeams * this.props.roundDetail["NumQuestions"];
-                                    for (let i = 1; i <= totalNumQuestions; i++) {
+                                    for (let i = 1; i <= this.totalNumQuestions; i++) {
                                         content.push(
                                             <React.Fragment key={i} >
                                                 {/* Question */}
@@ -102,7 +270,7 @@ class QuestionInfoEachRound extends React.Component {
                                                                 label={`To Team ${i % this.props.numOfTeams ? (i % this.props.numOfTeams) : this.props.numOfTeams}`}
                                                                 className="px-1"
                                                             >
-                                                                <Form.Control as="textarea" placeholder={`To Team ${i % this.props.numOfTeams}`} style={{ height: '100px' }} value="temp" required />
+                                                                <Form.Control as="textarea" placeholder={`To Team ${i % this.props.numOfTeams}`} style={{ height: '100px' }} defaultValue="temp" required />
                                                             </FloatingLabel>
                                                         </Row>
                                                     </Col>
@@ -140,24 +308,24 @@ class QuestionInfoEachRound extends React.Component {
                                                                         <Row className="mt-4 d-flex">
                                                                             <Col md={3}>
                                                                                 <FloatingLabel controlId={`optionAQuestion${i}`} label="Option A" className="px-1">
-                                                                                    <Form.Control type="text" placeholder="Option A" value="temp" required />
+                                                                                    <Form.Control type="text" placeholder="Option A" defaultValue="temp" required />
                                                                                 </FloatingLabel>
                                                                             </Col>
                                                                             <Col md={3}>
                                                                                 <FloatingLabel controlId={`optionBQuestion${i}`} label="Option B" className="px-1">
-                                                                                    <Form.Control type="text" placeholder="Option B" value="temp" required />
+                                                                                    <Form.Control type="text" placeholder="Option B" defaultValue="temp" required />
                                                                                 </FloatingLabel>
                                                                             </Col>
                                                                         </Row>
                                                                         <Row className="mt-4 d-flex">
                                                                             <Col md={3}>
                                                                                 <FloatingLabel controlId={`optionCQuestion${i}`} label="Option C" className="px-1">
-                                                                                    <Form.Control type="text" placeholder="Option C" value="temp" required />
+                                                                                    <Form.Control type="text" placeholder="Option C" defaultValue="temp" required />
                                                                                 </FloatingLabel>
                                                                             </Col>
                                                                             <Col md={3}>
                                                                                 <FloatingLabel controlId={`optionDQuestion${i}`} label="Option D" className="px-1">
-                                                                                    <Form.Control type="text" placeholder="Option D" value="temp" required />
+                                                                                    <Form.Control type="text" placeholder="Option D" defaultValue="temp" required />
                                                                                 </FloatingLabel>
                                                                             </Col>
                                                                         </Row>
@@ -180,7 +348,7 @@ class QuestionInfoEachRound extends React.Component {
                                                                     <Row className="mt-4 d-flex">
                                                                         <Col md={3}>
                                                                             <FloatingLabel controlId={`answerQuestion${i}`} label="Answer" className="px-1">
-                                                                                <Form.Control type="text" placeholder="Answer" value="temp" required />
+                                                                                <Form.Control type="text" placeholder="Answer" defaultValue="temp" required />
                                                                             </FloatingLabel>
                                                                         </Col>
                                                                     </Row>
@@ -266,11 +434,6 @@ export default class QuestionInfo extends React.Component {
             });
             throw err;
         }
-
-        if (this.props.numOfRounds != this.roundDetails.length) {
-            throw "Failed to Get Round Details";
-        };
-
     };
 
     nextRound = () => {
@@ -309,6 +472,7 @@ export default class QuestionInfo extends React.Component {
 
         return (
             <QuestionInfoEachRound
+                isEdit={this.props.isEdit}
                 quizEventName={this.props.quizEventName}
                 numOfTeams={this.props.numOfTeams}
                 roundDetail={this.roundDetails[this.state.roundCounter - 1]}

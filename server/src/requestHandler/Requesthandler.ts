@@ -2,7 +2,8 @@ import { Request, Response } from 'express';
 import { DbHandlerMySql } from "../dbHandlerMySql";
 import {
     CreateParam, GetParam, UpdateParam, ViewQuizData, GetAllQuizzes, QuizLifeCycleStatusCode, QuizBasicInfo,
-    QuizTeamsDetail
+    QuizTeamsDetail,
+    RoundQuestionsDetail
 } from "../common";
 
 export class RequestHandler {
@@ -429,7 +430,52 @@ export class RequestHandler {
             } catch (err) {
                 res.status(500).send();
             }
+
+        } else if (req.params[0] === 'questions') {
+            try {
+                const roundUUID = req.query.roundUUID as string;
+
+                if (!roundUUID) {
+                    res.status(404).send();
+                }
+
+                const currentQuestions: GetParam.Question[] = await db.getQuestionsByRoundUUID(roundUUID);
+                const response: RoundQuestionsDetail.Questions = [];
+                for (let question of currentQuestions) {
+                    let correctOption;
+                    switch (question.Answer) {
+                        case question.Option1:
+                            correctOption = "A";
+                            break;
+                        case question.Option2:
+                            correctOption = "B";
+                            break;
+                        case question.Option3:
+                            correctOption = "C";
+                            break;
+                        case question.Option4:
+                            correctOption = "D";
+                            break;
+                    }
+                    response.push({
+                        UUID: question.UUID,
+                        SequenceNumber: question.SequenceNumber,
+                        Description: question.Description,
+                        Answer: question.Answer,
+                        Option1: question.Option1,
+                        Option2: question.Option2,
+                        Option3: question.Option3,
+                        Option4: question.Option4,
+                        CorrectOption: correctOption
+                    });
+                }
+                res.json(response);
+
+            } catch (err) {
+                res.status(500).send();
+            }
         }
+
         else {
             res.status(404).send();
         }
@@ -629,19 +675,88 @@ export class RequestHandler {
                 const questions = req.body.Questions;
 
                 for (let _q = 0; _q < questions.length; _q++) {
-                    let param: CreateParam.QuestionInstance = {
-                        RoundUUID: roundUUID,
-                        SequenceNumber: questions[_q].SequenceNumber,
-                        Description: questions[_q].Description,
-                        Answer: questions[_q].Answer,
-                        MediaUUID: questions[_q]?.MediaUUID,
-                        Option1: questions[_q]?.Option1,
-                        Option2: questions[_q]?.Option2,
-                        Option3: questions[_q]?.Option3,
-                        Option4: questions[_q]?.Option4
+
+                    if (!!questions[_q].UUID) {
+                        // If question UUID is part of the payload, it is edit of existing question
+                        const param: UpdateParam.QuestionInstance = {};
+
+                        if (!!questions[_q].Description) {
+                            param.Description = questions[_q].Description;
+                        }
+                        if (!!questions[_q].Option1) {
+                            param.Option1 = questions[_q].Option1;
+                        }
+                        if (!!questions[_q].Option2) {
+                            param.Option2 = questions[_q].Option2;
+                        }
+                        if (!!questions[_q].Option3) {
+                            param.Option3 = questions[_q].Option3;
+                        }
+                        if (!!questions[_q].Option4) {
+                            param.Option4 = questions[_q].Option4;
+                        }
+                        if (!!questions[_q].MediaUUID) {
+                            param.MediaUUID = questions[_q].MediaUUID;
+                        }
+
+                        if (!!questions[_q].Answer) {
+                            param.Answer = questions[_q].Answer;
+                        } else {
+                            switch (questions[_q].CorrectOption) {
+                                case 'A':
+                                    param.Answer = questions[_q]?.Option1;
+                                    break;
+                                case 'B':
+                                    param.Answer = questions[_q]?.Option2;
+                                    break;
+                                case 'C':
+                                    param.Answer = questions[_q]?.Option3;
+                                    break;
+                                case 'D':
+                                    param.Answer = questions[_q]?.Option4;
+                                    break;
+                            }
+                        }
+
+                        await db.updateQuestionInstance(questions[_q].UUID, param);
+
+                    } else {
+                        // New question instance
+                        let answer: string = '';
+                        if (!!questions[_q]?.Answer) {
+                            answer = questions[_q]?.Answer;
+                        } else {
+                            switch (questions[_q].CorrectOption) {
+                                case 'A':
+                                    answer = questions[_q]?.Option1;
+                                    break;
+                                case 'B':
+                                    answer = questions[_q]?.Option2;
+                                    break;
+                                case 'C':
+                                    answer = questions[_q]?.Option3;
+                                    break;
+                                case 'D':
+                                    answer = questions[_q]?.Option4;
+                                    break;
+                            }
+                        }
+
+                        let param: CreateParam.QuestionInstance = {
+                            RoundUUID: roundUUID,
+                            SequenceNumber: questions[_q].SequenceNumber,
+                            Description: questions[_q].Description,
+                            Answer: answer,
+                            MediaUUID: questions[_q]?.MediaUUID,
+                            Option1: questions[_q]?.Option1,
+                            Option2: questions[_q]?.Option2,
+                            Option3: questions[_q]?.Option3,
+                            Option4: questions[_q]?.Option4
+                        }
+
+                        await db.createQuestionInstance(param);
                     }
 
-                    await db.createQuestionInstance(param);
                 }
 
                 res.status(200).send();

@@ -23,7 +23,23 @@ export namespace QuizMasterSchema {
     }
 
     export enum Round {
+        UUID = "UUID",
         RoundTypeID = "ROUND_TYPE_ID",
         SequenceNumber = "SEQUENCE_NUM"
+    }
+
+    export enum Question {
+        UUID = "UUID",
+        Description = " DESCRIPTION",
+        Option1 = "OPTION_1",
+        Option2 = "OPTION_2",
+        Option3 = "OPTION_3",
+        Option4 = "OPTION_4",
+        Answer = "ANSWER",
+        MediaUUID = "MEDIA_UUID",
+        TargetTeamUUID = "TARGET_TEAM_UUID",
+        ActualTeamUUID = "ACTUAL_TEAM_UUID",
+        ActualMarkGiven = "ACTUAL_MARK_GIVEN",
+        AnswerGiven = "ANSWER_GIVEN"
     }
 }

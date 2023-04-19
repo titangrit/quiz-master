@@ -308,8 +308,90 @@ export class DbHandlerMySql extends DbHandler {
         return;
     }
 
-    async updateQuestionInstance(param: UpdateParam.QuestionInstance): Promise<void> {
-        throw new Error("Method not implemented.");
+    async updateQuestionInstance(questionUUID: string, param: UpdateParam.QuestionInstance): Promise<void> {
+        let statement = "UPDATE QUESTION SET ";
+        let values: any = [];
+
+        if (param?.Description !== undefined) {
+            statement += `${QuizMasterSchema.Question.Description} = ?,`;
+            values.push(param.Description);
+        }
+
+        if (param?.Option1 !== undefined) {
+            statement += `${QuizMasterSchema.Question.Option1} = ?,`;
+            values.push(param.Option1);
+        }
+
+        if (param?.Option2 !== undefined) {
+            statement += `${QuizMasterSchema.Question.Option2} = ?,`;
+            values.push(param.Option2);
+        }
+
+        if (param?.Option3 !== undefined) {
+            statement += `${QuizMasterSchema.Question.Option3} = ?,`;
+            values.push(param.Option3);
+        }
+
+        if (param?.Option4 !== undefined) {
+            statement += `${QuizMasterSchema.Question.Option4} = ?,`;
+            values.push(param.Option4);
+        }
+
+        if (param?.Answer !== undefined) {
+            statement += `${QuizMasterSchema.Question.Answer} = ?,`;
+            values.push(param.Answer);
+        }
+
+        if (param?.MediaUUID !== undefined) {
+            statement += `${QuizMasterSchema.Question.MediaUUID} = ?,`;
+            values.push(param.MediaUUID);
+        }
+
+        if (param?.TargetTeamUUID !== undefined) {
+            statement += `${QuizMasterSchema.Question.TargetTeamUUID} = ?,`;
+            values.push(param.TargetTeamUUID);
+        }
+
+        if (param?.ActualTeamUUID !== undefined) {
+            statement += `${QuizMasterSchema.Question.ActualTeamUUID} = ?,`;
+            values.push(param.ActualTeamUUID);
+        }
+
+        if (param?.AnswerGiven !== undefined) {
+            statement += `${QuizMasterSchema.Question.AnswerGiven} = ?,`;
+            values.push(param.AnswerGiven);
+        }
+
+        if (param?.ActualMarkGiven !== undefined) {
+            statement += `${QuizMasterSchema.Question.ActualMarkGiven} = ?,`;
+            values.push(param.ActualMarkGiven);
+        }
+
+        if (values.length === 0) {
+            logger.info(`DbHandlerMySql->updateQuestionInstance :: No Value Passed to Update Question: ${questionUUID}`);
+            return;
+        }
+
+        statement = statement.slice(0, -1); // remove the last ','
+
+        statement += " WHERE UUID = ?";
+        values.push(questionUUID);
+
+        const sql = mysql.format(statement, values);
+
+        try {
+            let [result, fields] = await this.db_conn.execute(sql);
+
+            let _result = JSON.parse(JSON.stringify(result));
+            assert(_result.affectedRows === 1, `DbHandlerMySql->updateQuestionInstance :: Failed to Update Question ${questionUUID}: ${JSON.stringify(param)}`);
+
+            logger.info(`DbHandlerMySql->updateQuestionInstance :: Question ${questionUUID} Updated: ${JSON.stringify(param)}`);
+        } catch (err) {
+            logger.error(err);
+            throw err;
+        }
+
+        return;
     }
 
     async getRoundTypes(): Promise<GetParam.RoundType[]> {
@@ -603,6 +685,7 @@ export class DbHandlerMySql extends DbHandler {
 
             for (let _question of _result) {
                 const question: GetParam.Question = {
+                    UUID: _question.UUID,
                     RoundUUID: _question.ROUND_UUID,
                     SequenceNumber: _question.SEQUENCE_NUM,
                     Description: _question.DESCRIPTION,

@@ -82,3 +82,24 @@ export namespace QuizTeamsDetail {
 
     export type Teams = [Team, Team, Team, Team]
 }
+
+export namespace RoundQuestionsDetail {
+    export type Question = {
+        UUID: string,
+        SequenceNumber: number,
+        Description: string,
+        Answer?: string,
+        Option1?: string,
+        Option2?: string,
+        Option3?: string,
+        Option4?: string,
+        CorrectOption?: string,
+        MediaUUID?: string,
+        TargetTeamUUID?: string,
+        ActualTeamUUID?: string,
+        AnswerGiven?: string,
+        ActualMarkGiven?: string
+    }
+
+    export type Questions = Question[]
+}

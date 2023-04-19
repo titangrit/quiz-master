@@ -241,7 +241,7 @@ export default class RoundInfo extends React.Component {
     }
 
     componentDidUpdate() {
-        if (this.state.roundTypesObtained && this.state.currentRoundsObtained) {
+        if (this.props.isEdit && this.state.roundTypesObtained && this.state.currentRoundsObtained) {
             for (let i = 0; i < this.props.numOfRounds; i++) {
                 const round = this.currentRounds.find(round => round.SequenceNumber == i + 1);
                 if (!round) {
@@ -265,7 +265,7 @@ export default class RoundInfo extends React.Component {
 
         if (!this.state.roundTypesObtained || !this.state.currentRoundsObtained) {
             return (
-                <h3><Spinner animation="border" role="status" />Loading Available Round Types...</h3>
+                <h3><Spinner animation="border" role="status" /> Loading Rounds...</h3>
             );
         }
 
