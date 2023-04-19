@@ -3,7 +3,7 @@ import * as bodyParser from "body-parser";
 const path = require('path');
 import logger from "./logger";
 const httpLogger = require('./httpLogger');
-import { RequestHandler } from './requestHandler/Requesthandler';
+import { PostRequestHandler, GetRequestHandler } from './requestHandler';
 
 require('dotenv').config();
 const PORT = process.env.PORT || 8000
@@ -14,7 +14,6 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(httpLogger);
 app.use(express.static(path.join(__dirname, "..", "..", "public")))
 
-const requestHandler = new RequestHandler();
-app.route('/quiz/*').get(requestHandler.handleGET).post(requestHandler.handlePOST);
+app.route('/quiz/*').get(GetRequestHandler.handleGET).post(PostRequestHandler.handlePOST);
 
 app.listen(PORT, () => logger.info('Express.js listening on port ' + PORT))

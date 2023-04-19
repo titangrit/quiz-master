@@ -4,8 +4,8 @@
   "description": "A live quiz presentation app",
   "main": "main.js",
   "scripts": {
-    "ui:dev": "webpack --mode development",
-    "ui:prod": "webpack --mode production",
+    "client:dev": "webpack --mode development",
+    "client:prod": "webpack --mode production",
     "build": "rimraf ./server/dist && tsc",
     "start": "node ./server/dist/main.js",
     "start:dev": "npx nodemon",

@@ -416,7 +416,7 @@ export default class QuestionInfo extends React.Component {
 
             const _response = await response.json();
 
-            for (let roundType of _response.QuizRoundTypes) {
+            for (let roundType of _response) {
                 let _detail = {
                     UUID: roundType.UUID,
                     SeqNum: roundType.SequenceNumber,

@@ -1,2 +1,2 @@
-export { Activity, QuizStatus, QuizAction, ModifyQuizStep, BackgroundColor } from "./constants";
+export { QuizLifeCycleStatusCode, GetEndpoint, PostEndpoint, ModifyQuizStep } from "./constants";
 export { HomeNavbar } from "./HomeNavbar"

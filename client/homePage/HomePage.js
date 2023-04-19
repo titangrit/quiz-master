@@ -1,5 +1,5 @@
 import React from "react";
-import { QuizStatus } from "./../common";
+import { QuizLifeCycleStatusCode } from "./../common";
 import "./../common/style.css";
 import { HomeNavbar } from "../common";
 import "bootstrap/dist/css/bootstrap.min.css";
@@ -46,22 +46,22 @@ export default class HomePage extends React.Component {
 
         this.quizzes.push({
             QuizEventName: "very very long text very very long text very very long text very very long text very very long text very very long text very very long text very very long text",
-            LifecycleStatusCode: QuizStatus.Running
+            LifecycleStatusCode: QuizLifeCycleStatusCode.Running
         })
         this.quizzes.push({
             QuizEventName: "quiz6",
-            LifecycleStatusCode: QuizStatus.Running
+            LifecycleStatusCode: QuizLifeCycleStatusCode.Running
         })
         this.quizzes.push({
             QuizEventName: "quiz7",
             CompletedOnDate: new Date().toLocaleDateString(),
-            LifecycleStatusCode: QuizStatus.Completed
+            LifecycleStatusCode: QuizLifeCycleStatusCode.Completed
         })
         this.quizzes.push({
             QuizEventName: "quiz8",
             CompletedOnDate: new Date().toLocaleDateString(),
             date: new Date(),
-            LifecycleStatusCode: QuizStatus.Completed
+            LifecycleStatusCode: QuizLifeCycleStatusCode.Completed
         })
     }
 
@@ -73,7 +73,7 @@ export default class HomePage extends React.Component {
                         let status;
                         let theme = "light";
                         let buttons = [];
-                        if (quiz.LifecycleStatusCode === QuizStatus.Draft) {
+                        if (quiz.LifecycleStatusCode === QuizLifeCycleStatusCode.Draft) {
                             status = "In Draft";
                             theme = "light";
                             buttons.push(
@@ -102,7 +102,7 @@ export default class HomePage extends React.Component {
                                     </Col>
                                 </Row>
                             );
-                        } else if (quiz.LifecycleStatusCode === QuizStatus.Ready) {
+                        } else if (quiz.LifecycleStatusCode === QuizLifeCycleStatusCode.Ready) {
                             status = "Ready to Start";
                             theme = "info";
                             buttons.push(
@@ -140,7 +140,7 @@ export default class HomePage extends React.Component {
                                     </Col>
                                 </Row>
                             );
-                        } else if (quiz.LifecycleStatusCode === QuizStatus.Running) {
+                        } else if (quiz.LifecycleStatusCode === QuizLifeCycleStatusCode.Running) {
                             status = "Started";
                             theme = "info";
                             buttons.push(
@@ -168,7 +168,7 @@ export default class HomePage extends React.Component {
                                     </Col>
                                 </Row>
                             );
-                        } else if (quiz.LifecycleStatusCode === QuizStatus.Completed) {
+                        } else if (quiz.LifecycleStatusCode === QuizLifeCycleStatusCode.Completed) {
                             status = "Completed";
                             theme = "primary";
                             buttons.push(

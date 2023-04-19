@@ -5,6 +5,25 @@ export enum QuizLifeCycleStatusCode {
     Completed = 4
 }
 
+export enum GetEndpoint {
+    RoundTypes = "round_types",
+    RoundDetailsOfEachQuiz = "quiz_round_details",
+    ViewQuiz = "view_quiz_data",
+    GetAllQuizzes = "all_quizzes",
+    QuizBasicInfo = "basic_info",
+    QuizTeamsInfo = "team_info",
+    QuizRounds = "rounds",
+    QuestionDetailsOfEachRound = "questions",
+}
+
+export enum PostEndpoint {
+    QuizBasicInfo = "basic_info",
+    QuizTeamsInfo = "team_info",
+    QuizRoundsInfo = "round_info",
+    QuestionsInfoOfEachRound = "question_info",
+    SetQuizStateReady = "ready"
+}
+
 export namespace QuizMasterSchema {
     export enum Quiz {
         QuizID = "ID",

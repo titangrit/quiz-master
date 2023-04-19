@@ -1,16 +1,35 @@
-const Activity = {
-    Home: 'HOME',
-    Create: 'CREATE',
-    Edit: 'EDIT',
-    Copy: 'COPY',
-    Play: 'PLAY'
-}
-
-const QuizStatus = {
+const QuizLifeCycleStatusCode = {
     Draft: 1,
     Ready: 2,
     Running: 3,
     Completed: 4
+}
+
+const GetEndpoint = {
+    RoundTypes: "/quiz/round_types",
+    RoundDetailsOfEachQuiz: "/quiz/quiz_round_details",
+    ViewQuiz: "/quiz/view_quiz_data",
+    GetAllQuizzes: "/quiz/all_quizzes",
+    QuizBasicInfo: "/quiz/basic_info",
+    QuizTeamsInfo: "/quiz/team_info",
+    QuizRounds: "/quiz/rounds",
+    QuestionDetailsOfEachRound: "/quiz/questions",
+}
+
+const PostEndpoint = {
+    QuizBasicInfo: "/quiz/basic_info",
+    QuizTeamsInfo: "/quiz/team_info",
+    QuizRoundsInfo: "/quiz/round_info",
+    QuestionsInfoOfEachRound: "/quiz/question_info",
+    SetQuizStateReady: "/quiz/ready"
+}
+
+const ModifyQuizStep = {
+    BasicInfo: 1,
+    TeamInfo: 2,
+    RoundInfo: 3,
+    QuestionInfo: 4,
+    LastStep: 4
 }
 
 const QuizAction = {
@@ -20,12 +39,13 @@ const QuizAction = {
     ViewResult: 'View Result'
 }
 
-const ModifyQuizStep = {
-    BasicInfo: 1,
-    TeamInfo: 2,
-    RoundInfo: 3,
-    QuestionInfo: 4,
-    LastStep: 4
+
+const Activity = {
+    Home: 'HOME',
+    Create: 'CREATE',
+    Edit: 'EDIT',
+    Copy: 'COPY',
+    Play: 'PLAY'
 }
 
 const BackgroundColor = {
@@ -37,4 +57,4 @@ const BackgroundColor = {
     Color6: '#F4ECFF'
 }
 
-module.exports = { Activity, QuizStatus, QuizAction, ModifyQuizStep, BackgroundColor }
+module.exports = { QuizLifeCycleStatusCode, GetEndpoint, PostEndpoint, ModifyQuizStep }

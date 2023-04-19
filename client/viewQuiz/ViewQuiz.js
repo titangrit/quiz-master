@@ -11,6 +11,7 @@ import Button from "react-bootstrap/Button";
 import Accordion from 'react-bootstrap/Accordion';
 import { FormLabel } from "react-bootstrap";
 import Spinner from 'react-bootstrap/Spinner';
+import { GetEndpoint } from "./../common";
 
 /**
  * View quiz component
@@ -39,7 +40,7 @@ export default class ViewQuiz extends React.Component {
         }
 
         try {
-            const response = await fetch("/quiz/quiz_data?quizID=" + quizID, {
+            const response = await fetch(GetEndpoint.ViewQuiz + "?quizID=" + quizID, {
                 method: "GET",
                 headers: { 'Content-Type': 'application/json' }
             });

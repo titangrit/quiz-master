@@ -7,6 +7,7 @@ import FloatingLabel from 'react-bootstrap/FloatingLabel';
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import Spinner from 'react-bootstrap/Spinner';
+import { GetEndpoint, PostEndpoint } from "./../common";
 
 /**
  * Fill quiz basic information
@@ -65,7 +66,7 @@ export default class BasicInfo extends React.Component {
             }
 
             if (sendModifyRequest) {
-                const response = await fetch("/quiz/basic_info", {
+                const response = await fetch(PostEndpoint.QuizBasicInfo, {
                     method: "POST",
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(basicInfo)
