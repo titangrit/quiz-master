@@ -187,7 +187,7 @@ export default class BasicInfo extends React.Component {
                                     </FloatingLabel>
                                 </Row>
 
-                                <Row className="mb-4">
+                                <Row className="mt-5 mb-4">
                                     <Button
                                         variant="light"
                                         size="lg"

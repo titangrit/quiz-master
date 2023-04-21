@@ -6,8 +6,8 @@ import Col from "react-bootstrap/Col";
 import FloatingLabel from 'react-bootstrap/FloatingLabel';
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
-import { FormLabel } from "react-bootstrap";
 import Spinner from 'react-bootstrap/Spinner';
+import Card from 'react-bootstrap/Card';
 
 class QuestionInfoEachRound extends React.Component {
     constructor(props) {
@@ -243,7 +243,7 @@ class QuestionInfoEachRound extends React.Component {
         return (
             <React.Fragment>
                 <Container className="mt-4">
-                    <Row className="d-inline">
+                    <Row className="d-flex mb-5">
                         <Col md="auto" className="d-inline">
                             <p className="fs-3 d-inline">{`Round ${this.props.roundDetail["SeqNum"]} Questions | ${this.props.roundDetail["Name"]}`}</p>
                         </Col>
@@ -260,103 +260,107 @@ class QuestionInfoEachRound extends React.Component {
                                     for (let i = 1; i <= this.totalNumQuestions; i++) {
                                         content.push(
                                             <React.Fragment key={i} >
-                                                {/* Question */}
-                                                <Row className="mt-5 d-flex">
-                                                    <Col md={6}>
-                                                        <Row>
-                                                            <FormLabel style={{ fontWeight: 'bold' }}>{`Question ${i}`}</FormLabel>
-                                                            <FloatingLabel
-                                                                controlId={`question${i}`}
-                                                                label={`To Team ${i % this.props.numOfTeams ? (i % this.props.numOfTeams) : this.props.numOfTeams}`}
-                                                                className="px-1"
-                                                            >
-                                                                <Form.Control as="textarea" placeholder={`To Team ${i % this.props.numOfTeams}`} style={{ height: '100px' }} defaultValue="temp" required />
-                                                            </FloatingLabel>
+                                                <Card key={i} className="mb-4" bg="light">
+                                                    <Card.Header style={{ fontWeight: 'bold' }}>{`Question ${i}`}</Card.Header>
+                                                    <Card.Body>
+                                                        {/* Question */}
+                                                        <Row className="d-flex">
+                                                            <Col md={6}>
+                                                                <Row>
+                                                                    <FloatingLabel
+                                                                        controlId={`question${i}`}
+                                                                        label={`To Team ${i % this.props.numOfTeams ? (i % this.props.numOfTeams) : this.props.numOfTeams}`}
+                                                                        className="px-1"
+                                                                    >
+                                                                        <Form.Control as="textarea" placeholder={`To Team ${i % this.props.numOfTeams}`} style={{ height: '100px' }} defaultValue="temp" required />
+                                                                    </FloatingLabel>
+                                                                </Row>
+                                                            </Col>
                                                         </Row>
-                                                    </Col>
-                                                </Row>
 
-                                                {/* Audio Visual Media */}
-                                                {
-                                                    (
-                                                        () => {
-                                                            if (this.props.roundDetail["IsAudioVisual"]) {
-                                                                return (
-                                                                    <Row className="mt-4 d-flex">
-                                                                        <Col md={3}>
-                                                                            <Form.Group controlId={`mediaQuestion${i}`}>
-                                                                                <Form.Label>Select Media File</Form.Label>
-                                                                                <Form.Control type="file" />
-                                                                            </Form.Group>
-                                                                        </Col>
-                                                                    </Row>
-                                                                );
-                                                            } else {
-                                                                return null;
-                                                            }
+                                                        {/* Audio Visual Media */}
+                                                        {
+                                                            (
+                                                                () => {
+                                                                    if (this.props.roundDetail["IsAudioVisual"]) {
+                                                                        return (
+                                                                            <Row className="mt-4 d-flex">
+                                                                                <Col md={3}>
+                                                                                    <Form.Group controlId={`mediaQuestion${i}`}>
+                                                                                        <Form.Label>Select Media File</Form.Label>
+                                                                                        <Form.Control type="file" />
+                                                                                    </Form.Group>
+                                                                                </Col>
+                                                                            </Row>
+                                                                        );
+                                                                    } else {
+                                                                        return null;
+                                                                    }
+                                                                }
+                                                            )()
                                                         }
-                                                    )()
-                                                }
 
-                                                {/* Answer */}
-                                                {
-                                                    (
-                                                        () => {
-                                                            if (this.props.roundDetail["IsMCQ"]) {
-                                                                return (
-                                                                    <React.Fragment>
-                                                                        <Row className="mt-4 d-flex">
-                                                                            <Col md={3}>
-                                                                                <FloatingLabel controlId={`optionAQuestion${i}`} label="Option A" className="px-1">
-                                                                                    <Form.Control type="text" placeholder="Option A" defaultValue="temp" required />
-                                                                                </FloatingLabel>
-                                                                            </Col>
-                                                                            <Col md={3}>
-                                                                                <FloatingLabel controlId={`optionBQuestion${i}`} label="Option B" className="px-1">
-                                                                                    <Form.Control type="text" placeholder="Option B" defaultValue="temp" required />
-                                                                                </FloatingLabel>
-                                                                            </Col>
-                                                                        </Row>
-                                                                        <Row className="mt-4 d-flex">
-                                                                            <Col md={3}>
-                                                                                <FloatingLabel controlId={`optionCQuestion${i}`} label="Option C" className="px-1">
-                                                                                    <Form.Control type="text" placeholder="Option C" defaultValue="temp" required />
-                                                                                </FloatingLabel>
-                                                                            </Col>
-                                                                            <Col md={3}>
-                                                                                <FloatingLabel controlId={`optionDQuestion${i}`} label="Option D" className="px-1">
-                                                                                    <Form.Control type="text" placeholder="Option D" defaultValue="temp" required />
-                                                                                </FloatingLabel>
-                                                                            </Col>
-                                                                        </Row>
-                                                                        <Row className="mt-4 d-flex">
-                                                                            <Col md={3}>
-                                                                                <FloatingLabel controlId={`correctOptionQuestion${i}`} label="Correct Option" className="px-1">
-                                                                                    <Form.Select aria-label="Floating label">
-                                                                                        <option value="A">{`Option A`}</option>
-                                                                                        <option value="B">{`Option B`}</option>
-                                                                                        <option value="C">{`Option C`}</option>
-                                                                                        <option value="D">{`Option D`}</option>
-                                                                                    </Form.Select>
-                                                                                </FloatingLabel>
-                                                                            </Col>
-                                                                        </Row>
-                                                                    </React.Fragment>
-                                                                );
-                                                            } else {
-                                                                return (
-                                                                    <Row className="mt-4 d-flex">
-                                                                        <Col md={3}>
-                                                                            <FloatingLabel controlId={`answerQuestion${i}`} label="Answer" className="px-1">
-                                                                                <Form.Control type="text" placeholder="Answer" defaultValue="temp" required />
-                                                                            </FloatingLabel>
-                                                                        </Col>
-                                                                    </Row>
-                                                                );
-                                                            }
+                                                        {/* Answer */}
+                                                        {
+                                                            (
+                                                                () => {
+                                                                    if (this.props.roundDetail["IsMCQ"]) {
+                                                                        return (
+                                                                            <React.Fragment>
+                                                                                <Row className="mt-4 d-flex">
+                                                                                    <Col md={3}>
+                                                                                        <FloatingLabel controlId={`optionAQuestion${i}`} label="Option A" className="px-1">
+                                                                                            <Form.Control type="text" placeholder="Option A" defaultValue="temp" required />
+                                                                                        </FloatingLabel>
+                                                                                    </Col>
+                                                                                    <Col md={3}>
+                                                                                        <FloatingLabel controlId={`optionBQuestion${i}`} label="Option B" className="px-1">
+                                                                                            <Form.Control type="text" placeholder="Option B" defaultValue="temp" required />
+                                                                                        </FloatingLabel>
+                                                                                    </Col>
+                                                                                </Row>
+                                                                                <Row className="mt-4 d-flex">
+                                                                                    <Col md={3}>
+                                                                                        <FloatingLabel controlId={`optionCQuestion${i}`} label="Option C" className="px-1">
+                                                                                            <Form.Control type="text" placeholder="Option C" defaultValue="temp" required />
+                                                                                        </FloatingLabel>
+                                                                                    </Col>
+                                                                                    <Col md={3}>
+                                                                                        <FloatingLabel controlId={`optionDQuestion${i}`} label="Option D" className="px-1">
+                                                                                            <Form.Control type="text" placeholder="Option D" defaultValue="temp" required />
+                                                                                        </FloatingLabel>
+                                                                                    </Col>
+                                                                                </Row>
+                                                                                <Row className="mt-4 d-flex">
+                                                                                    <Col md={3}>
+                                                                                        <FloatingLabel controlId={`correctOptionQuestion${i}`} label="Correct Option" className="px-1">
+                                                                                            <Form.Select aria-label="Floating label">
+                                                                                                <option value="A">{`Option A`}</option>
+                                                                                                <option value="B">{`Option B`}</option>
+                                                                                                <option value="C">{`Option C`}</option>
+                                                                                                <option value="D">{`Option D`}</option>
+                                                                                            </Form.Select>
+                                                                                        </FloatingLabel>
+                                                                                    </Col>
+                                                                                </Row>
+                                                                            </React.Fragment>
+                                                                        );
+                                                                    } else {
+                                                                        return (
+                                                                            <Row className="mt-4 d-flex">
+                                                                                <Col md={3}>
+                                                                                    <FloatingLabel controlId={`answerQuestion${i}`} label="Answer" className="px-1">
+                                                                                        <Form.Control type="text" placeholder="Answer" defaultValue="temp" required />
+                                                                                    </FloatingLabel>
+                                                                                </Col>
+                                                                            </Row>
+                                                                        );
+                                                                    }
+                                                                }
+                                                            )()
                                                         }
-                                                    )()
-                                                }
+                                                    </Card.Body>
+                                                </Card>
                                             </React.Fragment>
                                         )
                                     }
@@ -373,7 +377,7 @@ class QuestionInfoEachRound extends React.Component {
                                     </Button>
                                 </Row>
 
-                                <Row className="mb-6">
+                                <Row className="mb-4">
                                     <Button variant="danger" size="lg" type="button" className="custom-button" onClick={() => { window.location.replace("/") }}>
                                         Cancel
                                     </Button>

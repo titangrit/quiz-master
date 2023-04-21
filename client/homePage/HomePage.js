@@ -45,19 +45,23 @@ export default class HomePage extends React.Component {
         }
 
         this.quizzes.push({
+            QuizID: "9999",
             QuizEventName: "very very long text very very long text very very long text very very long text very very long text very very long text very very long text very very long text",
             LifecycleStatusCode: QuizLifeCycleStatusCode.Running
         })
         this.quizzes.push({
+            QuizID: "9998",
             QuizEventName: "quiz6",
             LifecycleStatusCode: QuizLifeCycleStatusCode.Running
         })
         this.quizzes.push({
+            QuizID: "9997",
             QuizEventName: "quiz7",
             CompletedOnDate: new Date().toLocaleDateString(),
             LifecycleStatusCode: QuizLifeCycleStatusCode.Completed
         })
         this.quizzes.push({
+            QuizID: "9996",
             QuizEventName: "quiz8",
             CompletedOnDate: new Date().toLocaleDateString(),
             date: new Date(),
@@ -208,7 +212,7 @@ export default class HomePage extends React.Component {
                         }
 
                         return (
-                            <Card key={index} className="mb-2" bg={theme} text={theme === 'light' ? 'dark' : 'white'}>
+                            <Card key={quiz.QuizID} className="mb-2" bg={theme} text={theme === 'light' ? 'dark' : 'white'}>
                                 <Card.Header>{status}</Card.Header>
                                 <Card.Body>
                                     <Card.Title>{quiz.QuizEventName}</Card.Title>
@@ -217,6 +221,7 @@ export default class HomePage extends React.Component {
                                     </Card.Text>
 
                                     {buttons}
+
                                 </Card.Body>
                             </Card>
                         )

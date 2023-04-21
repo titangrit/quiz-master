@@ -15,10 +15,10 @@ module.exports = {
             import: './client/homePage/renderHomePage.js',
             // dependOn: ['common', 'react'],
         },
-        new_quiz: {
-            import: './client/newQuiz/renderNewQuiz.js',
-            // dependOn: ['common', 'react'],
-        },
+        // new_quiz: {
+        //     import: './client/newQuiz/renderNewQuiz.js',
+        //     // dependOn: ['common', 'react'],
+        // },
         edit_quiz: {
             import: './client/editQuiz/renderEditQuiz.js',
             // dependOn: ['common', 'react'],

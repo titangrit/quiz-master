@@ -6,8 +6,8 @@ import Col from "react-bootstrap/Col";
 import FloatingLabel from 'react-bootstrap/FloatingLabel';
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
-import { FormLabel } from "react-bootstrap";
 import Spinner from 'react-bootstrap/Spinner';
+import Card from 'react-bootstrap/Card';
 
 /**
  * Fill round information
@@ -272,7 +272,7 @@ export default class RoundInfo extends React.Component {
         return (
             <React.Fragment>
                 <Container className="mt-4">
-                    <Row className="d-inline">
+                    <Row className="d-flex mb-5">
                         <Col md="auto" className="d-inline">
                             <p className="fs-3 d-inline">Quiz Rounds Detail </p>
                         </Col>
@@ -290,96 +290,100 @@ export default class RoundInfo extends React.Component {
                                     for (let i = 0; i < this.props.numOfRounds; i++) {
                                         content.push(
                                             <React.Fragment key={i}>
-                                                <Row className="mt-5 d-flex">
-                                                    <Col md={3}>
-                                                        <FormLabel style={{ fontWeight: 'bold' }}>{`Round ${i + 1} Detail`}</FormLabel>
-                                                        <FloatingLabel controlId={`round${i + 1}`} label={`Round Type ID (Round Type Name)`} className="px-1">
-                                                            <Form.Select aria-label="Floating label" onChange={this.handleRoundTypeSelect}>
-                                                                {/* Show all the defined round types as options */}
-                                                                {
-                                                                    (
-                                                                        () => {
-                                                                            let content = [];
-                                                                            for (let roundType of this.roundTypes) {
-                                                                                content.push(<option key={roundType.ID} value={roundType.ID}>{`${roundType.ID} (${roundType.Name})`}</option>);
-                                                                            }
-                                                                            return content;
+                                                <Card key={i} className="mb-4" bg="light">
+                                                    <Card.Header style={{ fontWeight: 'bold' }}>{`Round ${i + 1}`}</Card.Header>
+                                                    <Card.Body>
+                                                        <Row className="d-flex">
+                                                            <Col md={3}>
+                                                                <FloatingLabel controlId={`round${i + 1}`} label={`Round Type ID (Round Type Name)`} className="px-1">
+                                                                    <Form.Select aria-label="Floating label" onChange={this.handleRoundTypeSelect}>
+                                                                        {/* Show all the defined round types as options */}
+                                                                        {
+                                                                            (
+                                                                                () => {
+                                                                                    let content = [];
+                                                                                    for (let roundType of this.roundTypes) {
+                                                                                        content.push(<option key={roundType.ID} value={roundType.ID}>{`${roundType.ID} (${roundType.Name})`}</option>);
+                                                                                    }
+                                                                                    return content;
+                                                                                }
+                                                                            )()
                                                                         }
-                                                                    )()
-                                                                }
-                                                            </Form.Select>
-                                                        </FloatingLabel>
-                                                    </Col>
-                                                </Row>
-                                                <Row className="mt-3 d-flex">
-                                                    <Col md={3}>
-                                                        <FloatingLabel controlId={`round${i + 1}TypeID`} label="Round Type ID *Required" className="px-1">
-                                                            <Form.Control type="text" placeholder="Round Type ID" required />
-                                                        </FloatingLabel>
-                                                    </Col>
-                                                    <Col md={3}>
-                                                        <FloatingLabel controlId={`round${i + 1}TypeName`} label="Round Type Name *Required" className="px-1">
-                                                            <Form.Control type="text" placeholder="Round Type Name" required />
-                                                        </FloatingLabel>
-                                                    </Col>
-                                                </Row>
-                                                <Row className="mt-3 d-flex">
-                                                    <Col md={3}>
-                                                        <FloatingLabel controlId={`round${i + 1}NumQuestions`} label="No. of Questions for Each Team" className="px-1">
-                                                            <Form.Select aria-label="Floating label">
-                                                                <option value="1">{`1 (One)`}</option>
-                                                                <option value="2">{`2 (Two)`}</option>
-                                                                <option value="3">{`3 (Three)`}</option>
-                                                                <option value="4">{`4 (Four)`}</option>
-                                                                <option value="5">{`5 (Five)`}</option>
-                                                                <option value="6">{`6 (Six)`}</option>
-                                                            </Form.Select>
-                                                        </FloatingLabel>
-                                                    </Col>
-                                                    <Col md={3}>
-                                                        <FloatingLabel controlId={`round${i + 1}FullMarkEachQ`} label="Full Mark for Each Question" className="px-1">
-                                                            <Form.Select aria-label="Floating label">
-                                                                <option value="10">{`10 (Ten)`}</option>
-                                                                <option value="5">{`5 (Five)`}</option>
-                                                                <option value="15">{`15 (Fifteen)`}</option>
-                                                                <option value="20">{`20 (Twenty)`}</option>
-                                                            </Form.Select>
-                                                        </FloatingLabel>
-                                                    </Col>
-                                                    <Col md={3}>
-                                                        <FloatingLabel controlId={`round${i + 1}TimerSeconds`} label="Allowed Time in Seconds" className="px-1">
-                                                            <Form.Select aria-label="Floating label">
-                                                                <option value="60">{`60 (Sixty)`}</option>
-                                                                <option value="15">{`15 (Fifteen)`}</option>
-                                                                <option value="90">{`90 (Ninety)`}</option>
-                                                                <option value="120">{`120 (One Hundred Twenty)`}</option>
-                                                            </Form.Select>
-                                                        </FloatingLabel>
-                                                    </Col>
-                                                </Row>
-                                                <Row className="mt-3 d-flex">
-                                                    <Col md={3}>
-                                                        <Form.Check
-                                                            type="checkbox"
-                                                            id={`round${i + 1}IsMCQ`}
-                                                            label="Multiple Choice Questions"
-                                                        />
-                                                    </Col>
-                                                    <Col md={3}>
-                                                        <Form.Check
-                                                            type="checkbox"
-                                                            id={`round${i + 1}IsPassable`}
-                                                            label="Pass Questions"
-                                                        />
-                                                    </Col>
-                                                    <Col md={3}>
-                                                        <Form.Check
-                                                            type="checkbox"
-                                                            id={`round${i + 1}IsAVRound`}
-                                                            label="Audio/Visual Round"
-                                                        />
-                                                    </Col>
-                                                </Row>
+                                                                    </Form.Select>
+                                                                </FloatingLabel>
+                                                            </Col>
+                                                        </Row>
+                                                        <Row className="mt-3 d-flex">
+                                                            <Col md={3}>
+                                                                <FloatingLabel controlId={`round${i + 1}TypeID`} label="Round Type ID *Required" className="px-1">
+                                                                    <Form.Control type="text" placeholder="Round Type ID" required />
+                                                                </FloatingLabel>
+                                                            </Col>
+                                                            <Col md={3}>
+                                                                <FloatingLabel controlId={`round${i + 1}TypeName`} label="Round Type Name *Required" className="px-1">
+                                                                    <Form.Control type="text" placeholder="Round Type Name" required />
+                                                                </FloatingLabel>
+                                                            </Col>
+                                                        </Row>
+                                                        <Row className="mt-3 d-flex">
+                                                            <Col md={3}>
+                                                                <FloatingLabel controlId={`round${i + 1}NumQuestions`} label="No. of Questions for Each Team" className="px-1">
+                                                                    <Form.Select aria-label="Floating label">
+                                                                        <option value="1">{`1 (One)`}</option>
+                                                                        <option value="2">{`2 (Two)`}</option>
+                                                                        <option value="3">{`3 (Three)`}</option>
+                                                                        <option value="4">{`4 (Four)`}</option>
+                                                                        <option value="5">{`5 (Five)`}</option>
+                                                                        <option value="6">{`6 (Six)`}</option>
+                                                                    </Form.Select>
+                                                                </FloatingLabel>
+                                                            </Col>
+                                                            <Col md={3}>
+                                                                <FloatingLabel controlId={`round${i + 1}FullMarkEachQ`} label="Full Mark for Each Question" className="px-1">
+                                                                    <Form.Select aria-label="Floating label">
+                                                                        <option value="10">{`10 (Ten)`}</option>
+                                                                        <option value="5">{`5 (Five)`}</option>
+                                                                        <option value="15">{`15 (Fifteen)`}</option>
+                                                                        <option value="20">{`20 (Twenty)`}</option>
+                                                                    </Form.Select>
+                                                                </FloatingLabel>
+                                                            </Col>
+                                                            <Col md={3}>
+                                                                <FloatingLabel controlId={`round${i + 1}TimerSeconds`} label="Allowed Time in Seconds" className="px-1">
+                                                                    <Form.Select aria-label="Floating label">
+                                                                        <option value="60">{`60 (Sixty)`}</option>
+                                                                        <option value="15">{`15 (Fifteen)`}</option>
+                                                                        <option value="90">{`90 (Ninety)`}</option>
+                                                                        <option value="120">{`120 (One Hundred Twenty)`}</option>
+                                                                    </Form.Select>
+                                                                </FloatingLabel>
+                                                            </Col>
+                                                        </Row>
+                                                        <Row className="mt-3 d-flex">
+                                                            <Col md={3}>
+                                                                <Form.Check
+                                                                    type="checkbox"
+                                                                    id={`round${i + 1}IsMCQ`}
+                                                                    label="Multiple Choice Questions"
+                                                                />
+                                                            </Col>
+                                                            <Col md={3}>
+                                                                <Form.Check
+                                                                    type="checkbox"
+                                                                    id={`round${i + 1}IsPassable`}
+                                                                    label="Pass Questions"
+                                                                />
+                                                            </Col>
+                                                            <Col md={3}>
+                                                                <Form.Check
+                                                                    type="checkbox"
+                                                                    id={`round${i + 1}IsAVRound`}
+                                                                    label="Audio/Visual Round"
+                                                                />
+                                                            </Col>
+                                                        </Row>
+                                                    </Card.Body>
+                                                </Card>
                                             </React.Fragment>
                                         )
                                     }
@@ -396,7 +400,7 @@ export default class RoundInfo extends React.Component {
                                     </Button>
                                 </Row>
 
-                                <Row className="mb-6">
+                                <Row className="mb-4">
                                     <Button variant="danger" size="lg" type="button" className="custom-button" onClick={() => { window.location.replace("/") }}>
                                         Cancel
                                     </Button>
