@@ -81,7 +81,7 @@ export default class HomePage extends React.Component {
                             status = "In Draft";
                             theme = "light";
                             buttons.push(
-                                <Row className="d-flex justify-content-left">
+                                <Row key="A" className="d-flex justify-content-left">
                                     <Col md={3} className="mx-3">
                                         <Row>
                                             <Button
@@ -110,7 +110,7 @@ export default class HomePage extends React.Component {
                             status = "Ready to Start";
                             theme = "info";
                             buttons.push(
-                                <Row className="d-flex justify-content-left">
+                                <Row key="A" className="d-flex justify-content-left">
                                     <Col md={3} className="mx-3">
                                         <Row>
                                             <Button variant="light"
@@ -148,7 +148,7 @@ export default class HomePage extends React.Component {
                             status = "Started";
                             theme = "info";
                             buttons.push(
-                                <Row className="d-flex justify-content-left">
+                                <Row key="A" className="d-flex justify-content-left">
                                     <Col md={3} className="mx-3">
                                         <Row>
                                             <Button
@@ -176,7 +176,7 @@ export default class HomePage extends React.Component {
                             status = "Completed";
                             theme = "primary";
                             buttons.push(
-                                <Row className="d-flex justify-content-left">
+                                <Row key="A" className="d-flex justify-content-left">
                                     <Col md={3} className="mx-3">
                                         <Row>
                                             <Button
