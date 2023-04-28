@@ -148,18 +148,21 @@ export class DbHandlerMySql extends DbHandler {
         let questionUUID: string = uuidv4();
 
         const statement = "INSERT INTO `QUESTION` (`UUID`, `DESCRIPTION`, `OPTION_1`, `OPTION_2`, `OPTION_3`, `OPTION_4`, `ANSWER`, "
-            + "`MEDIA_UUID`, `ROUND_UUID`, `SEQUENCE_NUM`) "
+            + "`MEDIA_BIN`, `ROUND_UUID`, `SEQUENCE_NUM`) "
             + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-        const values = [questionUUID, param.Description, param.Option1, param.Option2, param.Option3, param.Option4, param.Answer, param.MediaUUID, param.RoundUUID, param.SequenceNumber];
+        const values = [questionUUID, param.Description, param.Option1, param.Option2, param.Option3, param.Option4, param.Answer, param.MediaBinary, param.RoundUUID, param.SequenceNumber];
         const sql = mysql.format(statement, values);
 
         try {
             let [result, fields] = await this.db_conn.execute(sql);
 
             let _result = JSON.parse(JSON.stringify(result));
+
+            delete param.MediaBinary; // omit media binary from logging
+
             assert(_result.affectedRows === 1, "DbHandlerMySql->createQuestionInstance :: Failed to Create Question Instance");
 
-            logger.info(`DbHandlerMySql->createQuestionInstance :: Question Instance Successfully Created; UUID: ${questionUUID}`);
+            logger.info(`DbHandlerMySql->createQuestionInstance :: Question Instance ${questionUUID} Successfully Created: ${JSON.stringify(param)}`);
         } catch (err) {
             logger.error(err);
             throw err;
@@ -342,9 +345,9 @@ export class DbHandlerMySql extends DbHandler {
             values.push(param.Answer);
         }
 
-        if (param?.MediaUUID !== undefined) {
-            statement += `${QuizMasterSchema.Question.MediaUUID} = ?,`;
-            values.push(param.MediaUUID);
+        if (param?.MediaBinary !== undefined) {
+            statement += `${QuizMasterSchema.Question.MediaBinary} = ?,`;
+            values.push(param.MediaBinary);
         }
 
         if (param?.TargetTeamUUID !== undefined) {
@@ -383,6 +386,9 @@ export class DbHandlerMySql extends DbHandler {
             let [result, fields] = await this.db_conn.execute(sql);
 
             let _result = JSON.parse(JSON.stringify(result));
+
+            delete param.MediaBinary; // omit from logging
+
             assert(_result.affectedRows === 1, `DbHandlerMySql->updateQuestionInstance :: Failed to Update Question ${questionUUID}: ${JSON.stringify(param)}`);
 
             logger.info(`DbHandlerMySql->updateQuestionInstance :: Question ${questionUUID} Updated: ${JSON.stringify(param)}`);

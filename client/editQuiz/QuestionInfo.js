@@ -32,6 +32,8 @@ class QuestionInfoEachRound extends React.Component {
 
         const form = event.currentTarget;
 
+        let formData = new FormData();
+
         // extract the form data
         const questionsInfo = {
             RoundUUID: this.props.roundDetail["UUID"],
@@ -58,12 +60,11 @@ class QuestionInfoEachRound extends React.Component {
             }
 
             if (this.props.roundDetail["IsAudioVisual"]) {
-                // TODO actual implementation needed
-                const media = form[`mediaQuestion${i}`].value;
-                //     if (media !== thisQuestion?.MediaUUID) {
-                //         _question.MediaUUID = media;
-                //         modified = true;
-                //     }
+                if (!!form[`mediaQuestion${i}`].value) {
+                    _question.MediaUpdated = true;
+                    formData.append("Media", form[`mediaQuestion${i}`].files[0], i);
+                    modified = true;
+                }
             }
 
             if (this.props.roundDetail["IsMCQ"]) {
@@ -118,13 +119,15 @@ class QuestionInfoEachRound extends React.Component {
             }
         }
 
+        formData.append("Data", JSON.stringify(questionsInfo));
+
         // POST the data to server
         try {
             if (sendModifyRequest) {
                 const response = await fetch("/quiz/question_info", {
                     method: "POST",
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(questionsInfo)
+                    // headers: { 'Content-Type': 'multipart/form-data' },
+                    body: formData
                 });
 
                 if (response.status !== 200) {

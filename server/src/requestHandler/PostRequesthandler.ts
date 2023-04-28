@@ -197,8 +197,17 @@ export class PostRequestHandler {
         } else if (req.params[0] === PostEndpoint.QuestionsInfoOfEachRound) {
 
             try {
-                const roundUUID = req.body.RoundUUID;
-                const questions = req.body.Questions;
+                const body = JSON.parse(req.body.Data);
+                const roundUUID = body.RoundUUID;
+                const questions = body.Questions;
+
+                const media: any = [];
+
+                const files = req.files as Object;
+                Object.keys(files).forEach(function (key) {
+                    // media.push(files[key as keyof Request["files"]]);
+                    media.push(files[key as keyof typeof files]);
+                });
 
                 for (let _q = 0; _q < questions.length; _q++) {
 
@@ -221,9 +230,6 @@ export class PostRequestHandler {
                         if (!!questions[_q].Option4) {
                             param.Option4 = questions[_q].Option4;
                         }
-                        if (!!questions[_q].MediaUUID) {
-                            param.MediaUUID = questions[_q].MediaUUID;
-                        }
 
                         if (!!questions[_q].Answer) {
                             param.Answer = questions[_q].Answer;
@@ -242,6 +248,11 @@ export class PostRequestHandler {
                                     param.Answer = questions[_q]?.Option4;
                                     break;
                             }
+                        }
+
+                        if (!!questions[_q].MediaUpdated) {
+                            const file: Express.Multer.File = media.find((x: Express.Multer.File) => x.originalname == questions[_q].SequenceNumber);
+                            param.MediaBinary = file?.buffer;
                         }
 
                         await db.updateQuestionInstance(questions[_q].UUID, param);
@@ -268,16 +279,18 @@ export class PostRequestHandler {
                             }
                         }
 
+                        const file: Express.Multer.File = media.find((x: Express.Multer.File) => x.originalname == questions[_q].SequenceNumber);
+
                         let param: CreateParam.QuestionInstance = {
                             RoundUUID: roundUUID,
                             SequenceNumber: questions[_q].SequenceNumber,
                             Description: questions[_q].Description,
                             Answer: answer,
-                            MediaUUID: questions[_q]?.MediaUUID,
                             Option1: questions[_q]?.Option1,
                             Option2: questions[_q]?.Option2,
                             Option3: questions[_q]?.Option3,
-                            Option4: questions[_q]?.Option4
+                            Option4: questions[_q]?.Option4,
+                            MediaBinary: file?.buffer
                         }
 
                         await db.createQuestionInstance(param);
