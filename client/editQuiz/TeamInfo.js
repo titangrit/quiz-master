@@ -165,13 +165,17 @@ export default class TeamInfo extends React.Component {
     render() {
         if (this.state.errorOccured) {
             return (
-                <p style={{ color: 'red' }}>An error occurred. Check the server log.</p>
+                <div className="mt-5 d-flex justify-content-center">
+                    <p style={{ color: 'red' }}>An error occurred. Check the server log.</p>
+                </div>
             );
         }
 
         if (!this.state.teamsDetailObtained) {
             return (
-                <h3><Spinner animation="border" role="status" /> Loading Teams...</h3>
+                <div className="mt-5 d-flex justify-content-center">
+                    <h3><Spinner animation="border" role="status" /> Loading Teams...</h3>
+                </div>
             );
         }
 

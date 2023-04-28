@@ -39,7 +39,7 @@ class QuestionInfoEachRound extends React.Component {
         const bin = eventCurrentTarget.files[0];
         let imageBase64 = await this.toBase64(bin);
 
-        const element = document.getElementById(elementId);
+        const element = document.getElementById(elementId + "preview");
         element.src = imageBase64;
 
     }
@@ -240,7 +240,7 @@ class QuestionInfoEachRound extends React.Component {
                 }
 
                 if (this.props.roundDetail["IsAudioVisual"]) {
-                    const image = document.getElementById(`mediaQuestion${i + 1}`);
+                    const image = document.getElementById(`mediaQuestion${i + 1}preview`);
                     image.src = `data:image/gif;base64,${question.MediaBase64}`;
                 }
             }
@@ -314,7 +314,7 @@ class QuestionInfoEachRound extends React.Component {
                                                                                 <Col md={3}>
                                                                                     <Row className="mb-3">
                                                                                         <Image
-                                                                                            id={`mediaQuestion${i}`}
+                                                                                            id={`mediaQuestion${i}preview`}
                                                                                         />
                                                                                     </Row>
                                                                                     <Row>
@@ -322,7 +322,7 @@ class QuestionInfoEachRound extends React.Component {
                                                                                             <Form.Label>Select Media File</Form.Label>
                                                                                             <Form.Control
                                                                                                 type="file"
-                                                                                                accept=".png,.jpg,.jpeg,.webp"
+                                                                                                accept=".png,.jpg,.jpeg,.webp,.gif"
                                                                                                 onChange={(e) => this.updateImage(e.currentTarget)}
                                                                                             />
                                                                                         </Form.Group>

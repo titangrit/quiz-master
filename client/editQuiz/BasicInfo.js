@@ -135,13 +135,17 @@ export default class BasicInfo extends React.Component {
     render() {
         if (this.state.errorOccured) {
             return (
-                <p style={{ color: 'red' }}>An error occurred. Check the server log.</p>
+                <div className="mt-5 d-flex justify-content-center">
+                    <p style={{ color: 'red' }}>An error occurred. Check the server log.</p>
+                </div>
             );
         }
 
         if (!this.state.basicDetailObtained) {
             return (
-                <h3><Spinner animation="border" role="status" /> Loading Quiz Basic Detail...</h3>
+                <div className="mt-5 d-flex justify-content-center">
+                    <h3><Spinner animation="border" role="status" /> Loading Quiz Basic Detail...</h3>
+                </div>
             );
         }
 

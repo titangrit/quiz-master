@@ -12,6 +12,7 @@ import Accordion from 'react-bootstrap/Accordion';
 import Spinner from 'react-bootstrap/Spinner';
 import { GetEndpoint } from "./../common";
 import Card from 'react-bootstrap/Card';
+import Image from "react-bootstrap/Image";
 
 /**
  * View quiz component
@@ -73,7 +74,9 @@ export default class ViewQuiz extends React.Component {
             return (
                 <React.Fragment>
                     <HomeNavbar />
-                    <p style={{ color: 'red' }}>An error occurred. Check the server log.</p>
+                    <div className="mt-5 d-flex justify-content-center">
+                        <p style={{ color: 'red' }}>An error occurred. Check the server log.</p>
+                    </div>
                 </React.Fragment>
             );
         }
@@ -82,7 +85,9 @@ export default class ViewQuiz extends React.Component {
             return (
                 <React.Fragment>
                     <HomeNavbar />
-                    <h3><Spinner animation="border" role="status" />Loading Quiz Details...</h3>
+                    <div className="mt-5 d-flex justify-content-center">
+                        <h3><Spinner animation="border" role="status" />Loading Quiz Details...</h3>
+                    </div>
                 </React.Fragment>
             );
         }
@@ -350,11 +355,12 @@ export default class ViewQuiz extends React.Component {
                                                                             () => {
                                                                                 if (round.IsAVRound) {
                                                                                     return (
-                                                                                        <Row className="mt-2 d-flex">
+                                                                                        <Row className="my-3 d-flex">
                                                                                             <Col md={3}>
-                                                                                                <Form.Group controlId={`mediaQuestion${i}`}>
-                                                                                                    {/* TODO display media */}
-                                                                                                </Form.Group>
+                                                                                                <Image
+                                                                                                    src={`data:image/gif;base64,${question.MediaBase64}`}
+                                                                                                    fluid
+                                                                                                />
                                                                                             </Col>
                                                                                         </Row>
                                                                                     );
