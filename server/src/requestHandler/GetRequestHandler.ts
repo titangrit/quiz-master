@@ -193,6 +193,10 @@ export class GetRequestHandler {
                             CorrectOption: correctOption
                         }
 
+                        if (!!question.MediaBase64) {
+                            q.MediaBase64 = question.MediaBase64;
+                        }
+
                         questions.push(q);
                     }
 
@@ -492,7 +496,8 @@ export class GetRequestHandler {
                         Option2: question.Option2,
                         Option3: question.Option3,
                         Option4: question.Option4,
-                        CorrectOption: correctOption
+                        CorrectOption: correctOption,
+                        MediaBase64: question.MediaBase64
                     });
                 }
 

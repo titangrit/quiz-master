@@ -8,6 +8,7 @@ import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import Spinner from 'react-bootstrap/Spinner';
 import Card from 'react-bootstrap/Card';
+import Image from "react-bootstrap/Image";
 
 class QuestionInfoEachRound extends React.Component {
     constructor(props) {
@@ -24,6 +25,23 @@ class QuestionInfoEachRound extends React.Component {
 
         this.totalNumQuestions = 0;
         this.currentQuestions = [];
+    }
+
+    toBase64 = file => new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = reject;
+    });
+
+    updateImage = async (eventCurrentTarget) => {
+        const elementId = eventCurrentTarget.id;
+        const bin = eventCurrentTarget.files[0];
+        let imageBase64 = await this.toBase64(bin);
+
+        const element = document.getElementById(elementId);
+        element.src = imageBase64;
+
     }
 
     handleSubmit = async (event) => {
@@ -222,7 +240,8 @@ class QuestionInfoEachRound extends React.Component {
                 }
 
                 if (this.props.roundDetail["IsAudioVisual"]) {
-                    // TODO display media
+                    const image = document.getElementById(`mediaQuestion${i + 1}`);
+                    image.src = `data:image/gif;base64,${question.MediaBase64}`;
                 }
             }
         }
@@ -233,13 +252,17 @@ class QuestionInfoEachRound extends React.Component {
 
         if (this.state.errorOccured) {
             return (
-                <p style={{ color: 'red' }}>An error occurred. Check the server log.</p>
+                <div className="mt-5 d-flex justify-content-center">
+                    <p style={{ color: 'red' }}>An error occurred. Check the server log.</p>
+                </div>
             );
         }
 
         if (!this.state.currentQuestionsObtained) {
             return (
-                <h3><Spinner animation="border" role="status" /> Loading Questions...</h3>
+                <div className="mt-5 d-flex justify-content-center">
+                    <h3><Spinner animation="border" role="status" /> Loading Questions...</h3>
+                </div>
             );
         }
 
@@ -289,10 +312,21 @@ class QuestionInfoEachRound extends React.Component {
                                                                         return (
                                                                             <Row className="mt-4 d-flex">
                                                                                 <Col md={3}>
-                                                                                    <Form.Group controlId={`mediaQuestion${i}`}>
-                                                                                        <Form.Label>Select Media File</Form.Label>
-                                                                                        <Form.Control type="file" />
-                                                                                    </Form.Group>
+                                                                                    <Row className="mb-3">
+                                                                                        <Image
+                                                                                            id={`mediaQuestion${i}`}
+                                                                                        />
+                                                                                    </Row>
+                                                                                    <Row>
+                                                                                        <Form.Group controlId={`mediaQuestion${i}`}>
+                                                                                            <Form.Label>Select Media File</Form.Label>
+                                                                                            <Form.Control
+                                                                                                type="file"
+                                                                                                accept=".png,.jpg,.jpeg,.webp"
+                                                                                                onChange={(e) => this.updateImage(e.currentTarget)}
+                                                                                            />
+                                                                                        </Form.Group>
+                                                                                    </Row>
                                                                                 </Col>
                                                                             </Row>
                                                                         );

@@ -252,7 +252,8 @@ export class PostRequestHandler {
 
                         if (!!questions[_q].MediaUpdated) {
                             const file: Express.Multer.File = media.find((x: Express.Multer.File) => x.originalname == questions[_q].SequenceNumber);
-                            param.MediaBinary = file?.buffer;
+                            param.MediaBase64 = Buffer.from(file?.buffer).toString('base64');
+                            // param.MediaBinary = file?.buffer;
                         }
 
                         await db.updateQuestionInstance(questions[_q].UUID, param);
@@ -280,6 +281,7 @@ export class PostRequestHandler {
                         }
 
                         const file: Express.Multer.File = media.find((x: Express.Multer.File) => x.originalname == questions[_q].SequenceNumber);
+                        const mediaBase64 = Buffer.from(file?.buffer).toString('base64');
 
                         let param: CreateParam.QuestionInstance = {
                             RoundUUID: roundUUID,
@@ -290,7 +292,7 @@ export class PostRequestHandler {
                             Option2: questions[_q]?.Option2,
                             Option3: questions[_q]?.Option3,
                             Option4: questions[_q]?.Option4,
-                            MediaBinary: file?.buffer
+                            MediaBase64: mediaBase64
                         }
 
                         await db.createQuestionInstance(param);

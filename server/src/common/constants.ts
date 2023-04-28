@@ -56,7 +56,7 @@ export namespace QuizMasterSchema {
         Option3 = "OPTION_3",
         Option4 = "OPTION_4",
         Answer = "ANSWER",
-        MediaBinary = "MEDIA_BIN",
+        MediaBase64 = "MEDIA_BASE64",
         TargetTeamUUID = "TARGET_TEAM_UUID",
         ActualTeamUUID = "ACTUAL_TEAM_UUID",
         ActualMarkGiven = "ACTUAL_MARK_GIVEN",

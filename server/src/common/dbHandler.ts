@@ -47,7 +47,7 @@ export namespace CreateParam {
         Option3: string,
         Option4: string,
         Answer: string,
-        MediaBinary: any
+        MediaBase64: any
     };
 
     export type QuizInstance = CreateQuizInstanceParam;
@@ -112,7 +112,7 @@ export namespace UpdateParam {
         Option3?: string,
         Option4?: string,
         Answer?: string,
-        MediaBinary?: any,
+        MediaBase64?: any,
         TargetTeamUUID?: string,
         ActualTeamUUID?: string,
         ActualMarkGiven?: number,
@@ -188,7 +188,7 @@ export namespace GetParam {
         Option4: string,
         Answer: string,
         RoundUUID: string,
-        MediaUUID: string,
+        MediaBase64: any,
         TargetTeamUUID: string,
         ActualTeamUUID: string,
         AnswerGiven: string,

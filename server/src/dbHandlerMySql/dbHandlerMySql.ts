@@ -148,9 +148,9 @@ export class DbHandlerMySql extends DbHandler {
         let questionUUID: string = uuidv4();
 
         const statement = "INSERT INTO `QUESTION` (`UUID`, `DESCRIPTION`, `OPTION_1`, `OPTION_2`, `OPTION_3`, `OPTION_4`, `ANSWER`, "
-            + "`MEDIA_BIN`, `ROUND_UUID`, `SEQUENCE_NUM`) "
+            + "`MEDIA_BASE64`, `ROUND_UUID`, `SEQUENCE_NUM`) "
             + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-        const values = [questionUUID, param.Description, param.Option1, param.Option2, param.Option3, param.Option4, param.Answer, param.MediaBinary, param.RoundUUID, param.SequenceNumber];
+        const values = [questionUUID, param.Description, param.Option1, param.Option2, param.Option3, param.Option4, param.Answer, param.MediaBase64, param.RoundUUID, param.SequenceNumber];
         const sql = mysql.format(statement, values);
 
         try {
@@ -158,7 +158,7 @@ export class DbHandlerMySql extends DbHandler {
 
             let _result = JSON.parse(JSON.stringify(result));
 
-            delete param.MediaBinary; // omit media binary from logging
+            delete param.MediaBase64; // omit media binary from logging
 
             assert(_result.affectedRows === 1, "DbHandlerMySql->createQuestionInstance :: Failed to Create Question Instance");
 
@@ -345,9 +345,9 @@ export class DbHandlerMySql extends DbHandler {
             values.push(param.Answer);
         }
 
-        if (param?.MediaBinary !== undefined) {
-            statement += `${QuizMasterSchema.Question.MediaBinary} = ?,`;
-            values.push(param.MediaBinary);
+        if (param?.MediaBase64 !== undefined) {
+            statement += `${QuizMasterSchema.Question.MediaBase64} = ?,`;
+            values.push(param.MediaBase64);
         }
 
         if (param?.TargetTeamUUID !== undefined) {
@@ -387,7 +387,7 @@ export class DbHandlerMySql extends DbHandler {
 
             let _result = JSON.parse(JSON.stringify(result));
 
-            delete param.MediaBinary; // omit from logging
+            delete param.MediaBase64; // omit from logging
 
             assert(_result.affectedRows === 1, `DbHandlerMySql->updateQuestionInstance :: Failed to Update Question ${questionUUID}: ${JSON.stringify(param)}`);
 
@@ -692,6 +692,12 @@ export class DbHandlerMySql extends DbHandler {
             let _result = JSON.parse(JSON.stringify(result));
 
             for (let _question of _result) {
+                const blob = _question[QuizMasterSchema.Question.MediaBase64];
+                let mediaBase64 = null;
+                if (blob !== null) {
+                    mediaBase64 = Buffer.from(blob).toString('utf-8');
+                }
+
                 const question: GetParam.Question = {
                     UUID: _question.UUID,
                     RoundUUID: _question.ROUND_UUID,
@@ -702,7 +708,7 @@ export class DbHandlerMySql extends DbHandler {
                     Option2: _question.OPTION_2,
                     Option3: _question.OPTION_3,
                     Option4: _question.OPTION_4,
-                    MediaUUID: _question.MEDIA_UUID,
+                    MediaBase64: mediaBase64,
                     TargetTeamUUID: _question.TARGET_TEAM_UUID,
                     ActualTeamUUID: _question.ACTUAL_TEAM_UUID,
                     AnswerGiven: _question.ANSWER_GIVEN,

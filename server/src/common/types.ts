@@ -23,7 +23,8 @@ export namespace ViewQuizData {
         Option3: string,
         Option4: string,
         CorrectOption: string,
-        Answer: string
+        Answer: string,
+        MediaBase64?: any
     }
 
     export interface Round {
@@ -94,7 +95,7 @@ export namespace RoundQuestionsDetail {
         Option3?: string,
         Option4?: string,
         CorrectOption?: string,
-        MediaUUID?: string,
+        MediaBase64?: any,
         TargetTeamUUID?: string,
         ActualTeamUUID?: string,
         AnswerGiven?: string,
