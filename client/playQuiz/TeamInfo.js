@@ -170,7 +170,7 @@ export default class TeamInfo extends React.Component {
     }
 
     async componentDidMount() {
-        if (!this.state.teamsDetailObtained && !this.state.errorOccured) {
+        if (!this.state.teamsDetailObtained) {
             await this.getTeamsDetail();
             this.setState({
                 teamsDetailObtained: true

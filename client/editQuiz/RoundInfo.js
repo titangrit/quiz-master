@@ -226,11 +226,11 @@ export default class RoundInfo extends React.Component {
     }
 
     async componentDidMount() {
-        if (!this.state.currentRoundsObtained) {
+        if (!this.state.currentRoundsObtained && !this.state.errorOccured) {
             await this.getCurrentRounds();
         }
 
-        if (!this.state.roundTypesObtained) {
+        if (!this.state.roundTypesObtained && !this.state.errorOccured) {
             await this.getRoundTypes();
         }
 
