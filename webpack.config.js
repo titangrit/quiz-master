@@ -27,6 +27,10 @@ module.exports = {
             import: './client/viewQuiz/renderViewQuiz.js',
             // dependOn: ['common', 'react'],
         },
+        play_quiz: {
+            import: './client/playQuiz/renderPlayQuiz.js',
+            // dependOn: ['common', 'react'],
+        },
         // common: './src/client/common',
         // react: 'react',
     },

@@ -515,6 +515,62 @@ export class GetRequestHandler {
             } catch (err) {
                 res.status(500).send();
             }
+
+        } else if (req.params[0] === GetEndpoint.AboutQuiz) {
+            const _quizID = req.query.quizID as string;
+            const quizID = parseInt(_quizID);
+
+            if (Number.isNaN(quizID)) {
+                res.status(404).send();
+            }
+
+            type AboutQuiz = {
+                QuizEventName: string,
+                NumberOfTeams: number,
+                NumberOfRounds: number,
+                RoundTypes: GetParam.RoundType[]
+            }
+
+            try {
+                const quiz: GetParam.Quiz = await db.getQuizByID(quizID);
+                const _rounds: GetParam.Round[] = await db.getRoundsByQuizID(quizID);
+                let rounds = _rounds.sort((x, y) => {
+                    if (x.SequenceNumber > y.SequenceNumber) {
+                        return 1;
+                    } else {
+                        return -1;
+                    }
+                });
+
+                rounds = rounds.slice(0, quiz.NumberOfRounds);
+
+                const roundTypes: GetParam.RoundType[] = [];
+                for (let _round of rounds) {
+                    const _roundType = await db.getRoundTypeByID(_round.RoundTypeID);
+                    const _quizRoundType: GetParam.RoundType = {
+                        RoundTypeID: _round.RoundTypeID,
+                        RoundTypeName: _roundType.RoundTypeName,
+                        NumQuestionsEachTeam: _roundType.NumQuestionsEachTeam,
+                        IsMCQ: _roundType.IsMCQ,
+                        IsAVRound: _roundType.IsAVRound,
+                        IsPassable: _roundType.IsPassable,
+                        TimerSeconds: _roundType.TimerSeconds,
+                        FullMarkEachQuestion: _roundType.FullMarkEachQuestion
+                    }
+                    roundTypes.push(_quizRoundType)
+                }
+
+                const response: AboutQuiz = {
+                    QuizEventName: quiz.QuizEventname,
+                    NumberOfTeams: quiz.NumberOfTeams,
+                    NumberOfRounds: quiz.NumberOfRounds,
+                    RoundTypes: roundTypes
+                }
+
+                res.json(response);
+            } catch (err) {
+                res.status(500).send();
+            }
         }
 
         else {

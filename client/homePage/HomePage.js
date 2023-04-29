@@ -115,6 +115,7 @@ export default class HomePage extends React.Component {
                                         <Row>
                                             <Button variant="light"
                                                 className="custom-button"
+                                                onClick={() => { document.location.href = "/play_quiz.html?quizID=" + quiz.QuizID }}
                                             >
                                                 Start
                                             </Button>
@@ -154,6 +155,7 @@ export default class HomePage extends React.Component {
                                             <Button
                                                 variant="light"
                                                 className="custom-button"
+                                                onClick={() => { document.location.href = "/play_quiz.html?quizID=" + quiz.QuizID + "&resume=true" }}
                                             >
                                                 Resume
                                             </Button>

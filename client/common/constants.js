@@ -32,6 +32,22 @@ const ModifyQuizStep = {
     LastStep: 4
 }
 
+const PlayQuizStep = {
+    TeamInfo: 1,
+    AboutQuiz: 2,
+    Rounds: 3,
+    FinalResult: 4,
+    LastStep: 4
+}
+
+const PlayQuizEachRoundStep = {
+    RoundInfo: 1,
+    Questions: 2,
+    RoundResult: 3,
+    LastStep: 3
+}
+
+
 const QuizAction = {
     Start: 'Start',
     Edit: 'Edit',
@@ -57,4 +73,4 @@ const BackgroundColor = {
     Color6: '#F4ECFF'
 }
 
-module.exports = { QuizLifeCycleStatusCode, GetEndpoint, PostEndpoint, ModifyQuizStep }
+module.exports = { QuizLifeCycleStatusCode, GetEndpoint, PostEndpoint, ModifyQuizStep, PlayQuizStep, PlayQuizEachRoundStep }
