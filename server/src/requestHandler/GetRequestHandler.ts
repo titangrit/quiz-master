@@ -15,8 +15,16 @@ export class GetRequestHandler {
         if (req.params[0] === GetEndpoint.RoundTypes) {
 
             try {
+                const roundTypeID = req.query.roundTypeID as string;
+
+                if (roundTypeID) {
+                    const roundType: GetParam.RoundType = await db.getRoundTypeByID(roundTypeID);
+                    res.json({ RoundType: roundType });
+                }
+
                 const roundTypes: GetParam.RoundType[] = await db.getRoundTypes();
                 res.json({ RoundTypes: roundTypes });
+
             } catch (err) {
                 res.status(500).send();
             }
@@ -268,11 +276,34 @@ export class GetRequestHandler {
                     res.status(404).send();
                     return;
                 }
+
+                let teamUUIDs: string[] = [];
+                let teamCount = 0;
+                if (quizData.Team1UUID && teamCount < quizData.NumberOfTeams) {
+                    teamUUIDs.push(quizData.Team1UUID);
+                    teamCount++;
+                }
+                if (quizData.Team2UUID && teamCount < quizData.NumberOfTeams) {
+                    teamUUIDs.push(quizData.Team2UUID);
+                    teamCount++;
+                }
+                if (quizData.Team3UUID && teamCount < quizData.NumberOfTeams) {
+                    teamUUIDs.push(quizData.Team3UUID);
+                    teamCount++;
+                }
+                if (quizData.Team4UUID && teamCount < quizData.NumberOfTeams) {
+                    teamUUIDs.push(quizData.Team4UUID);
+                    teamCount++;
+                }
+
                 const response: QuizBasicInfo = {
                     QuizEventID: quizData.QuizEventID,
                     QuizEventName: quizData.QuizEventname,
                     NumberOfTeams: quizData.NumberOfTeams,
-                    NumberOfRounds: quizData.NumberOfRounds
+                    NumberOfRounds: quizData.NumberOfRounds,
+                    TeamUUIDs: teamUUIDs,
+                    CurrentRound: quizData.CurrentRoundSeq,
+                    CurrentQuestion: quizData.CurrentQuestionSeq
                 }
                 res.json(response);
             } catch (err) {
@@ -571,9 +602,8 @@ export class GetRequestHandler {
             } catch (err) {
                 res.status(500).send();
             }
-        }
 
-        else {
+        } else {
             res.status(404).send();
         }
     }

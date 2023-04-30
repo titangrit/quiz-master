@@ -66,7 +66,10 @@ export type QuizBasicInfo = {
     QuizEventID: number,
     QuizEventName: string,
     NumberOfTeams: number,
-    NumberOfRounds: number
+    NumberOfRounds: number,
+    TeamUUIDs: string[],
+    CurrentRound: number,
+    CurrentQuestion: number
 }
 
 export namespace QuizTeamsDetail {

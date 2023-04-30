@@ -155,7 +155,7 @@ export namespace GetParam {
         NumberOfRounds: number,
         NumberOfTeams: number,
         CurrentRoundSeq: number,
-        CurrentQuestionSeq?: number,
+        CurrentQuestionSeq: number,
         Team1UUID?: string,
         Team2UUID?: string,
         Team3UUID?: string,

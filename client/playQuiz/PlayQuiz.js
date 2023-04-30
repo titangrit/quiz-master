@@ -4,7 +4,7 @@ import { PlayQuizStep } from "../common";
 import { HomeNavbar } from "../common";
 import TeamInfo from "./TeamInfo";
 import AboutQuiz from "./AboutQuiz";
-import Rounds from "./Rounds";
+import QuizRounds from "./QuizRounds";
 import FinalResult from "./FinalResult";
 
 /**
@@ -21,9 +21,10 @@ export default class PlayQuiz extends React.Component {
 
         const queryParams = new URLSearchParams(window.location.search)
         this.state.quizEventID = queryParams.get('quizID');
-        this.state.resume = queryParams.get('resume');
+        const resume = queryParams.get('resume');
 
-        if (this.state.resume === "true") {
+        if (resume === "true") {
+            this.state.resume = true;
             this.state.playQuizStep = PlayQuizStep.Rounds;
         }
 
@@ -77,8 +78,9 @@ export default class PlayQuiz extends React.Component {
                 return (
                     <React.Fragment>
                         <HomeNavbar />
-                        <Rounds
+                        <QuizRounds
                             quizEventID={this.state.quizEventID}
+                            resume={this.state.resume}
                             nextStep={() => this.nextStep()}
                         />
                     </React.Fragment>

@@ -14,7 +14,7 @@ export enum GetEndpoint {
     QuizTeamsInfo = "team_info",
     QuizRounds = "rounds",
     QuestionDetailsOfEachRound = "questions",
-    AboutQuiz = "about_quiz",
+    AboutQuiz = "about_quiz"
 }
 
 export enum PostEndpoint {

@@ -139,8 +139,6 @@ export default class TeamInfo extends React.Component {
 
                 this.quizEventName = _response.QuizEventName;
                 this.numOfTeams = _response.NumberOfTeams;
-            } else if (response.status === 404) {
-                // Do nothing
             } else {
                 this.setState({
                     errorOccured: true
@@ -155,8 +153,6 @@ export default class TeamInfo extends React.Component {
 
             if (response.status === 200) {
                 this.teamsDetail = await response.json();
-            } else if (response.status === 404) {
-                // Do nothing
             } else {
                 this.setState({
                     errorOccured: true
