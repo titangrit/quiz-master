@@ -6,12 +6,7 @@ import Col from "react-bootstrap/Col";
 import Button from "react-bootstrap/Button";
 import Spinner from 'react-bootstrap/Spinner';
 import { PlayQuizEachRoundStep } from "../common";
-
-class Question extends React.Component {
-    constructor(props) {
-        super(props);
-    }
-}
+import Question from "./Question";
 
 class RoundInfo extends React.Component {
     constructor(props) {
@@ -38,7 +33,7 @@ class RoundInfo extends React.Component {
                             <p>🡆 {this.props.roundTypeInfo.IsMCQ ? `Multiple choice questions.` : `Direct answer, no multiple choice options.`}</p>
                             {this.props.roundTypeInfo.IsAVRound ? <p>🡆 Visual round.</p> : null}
                             <p>🡆 Each question carries <span style={{ fontWeight: 'bold' }}>{`${this.props.roundTypeInfo.FullMarkEachQuestion}`}</span> full marks.</p>
-                            <p>🡆 {this.props.roundTypeInfo.IsPassable ? `Questions are passable to next team.` : `Direct questions, not passable.`}</p>
+                            <p>🡆 {this.props.roundTypeInfo.IsPassable ? `Questions are passable to next team. Each pass reduces mark by one third.` : `Direct questions, not passable.`}</p>
                             <p>🡆 Each question must be answered within <span style={{ fontWeight: 'bold' }}>{`${this.props.roundTypeInfo.TimerSeconds}`}</span> seconds.</p>
                         </Row>
 
@@ -105,9 +100,7 @@ class Round extends React.Component {
 
     nextQuestion = () => {
         if (this.roundDetail.RoundTypeInfo.NumQuestionsEachTeam * this.props.quizInfo.NumberOfTeams >= this.state.currentQuestionNumber) {
-            this.setState({
-                roundStep: this.state.roundStep + 1
-            });
+            this.nextStep();
         }
 
         const currentQuestionNumber = this.state.currentQuestionNumber + 1;

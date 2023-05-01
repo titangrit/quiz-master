@@ -111,7 +111,7 @@ export default class AboutQuiz extends React.Component {
                                                 <p>🡆 {this.roundTypes[i].IsMCQ ? `Multiple choice questions.` : `Direct answer, no multiple choice options.`}</p>
                                                 {this.roundTypes[i].IsAVRound ? <p>🡆 Visual round.</p> : null}
                                                 <p>🡆 Each question carries <span style={{ fontWeight: 'bold' }}>{`${this.roundTypes[i].FullMarkEachQuestion}`}</span> full marks.</p>
-                                                <p>🡆 {this.roundTypes[i].IsPassable ? `Questions are passable to next team.` : `Direct questions, not passable.`}</p>
+                                                <p>🡆 {this.roundTypes[i].IsPassable ? `Questions are passable to next team. Each pass reduces mark by one third.` : `Direct questions, not passable.`}</p>
                                                 <p>🡆 Each question must be answered within <span style={{ fontWeight: 'bold' }}>{`${this.roundTypes[i].TimerSeconds}`}</span> seconds.</p>
                                             </Row>
                                         );
