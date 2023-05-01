@@ -17,6 +17,50 @@ class RoundInfo extends React.Component {
     constructor(props) {
         super(props);
     }
+
+    render() {
+        return (
+            <React.Fragment>
+                <Container className="mt-4">
+                    <Row className="d-inline">
+                        <Col md="auto" className="d-inline">
+                            <p className="fs-3 d-inline">{`Round ${this.props.round.SequenceNumber} - ${this.props.roundTypeInfo.RoundTypeName}`}</p>
+                        </Col>
+                        <Col md="auto" className="d-inline">
+                            <p className="fs-4 d-inline">{`{ ${this.props.quizInfo.QuizEventName} }`}</p>
+                        </Col>
+                    </Row>
+
+                    <Row className="mt-5 d-flex">
+
+                        <Row className="mb-4">
+                            <p>🡆 <span style={{ fontWeight: 'bold' }}>{`${this.props.roundTypeInfo.NumQuestionsEachTeam}`}</span> question(s) for each team.</p>
+                            <p>🡆 {this.props.roundTypeInfo.IsMCQ ? `Multiple choice questions.` : `Direct answer, no multiple choice options.`}</p>
+                            {this.props.roundTypeInfo.IsAVRound ? <p>🡆 Visual round.</p> : null}
+                            <p>🡆 Each question carries <span style={{ fontWeight: 'bold' }}>{`${this.props.roundTypeInfo.FullMarkEachQuestion}`}</span> full marks.</p>
+                            <p>🡆 {this.props.roundTypeInfo.IsPassable ? `Questions are passable to next team.` : `Direct questions, not passable.`}</p>
+                            <p>🡆 Each question must be answered within <span style={{ fontWeight: 'bold' }}>{`${this.props.roundTypeInfo.TimerSeconds}`}</span> seconds.</p>
+                        </Row>
+
+                        <Col md={3}>
+                            <Row className="mt-5 mb-5">
+                                <Button
+                                    variant="light"
+                                    size="lg"
+                                    type="button"
+                                    className="custom-button"
+                                    onClick={() => { this.props.nextStep() }}
+                                >
+                                    {`Start Round ${this.props.round.SequenceNumber} 〉`}
+                                </Button>
+                            </Row>
+
+                        </Col>
+                    </Row>
+                </Container >
+            </React.Fragment>
+        );
+    }
 }
 
 class RoundResult extends React.Component {
@@ -164,7 +208,10 @@ class Round extends React.Component {
             case PlayQuizEachRoundStep.RoundInfo:
                 return (
                     <RoundInfo
-
+                        round={this.props.round}
+                        quizInfo={this.props.quizInfo}
+                        roundTypeInfo={this.roundDetail.RoundTypeInfo}
+                        nextStep={this.nextStep}
                     />
                 );
 
