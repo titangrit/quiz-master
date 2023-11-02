@@ -324,6 +324,7 @@ class QuestionInfoEachRound extends React.Component {
                                                                                                 type="file"
                                                                                                 accept=".png,.jpg,.jpeg,.webp,.gif"
                                                                                                 onChange={(e) => this.updateImage(e.currentTarget)}
+                                                                                                required
                                                                                             />
                                                                                         </Form.Group>
                                                                                     </Row>

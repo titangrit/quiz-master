@@ -33,7 +33,7 @@ export default class HomePage extends React.Component {
 
             if (response.status !== 200) {
                 this.setState({
-                    errorOccured: true
+                    errorOccurred: true
                 })
                 throw "Failed to Get Quizzes";
             }
@@ -275,7 +275,7 @@ export default class HomePage extends React.Component {
                             }
 
                             {/* Loading message */}
-                            {!this.state.availableQuizzesObtained &&
+                            {!this.state.availableQuizzesObtained && !this.state.errorOccurred &&
                                 <h3><Spinner animation="border" role="status" /> Loading Available Quizzes...</h3>
                             }
 

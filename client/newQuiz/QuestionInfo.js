@@ -118,7 +118,7 @@ class QuestionInfoEachRound extends React.Component {
                                                                         <Col md={3}>
                                                                             <Form.Group controlId={`mediaQuestion${i}`}>
                                                                                 <Form.Label>Select Media File</Form.Label>
-                                                                                <Form.Control type="file" />
+                                                                                <Form.Control type="file" required/>
                                                                             </Form.Group>
                                                                         </Col>
                                                                     </Row>

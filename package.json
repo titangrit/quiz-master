@@ -13,14 +13,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Malemm/quiz-master.git"
+    "url": "git+https://github.com/titangrit/quiz-master.git"
   },
   "author": "Malemnganba Mutum",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/Malemm/quiz-master/issues"
+    "url": "https://github.com/titangrit/quiz-master/issues"
   },
-  "homepage": "https://github.com/Malemm/quiz-master#readme",
+  "homepage": "https://github.com/titangrit/quiz-master#readme",
   "dependencies": {
     "body-parser": "^1.20.2",
     "bootstrap": "^5.2.3",

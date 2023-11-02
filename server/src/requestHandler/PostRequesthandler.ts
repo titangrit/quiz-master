@@ -281,7 +281,7 @@ export class PostRequestHandler {
                         }
 
                         const file: Express.Multer.File = media.find((x: Express.Multer.File) => x.originalname == questions[_q].SequenceNumber);
-                        const mediaBase64 = Buffer.from(file?.buffer).toString('base64');
+                        const mediaBase64 = file?.buffer ? Buffer.from(file.buffer).toString('base64') : "";
 
                         let param: CreateParam.QuestionInstance = {
                             RoundUUID: roundUUID,
