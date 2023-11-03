@@ -6,23 +6,23 @@ export enum QuizLifeCycleStatusCode {
 }
 
 export enum GetEndpoint {
-    RoundTypes = "round_types",
-    RoundDetailsOfEachQuiz = "quiz_round_details",
-    ViewQuiz = "view_quiz_data",
-    GetAllQuizzes = "all_quizzes",
-    QuizBasicInfo = "basic_info",
-    QuizTeamsInfo = "team_info",
-    QuizRounds = "rounds",
-    QuestionDetailsOfEachRound = "questions",
-    AboutQuiz = "about_quiz"
+    round_types = "round_types",
+    quiz_round_details = "quiz_round_details",
+    view_quiz_data = "view_quiz_data",
+    all_quizzes = "all_quizzes",
+    basic_info = "basic_info",
+    team_info = "team_info",
+    rounds = "rounds",
+    questions = "questions",
+    about_quiz = "about_quiz"
 }
 
 export enum PostEndpoint {
-    QuizBasicInfo = "basic_info",
-    QuizTeamsInfo = "team_info",
-    QuizRoundsInfo = "round_info",
-    QuestionsInfoOfEachRound = "question_info",
-    SetQuizStateReady = "ready"
+    basic_info = "basic_info",
+    team_info = "team_info",
+    round_info = "round_info",
+    question_info = "question_info",
+    ready = "ready"
 }
 
 export namespace QuizMasterSchema {

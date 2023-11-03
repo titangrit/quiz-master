@@ -1,20 +1,17 @@
-import { DbHandler, CreateParam, UpdateParam, GetParam, QuizLifeCycleStatusCode, QuizMasterSchema } from "../common";
+import { QuizLifeCycleStatusCode, QuizMasterSchema } from "./constants";
+import { IHandleDatabase, CreateParam, UpdateParam, GetParam } from "./IHandleDatabase";
 import * as mysql from 'mysql2/promise';
 import { v4 as uuidv4 } from 'uuid';
 import assert from 'node:assert';
 import logger from "../logger";
 
-export class DbHandlerMySql extends DbHandler {
-    static INSTANCE: DbHandlerMySql;
+export class MySqlDbHandler implements IHandleDatabase {
+    private static instance: MySqlDbHandler;
     private db_conn!: mysql.Connection;
 
-    private constructor() {
-        super();
-    }
-
-    static async getInstance(): Promise<DbHandler> {
-        if (!this.INSTANCE) {
-            this.INSTANCE = new DbHandlerMySql();
+    static async getInstance(): Promise<IHandleDatabase> {
+        if (!this.instance) {
+            this.instance = new MySqlDbHandler();
 
             require('dotenv').config();
             const HOST = "localhost"
@@ -22,7 +19,7 @@ export class DbHandlerMySql extends DbHandler {
             const PASS = process.env.MYSQL_PASS
             const DB = process.env.MYSQL_DB
 
-            this.INSTANCE.db_conn = await mysql.createConnection({
+            this.instance.db_conn = await mysql.createConnection({
                 host: HOST,
                 user: USER,
                 password: PASS,
@@ -30,7 +27,7 @@ export class DbHandlerMySql extends DbHandler {
             });
         }
 
-        return this.INSTANCE;
+        return this.instance;
     }
 
     async createQuizInstance(param: CreateParam.QuizInstance): Promise<number> {

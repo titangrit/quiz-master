@@ -1,19 +1,19 @@
 import { QuizLifeCycleStatusCode } from "./constants";
 
 export namespace CreateParam {
-    interface CreateQuizInstanceParam {
+    export type QuizInstance = {
         QuizEventName: string,
         NumberOfRounds: number,
         NumberOfTeams: number
     };
 
-    interface CreateMemberInstanceParam {
+    export type MemberInstance = {
         Surname: string,
         Name: string,
         Lastname: string
     };
 
-    interface CreateTeamInstanceParam {
+    export type TeamInstance = {
         TeamName: string,
         Member1UUID: string,
         Member2UUID: string,
@@ -21,7 +21,7 @@ export namespace CreateParam {
         Member4UUID: string
     };
 
-    interface CreateRoundTypeInstanceParam {
+    export type RoundTypeInstance = {
         RoundTypeID: string,
         RoundTypeName: string,
         NumQuestionsEachTeam: number,
@@ -32,13 +32,13 @@ export namespace CreateParam {
         TimerSeconds: number
     };
 
-    interface CreateRoundInstanceParam {
+    export type RoundInstance = {
         QuizID: string,
         RoundTypeID: string,
         SequenceNumber: number
     };
 
-    interface CreateQuestionInstanceParam {
+    export type QuestionInstance = {
         RoundUUID: string,
         SequenceNumber: number,
         Description: string,
@@ -49,17 +49,10 @@ export namespace CreateParam {
         Answer: string,
         MediaBase64: any
     };
-
-    export type QuizInstance = CreateQuizInstanceParam;
-    export type MemberInstance = CreateMemberInstanceParam;
-    export type TeamInstance = CreateTeamInstanceParam;
-    export type RoundTypeInstance = CreateRoundTypeInstanceParam;
-    export type RoundInstance = CreateRoundInstanceParam;
-    export type QuestionInstance = CreateQuestionInstanceParam;
 }
 
 export namespace UpdateParam {
-    interface updateQuizInstanceParam {
+    export type QuizInstance = {
         QuizEventName?: string,
         StartDate?: Date,
         EndDate?: Date,
@@ -74,14 +67,14 @@ export namespace UpdateParam {
         Team4UUID?: string
     };
 
-    interface updateMemberInstanceParam {
+    export type MemberInstance = {
         UUID: string,
         Surname: string,
         Name: string,
         Lastname: string
     };
 
-    interface updateTeamInstanceParam {
+    export type TeamInstance = {
         UUID: string,
         TeamName: string
     };
@@ -89,7 +82,7 @@ export namespace UpdateParam {
     /**
      * Do not support, it will cause inconsistency to past quizzes
      */
-    // interface updateRoundTypeInstanceParam {
+    // export type RoundTypeInstance =  {
     //     RoundTypeID: string,
     //     RoundTypeName: string,
     //     NumQuestionsEachTeam: number,
@@ -100,12 +93,12 @@ export namespace UpdateParam {
     //     TimerSeconds: number
     // };
 
-    interface updateRoundInstanceParam {
+    export type RoundInstance = {
         RoundTypeID?: string,
         SequenceNumber?: number
     };
 
-    interface updateQuestionInstanceParam {
+    export type QuestionInstance = {
         Description?: string,
         Option1?: string,
         Option2?: string,
@@ -118,17 +111,10 @@ export namespace UpdateParam {
         ActualMarkGiven?: number,
         AnswerGiven?: string
     };
-
-    export type QuizInstance = updateQuizInstanceParam;
-    export type MemberInstance = updateMemberInstanceParam;
-    export type TeamInstance = updateTeamInstanceParam;
-    // export type RoundTypeInstance = updateRoundTypeInstanceParam;
-    export type RoundInstance = updateRoundInstanceParam;
-    export type QuestionInstance = updateQuestionInstanceParam;
 }
 
 export namespace GetParam {
-    interface getRoundTypeResponseParam {
+    export type RoundType = {
         RoundTypeID: string,
         RoundTypeName: string,
         NumQuestionsEachTeam: number,
@@ -139,14 +125,14 @@ export namespace GetParam {
         TimerSeconds: number
     };
 
-    interface getRoundResponseParam {
+    export type Round = {
         UUID: string,
         QuizID: number,
         RoundTypeID: string,
         SequenceNumber: number
     };
 
-    interface getQuizResponseParam {
+    export type Quiz = {
         QuizEventID: number,
         QuizEventname: string,
         StartDateTime: Date,
@@ -162,23 +148,23 @@ export namespace GetParam {
         Team4UUID?: string
     }
 
-    interface member {
+    export type Member = {
         UUID: string,
         Surname: string,
         Name: string,
         Lastname: string
     }
 
-    interface getTeamResponseParam {
+    export type Team = {
         UUID: string,
         TeamName: string,
-        Member1: member,
-        Member2: member,
-        Member3: member,
-        Member4: member
+        Member1: Member,
+        Member2: Member,
+        Member3: Member,
+        Member4: Member
     }
 
-    interface getQuestionResponseParam {
+    export type Question = {
         UUID: string,
         SequenceNumber: number,
         Description: string,
@@ -194,41 +180,33 @@ export namespace GetParam {
         AnswerGiven: string,
         ActualMarkGiven: number
     }
-
-    export type RoundType = getRoundTypeResponseParam;
-    export type Round = getRoundResponseParam;
-    export type Quiz = getQuizResponseParam;
-    export type Member = member;
-    export type Team = getTeamResponseParam;
-    export type Question = getQuestionResponseParam;
 }
 
-export abstract class DbHandler {
-    abstract createQuizInstance(param: CreateParam.QuizInstance): Promise<number>;
-    abstract createMemberInstance(param: CreateParam.MemberInstance): Promise<string>;
-    abstract createTeamInstance(param: CreateParam.TeamInstance): Promise<string>;
-    abstract createRoundTypeInstance(param: CreateParam.RoundTypeInstance): Promise<string>;
-    abstract createRoundInstance(param: CreateParam.RoundInstance): Promise<string>;
-    abstract createQuestionInstance(param: CreateParam.QuestionInstance): Promise<string>;
+export interface IHandleDatabase {
+    createQuizInstance(param: CreateParam.QuizInstance): Promise<number>;
+    createMemberInstance(param: CreateParam.MemberInstance): Promise<string>;
+    createTeamInstance(param: CreateParam.TeamInstance): Promise<string>;
+    createRoundTypeInstance(param: CreateParam.RoundTypeInstance): Promise<string>;
+    createRoundInstance(param: CreateParam.RoundInstance): Promise<string>;
+    createQuestionInstance(param: CreateParam.QuestionInstance): Promise<string>;
 
-    abstract updateQuizInstance(quizID: number, param: UpdateParam.QuizInstance): Promise<void>;
-    abstract updateMemberInstance(param: UpdateParam.MemberInstance): Promise<void>;
-    abstract updateTeamInstance(param: UpdateParam.TeamInstance): Promise<void>;
+    updateQuizInstance(quizID: number, param: UpdateParam.QuizInstance): Promise<void>;
+    updateMemberInstance(param: UpdateParam.MemberInstance): Promise<void>;
+    updateTeamInstance(param: UpdateParam.TeamInstance): Promise<void>;
     // Do not support, it will cause inconsistency to past quizzes
-    // abstract updateRoundTypeInstance(param: updateRoundTypeInstanceParam): Promise<void>;
-    abstract updateRoundInstance(roundUUID: string, param: UpdateParam.RoundInstance): Promise<void>;
-    abstract updateQuestionInstance(questionUUID: string, param: UpdateParam.QuestionInstance): Promise<void>;
+    //  updateRoundTypeInstance(param: updateRoundTypeInstanceParam): Promise<void>;
+    updateRoundInstance(roundUUID: string, param: UpdateParam.RoundInstance): Promise<void>;
+    updateQuestionInstance(questionUUID: string, param: UpdateParam.QuestionInstance): Promise<void>;
 
-    abstract getRoundTypes(): Promise<GetParam.RoundType[]>;
-    abstract getRoundTypeByID(roundTypeID: string): Promise<GetParam.RoundType>;
-    abstract getRoundsByQuizID(quizID: number): Promise<GetParam.Round[]>;
-    abstract getQuizByID(quizID: number): Promise<GetParam.Quiz>;
-    abstract getAllQuizzes(): Promise<GetParam.Quiz[]>;
-    abstract getTeamByUUID(teamUUID: string): Promise<GetParam.Team>;
-    abstract getQuestionsByRoundUUID(roundUUID: string): Promise<GetParam.Question[]>;
-    abstract getRoundByUUID(roundUUID: string): Promise<GetParam.Round>
+    getRoundTypes(): Promise<GetParam.RoundType[]>;
+    getRoundTypeByID(roundTypeID: string): Promise<GetParam.RoundType>;
+    getRoundsByQuizID(quizID: number): Promise<GetParam.Round[]>;
+    getQuizByID(quizID: number): Promise<GetParam.Quiz>;
+    getAllQuizzes(): Promise<GetParam.Quiz[]>;
+    getTeamByUUID(teamUUID: string): Promise<GetParam.Team>;
+    getQuestionsByRoundUUID(roundUUID: string): Promise<GetParam.Question[]>;
+    getRoundByUUID(roundUUID: string): Promise<GetParam.Round>
 
-    abstract deleteMemberInstance(memberUUID: string): Promise<void>;
-    abstract deleteTeamInstance(teamUUID: string): Promise<void>;
-
+    deleteMemberInstance(memberUUID: string): Promise<void>;
+    deleteTeamInstance(teamUUID: string): Promise<void>;
 }

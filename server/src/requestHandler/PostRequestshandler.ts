@@ -1,9 +1,9 @@
 import { Request, Response } from 'express';
-import { DbHandlerMySql } from "../dbHandlerMySql";
+import { DbHandlerMySql } from "./MySqlDbHandler";
 import {
     CreateParam, GetParam, UpdateParam, QuizLifeCycleStatusCode,
     PostEndpoint
-} from "../common";
+} from ".";
 
 export class PostRequestHandler {
 

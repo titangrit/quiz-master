@@ -1,2 +1,2 @@
-export { GetRequestHandler } from "./GetRequestHandler";
-export { PostRequestHandler } from "./PostRequesthandler";
+export { GetRequestsHandler } from "./GetRequestsHandler";
+export { PostRequestHandler } from "./PostRequestHandler";
