@@ -1,13 +1,13 @@
 import express from "express";
 import * as bodyParser from "body-parser";
 import path from "path";
-import { logger } from "./logger.js";
-import { httpLogger } from "./httpLogger.js";
+import { logger } from "./logger";
+import { httpLogger } from "./httpLogger";
 import multer from "multer";
 import dotenv from "dotenv";
-import RequestHandler from "./RequestHandler.js";
-import { IHandleDatabase } from "./IHandleDatabase.js";
-import { MySqlDbHandler } from "./MySqlDbHandler.js";
+import RequestHandler from "./RequestHandler";
+import { IHandleDatabase } from "./IHandleDatabase";
+import { MySqlDbHandler } from "./MySqlDbHandler";
 
 const start = async () => {
   dotenv.config();

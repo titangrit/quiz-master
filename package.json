@@ -8,7 +8,7 @@
     "client:prod": "webpack --mode production",
     "build": "rimraf ./server/dist && tsc",
     "start": "node ./server/dist/main.js",
-    "start:dev": "npx nodemon",
+    "watch": "npx nodemon",
     "test": "echo \"Error: no test specified\" && exit 1",
     "eslint": "eslint"
   },
