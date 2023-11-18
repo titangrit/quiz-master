@@ -52,19 +52,12 @@ export enum Question {
   AnswerGiven = "ANSWER_GIVEN",
 }
 
-export enum Member {
-  UUID = "UUID",
-  Surname = "SURNAME",
-  Name = "NAME",
-  Lastname = "LASTNAME",
-}
-
 export enum Team {
   UUID = "UUID",
   TeamName = "TEAM_NAME",
-  Member1UUID = "MEMBER_1_UUID",
-  Member2UUID = "MEMBER_2_UUID",
-  Member3UUID = "MEMBER_3_UUID",
-  Member4UUID = "MEMBER_4_UUID",
+  Member1Name = "MEMBER_1_Name",
+  Member2Name = "MEMBER_2_Name",
+  Member3Name = "MEMBER_3_Name",
+  Member4Name = "MEMBER_4_Name",
   TotalMark = "TOTAL_MARK",
 }

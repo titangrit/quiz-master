@@ -16,20 +16,13 @@ export type QuizType = {
   Team4UUID?: string;
 };
 
-export type MemberType = {
-  UUID?: string;
-  Surname?: string;
-  Name?: string;
-  Lastname?: string;
-};
-
 export type TeamType = {
   UUID?: string;
   TeamName?: string;
-  Member1UUID?: string;
-  Member2UUID?: string;
-  Member3UUID?: string;
-  Member4UUID?: string;
+  Member1Name?: string;
+  Member2Name?: string;
+  Member3Name?: string;
+  Member4Name?: string;
   TotalMark?: number;
 };
 
@@ -65,14 +58,11 @@ export type QuestionType = {
 
 export interface IHandleDatabase {
   createQuiz: (quiz: QuizType) => Promise<number>;
-  createMember: (member: MemberType) => Promise<string>;
   createTeam: (team: TeamType) => Promise<string>;
   createRound: (round: RoundType) => Promise<string>;
   createQuestion: (question: QuestionType) => Promise<string>;
 
   getQuiz: (quizID?: number) => Promise<QuizType[]>;
-  getMembersByTeamUUID: (teamUUID: string) => Promise<MemberType[]>;
-  getMemberByUUID: (memberUUID: string) => Promise<MemberType>;
   getTeamsByQuizID: (quizID: number) => Promise<TeamType[]>;
   getTeamByUUID: (teamUUID: string) => Promise<TeamType>;
   getRoundsByQuizID: (quizID: number) => Promise<RoundType[]>;
@@ -81,11 +71,9 @@ export interface IHandleDatabase {
   getQuestionByUUID: (questionUUID: string) => Promise<QuestionType>;
 
   updateQuiz: (quiz: QuizType) => Promise<void>;
-  updateMember: (member: MemberType) => Promise<void>;
   updateTeam: (team: TeamType) => Promise<void>;
   updateRound: (round: RoundType) => Promise<void>;
   updateQuestion: (question: QuestionType) => Promise<void>;
 
-  deleteMember: (memberUUID: string) => Promise<void>;
   deleteTeam: (teamUUID: string) => Promise<void>;
 }
