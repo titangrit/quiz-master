@@ -230,6 +230,9 @@ export default class RequestHandler {
        * Invalid endpoint
        */
 
+      logger.error(
+        "RequestHandler->handleRequest :: Invalid endpoint: " + endpoint
+      );
       res.status(400).send("Invalid endpoint: " + endpoint);
     } catch (error) {
       logger.error("RequestHandler->handleRequest: " + endpoint, error);

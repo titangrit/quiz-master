@@ -1,6 +1,33 @@
+import winston from "winston";
 import morgan from "morgan";
 import json from "morgan-json";
-import { logger } from "./logger";
+
+const options = {
+  file: {
+    level: "info",
+    filename: "./logs/access.log",
+    handleExceptions: true,
+    json: true,
+    maxsize: 5242880, // 5MB
+    maxFiles: 5,
+    colorize: false,
+  },
+  console: {
+    level: "info",
+    handleExceptions: true,
+    json: false,
+    colorize: true,
+  },
+};
+
+const logger = winston.createLogger({
+  levels: winston.config.npm.levels,
+  transports: [
+    new winston.transports.File(options.file),
+    new winston.transports.Console(options.console),
+  ],
+  exitOnError: false,
+});
 
 const format = json({
   method: ":method",
