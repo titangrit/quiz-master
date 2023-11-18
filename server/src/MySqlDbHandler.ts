@@ -8,7 +8,7 @@ import {
 } from "./IHandleDatabase";
 import * as mysql from "mysql2/promise";
 import { v4 as uuidv4 } from "uuid";
-import { logger } from "../logger";
+import { logger } from "./logger";
 import dotenv from "dotenv";
 
 export class MySqlDbHandler implements IHandleDatabase {

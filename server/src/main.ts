@@ -1,24 +1,48 @@
-import express from 'express';
+import express from "express";
 import * as bodyParser from "body-parser";
-const path = require('path');
-import logger from "./logger";
-const httpLogger = require('./httpLogger');
-import { PostRequestHandler, GetRequestHandler } from './requestHandler';
+import path from "path";
+import { logger } from "./logger.js";
+import { httpLogger } from "./httpLogger.js";
+import multer from "multer";
+import dotenv from "dotenv";
+import RequestHandler from "./RequestHandler.js";
+import { IHandleDatabase } from "./IHandleDatabase.js";
+import { MySqlDbHandler } from "./MySqlDbHandler.js";
 
-const multer = require("multer");
-// const upload = multer({ dest: "uploads/" });
-const storage = multer.memoryStorage()
-const upload = multer({ storage: storage })
+const start = async () => {
+  dotenv.config();
 
-require('dotenv').config();
-const PORT = process.env.PORT || 8000
+  // const upload = multer({ dest: "uploads/" });
+  const storage = multer.memoryStorage();
+  const upload = multer({ storage: storage });
 
-const app = express();
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: false }));
-app.use(httpLogger);
-app.use(express.static(path.join(__dirname, "..", "..", "public")));
+  const PORT = process.env.PORT || 8000;
+  const DB = process.env.DB || "sqlite";
 
-app.route('/quiz/*').get(GetRequestHandler.handleGET).post(upload.array("Media"), PostRequestHandler.handlePOST);
+  let dbHandler: IHandleDatabase;
 
-app.listen(PORT, () => logger.info('Express.js listening on port ' + PORT))
+  if (DB === "mysql") {
+    dbHandler = await MySqlDbHandler.getInstance();
+  } else {
+    throw new Error("Invalid DB! Supported DBs: mysql");
+  }
+
+  const requestHandler: RequestHandler = new RequestHandler(dbHandler);
+
+  const app = express();
+  app.use(bodyParser.json());
+  app.use(bodyParser.urlencoded({ extended: false }));
+  app.use(httpLogger);
+  app.use(express.static(path.join(__dirname, "..", "..", "public")));
+
+  app
+    .route("/quiz/*")
+    .get(requestHandler.handleRequest)
+    .post(upload.array("Media"), requestHandler.handleRequest);
+
+  app.listen(PORT, () =>
+    logger.info("Server listening: " + `http://localhost:${PORT}`)
+  );
+};
+
+start();

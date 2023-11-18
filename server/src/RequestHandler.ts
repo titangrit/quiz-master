@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import File = Express.Multer.File;
-import { logger } from "../logger";
+import { logger } from "./logger";
 import { Endpoint, QuizLifecycleStatusCode } from "./constants";
 import {
   IHandleDatabase,
@@ -10,7 +10,7 @@ import {
   QuestionType,
 } from "./IHandleDatabase";
 
-export class RequestHandler {
+export default class RequestHandler {
   private db: IHandleDatabase;
 
   constructor(dbHandler: IHandleDatabase) {
@@ -225,6 +225,12 @@ export class RequestHandler {
         await this.db.updateQuestion(question);
         res.status(204).send("Recorded question response");
       }
+
+      /**
+       * Invalid endpoint
+       */
+
+      res.status(400).send("Invalid endpoint: " + endpoint);
     } catch (error) {
       logger.error("RequestHandler->handleRequest: " + endpoint, error);
       res.status(500).send("Error occurred: " + JSON.stringify(error));
