@@ -1,11 +1,11 @@
-import { type QuizLifeCycleStatusCode } from "./constants";
+import { type QuizLifecycleStatusCode } from "./constants";
 
 export type QuizType = {
   ID?: number;
   QuizEventName?: string;
   StartDateTime?: Date;
   EndDateTime?: Date;
-  LifecycleStatusCode?: QuizLifeCycleStatusCode;
+  LifecycleStatusCode?: QuizLifecycleStatusCode;
   NumberOfRounds?: number;
   NumberOfTeams?: number;
   CurrentRoundSeq?: number;
