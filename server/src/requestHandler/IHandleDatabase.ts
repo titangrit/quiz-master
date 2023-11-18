@@ -1,56 +1,11 @@
 import { type QuizLifeCycleStatusCode } from "./constants";
 
-export type CreateQuizType = {
-  QuizEventName: string;
-  NumberOfRounds: number;
-  NumberOfTeams: number;
-  LifecycleStatusCode: number;
-};
-
-export type CreateMemberType = {
-  Surname: string;
-  Name: string;
-  Lastname: string;
-};
-
-export type CreateTeamType = {
-  TeamName: string;
-  Member1UUID?: string;
-  Member2UUID?: string;
-  Member3UUID?: string;
-  Member4UUID?: string;
-};
-
-export type CreateRoundType = {
-  QuizID: string;
-  RoundName: string;
-  SequenceNumber: number;
-  NumQuestionsEachTeam: number;
-  FullMarkEachQuestion: number;
-  IsMCQ?: boolean;
-  IsAudioVisualRound?: boolean;
-  IsPassable?: boolean;
-  TimerSeconds?: number;
-};
-
-export type CreateQuestionType = {
-  RoundUUID: string;
-  SequenceNumber: number;
-  Description: string;
-  Option1?: string;
-  Option2?: string;
-  Option3?: string;
-  Option4?: string;
-  Answer: string;
-  MediaBase64?: string;
-};
-
-export type UpdateQuizType = {
-  ID: number;
+export type QuizType = {
+  ID?: number;
   QuizEventName?: string;
   StartDateTime?: Date;
   EndDateTime?: Date;
-  LifecycleStatusCode?: number;
+  LifecycleStatusCode?: QuizLifeCycleStatusCode;
   NumberOfRounds?: number;
   NumberOfTeams?: number;
   CurrentRoundSeq?: number;
@@ -61,20 +16,26 @@ export type UpdateQuizType = {
   Team4UUID?: string;
 };
 
-export type UpdateMemberType = {
-  UUID: string;
+export type MemberType = {
+  UUID?: string;
   Surname?: string;
   Name?: string;
   Lastname?: string;
 };
 
-export type UpdateTeamType = {
-  UUID: string;
-  TeamName: string;
+export type TeamType = {
+  UUID?: string;
+  TeamName?: string;
+  Member1UUID?: string;
+  Member2UUID?: string;
+  Member3UUID?: string;
+  Member4UUID?: string;
+  TotalMark?: number;
 };
 
-export type UpdateRoundType = {
-  UUID: string;
+export type RoundType = {
+  UUID?: string;
+  QuizID?: number;
   RoundName?: string;
   SequenceNumber?: number;
   NumQuestionsEachTeam?: number;
@@ -85,8 +46,10 @@ export type UpdateRoundType = {
   TimerSeconds?: number;
 };
 
-export type UpdateQuestionType = {
-  UUID: string;
+export type QuestionType = {
+  UUID?: string;
+  RoundUUID?: string;
+  SequenceNumber?: number;
   Description?: string;
   Option1?: string;
   Option2?: string;
@@ -100,88 +63,28 @@ export type UpdateQuestionType = {
   AnswerGiven?: string;
 };
 
-export type GetQuizType = {
-  ID: number;
-  QuizEventName: string;
-  StartDateTime: Date;
-  EndDateTime: Date;
-  LifecycleStatusCode: QuizLifeCycleStatusCode;
-  NumberOfRounds: number;
-  NumberOfTeams: number;
-  CurrentRoundSeq: number;
-  CurrentQuestionSeq: number;
-  Team1UUID: string;
-  Team2UUID: string;
-  Team3UUID: string;
-  Team4UUID: string;
-};
-
-export type GetMemberType = {
-  UUID: string;
-  Surname: string;
-  Name: string;
-  Lastname: string;
-};
-
-export type GetTeamType = {
-  UUID: string;
-  TeamName: string;
-  Member1: GetMemberType;
-  Member2: GetMemberType;
-  Member3: GetMemberType;
-  Member4: GetMemberType;
-};
-
-export type GetRoundType = {
-  UUID: string;
-  QuizID: number;
-  RoundName: string;
-  SequenceNumber: number;
-  NumQuestionsEachTeam: number;
-  FullMarkEachQuestion: number;
-  IsMCQ: boolean;
-  IsAudioVisualRound: boolean;
-  IsPassable: boolean;
-  TimerSeconds: number;
-};
-
-export type GetQuestionType = {
-  UUID: string;
-  SequenceNumber: number;
-  Description: string;
-  Option1: string;
-  Option2: string;
-  Option3: string;
-  Option4: string;
-  Answer: string;
-  RoundUUID: string;
-  MediaBase64: string;
-  TargetTeamUUID: string;
-  ActualTeamUUID: string;
-  AnswerGiven: string;
-  ActualMarkGiven: number;
-};
-
 export interface IHandleDatabase {
-  createQuiz: (quiz: CreateQuizType) => Promise<number>;
-  createMember: (member: CreateMemberType) => Promise<string>;
-  createTeam: (team: CreateTeamType) => Promise<string>;
-  createRound: (round: CreateRoundType) => Promise<string>;
-  createQuestion: (question: CreateQuestionType) => Promise<string>;
+  createQuiz: (quiz: QuizType) => Promise<number>;
+  createMember: (member: MemberType) => Promise<string>;
+  createTeam: (team: TeamType) => Promise<string>;
+  createRound: (round: RoundType) => Promise<string>;
+  createQuestion: (question: QuestionType) => Promise<string>;
 
-  getQuiz: (quizID?: number) => Promise<GetQuizType[]>;
-  getTeamsByQuizID: (quizID: number) => Promise<GetTeamType[]>;
-  getTeamByUUID: (teamUUID: string) => Promise<GetTeamType>;
-  getRoundsByQuizID: (quizID: number) => Promise<GetRoundType[]>;
-  getRoundByUUID: (roundUUID: string) => Promise<GetRoundType>;
-  getQuestionsByRoundUUID: (roundUUID: string) => Promise<GetQuestionType[]>;
-  getQuestionByUUID: (questionUUID: string) => Promise<GetQuestionType>;
+  getQuiz: (quizID?: number) => Promise<QuizType[]>;
+  getMembersByTeamUUID: (teamUUID: string) => Promise<MemberType[]>;
+  getMemberByUUID: (memberUUID: string) => Promise<MemberType>;
+  getTeamsByQuizID: (quizID: number) => Promise<TeamType[]>;
+  getTeamByUUID: (teamUUID: string) => Promise<TeamType>;
+  getRoundsByQuizID: (quizID: number) => Promise<RoundType[]>;
+  getRoundByUUID: (roundUUID: string) => Promise<RoundType>;
+  getQuestionsByRoundUUID: (roundUUID: string) => Promise<QuestionType[]>;
+  getQuestionByUUID: (questionUUID: string) => Promise<QuestionType>;
 
-  updateQuiz: (quiz: UpdateQuizType) => Promise<void>;
-  updateMember: (member: UpdateMemberType) => Promise<void>;
-  updateTeam: (team: UpdateTeamType) => Promise<void>;
-  updateRound: (round: UpdateRoundType) => Promise<void>;
-  updateQuestion: (question: UpdateQuestionType) => Promise<void>;
+  updateQuiz: (quiz: QuizType) => Promise<void>;
+  updateMember: (member: MemberType) => Promise<void>;
+  updateTeam: (team: TeamType) => Promise<void>;
+  updateRound: (round: RoundType) => Promise<void>;
+  updateQuestion: (question: QuestionType) => Promise<void>;
 
   deleteMember: (memberUUID: string) => Promise<void>;
   deleteTeam: (teamUUID: string) => Promise<void>;

@@ -1,21 +1,11 @@
 import * as schema from "./TableSchema";
 import {
   IHandleDatabase,
-  CreateQuizType,
-  CreateMemberType,
-  CreateTeamType,
-  CreateRoundType,
-  CreateQuestionType,
-  GetQuizType,
-  GetMemberType,
-  GetTeamType,
-  GetRoundType,
-  GetQuestionType,
-  UpdateQuizType,
-  UpdateMemberType,
-  UpdateTeamType,
-  UpdateRoundType,
-  UpdateQuestionType,
+  QuizType,
+  MemberType,
+  TeamType,
+  RoundType,
+  QuestionType,
 } from "./IHandleDatabase";
 import * as mysql from "mysql2/promise";
 import { v4 as uuidv4 } from "uuid";
@@ -47,7 +37,7 @@ export class MySqlDbHandler implements IHandleDatabase {
     return this.instance;
   }
 
-  async createQuiz(quiz: CreateQuizType): Promise<number> {
+  async createQuiz(quiz: QuizType): Promise<number> {
     try {
       const statement =
         `INSERT INTO ${schema.Table.Quiz} ` +
@@ -80,7 +70,7 @@ export class MySqlDbHandler implements IHandleDatabase {
     }
   }
 
-  async createMember(member: CreateMemberType): Promise<string> {
+  async createMember(member: MemberType): Promise<string> {
     try {
       const memberUUID: string = uuidv4();
       const statement =
@@ -106,12 +96,12 @@ export class MySqlDbHandler implements IHandleDatabase {
     }
   }
 
-  async createTeam(team: CreateTeamType): Promise<string> {
+  async createTeam(team: TeamType): Promise<string> {
     try {
       const teamUUID: string = uuidv4();
       const statement =
         `INSERT INTO ${schema.Table.Team} ` +
-        `(${schema.Team.UUID}, ${schema.Team.TeamName}, ${schema.Team.Member1}, ${schema.Team.Member2}, ${schema.Team.Member3}, ${schema.Team.Member4}) ` +
+        `(${schema.Team.UUID}, ${schema.Team.TeamName}, ${schema.Team.Member1UUID}, ${schema.Team.Member2UUID}, ${schema.Team.Member3UUID}, ${schema.Team.Member4UUID}) ` +
         "VALUES (?, ?, ?, ?, ?, ?)";
       const values = [
         teamUUID,
@@ -137,7 +127,7 @@ export class MySqlDbHandler implements IHandleDatabase {
     }
   }
 
-  async createRound(round: CreateRoundType): Promise<string> {
+  async createRound(round: RoundType): Promise<string> {
     try {
       const roundUUID: string = uuidv4();
       const statement =
@@ -173,7 +163,7 @@ export class MySqlDbHandler implements IHandleDatabase {
     }
   }
 
-  async createQuestion(question: CreateQuestionType): Promise<string> {
+  async createQuestion(question: QuestionType): Promise<string> {
     try {
       const questionUUID: string = uuidv4();
 
@@ -214,7 +204,7 @@ export class MySqlDbHandler implements IHandleDatabase {
     }
   }
 
-  async updateQuiz(quiz: UpdateQuizType): Promise<void> {
+  async updateQuiz(quiz: QuizType): Promise<void> {
     let statement = `UPDATE ${schema.Table.Quiz} SET `;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const values: any[] = [];
@@ -314,15 +304,109 @@ export class MySqlDbHandler implements IHandleDatabase {
     }
   }
 
-  async updateMember(member: UpdateMemberType): Promise<void> {
-    throw new Error("Method not implemented: " + JSON.stringify(member));
+  async updateMember(member: MemberType): Promise<void> {
+    let statement = `UPDATE ${schema.Table.Member} SET `;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const values: any[] = [];
+
+    if (member.Surname !== undefined) {
+      statement += `${schema.Member.Surname} = ?,`;
+      values.push(member.Surname);
+    }
+    if (member.Name !== undefined) {
+      statement += `${schema.Member.Name} = ?,`;
+      values.push(member.Name);
+    }
+    if (member.Lastname !== undefined) {
+      statement += `${schema.Member.Lastname} = ?,`;
+      values.push(member.Lastname);
+    }
+
+    if (values.length === 0) {
+      return;
+    }
+
+    statement = statement.slice(0, -1); // Remove the last ','
+
+    statement += " WHERE UUID = ?";
+    values.push(member.UUID);
+
+    const sql = mysql.format(statement, values);
+
+    try {
+      await this.db_conn.execute(sql);
+
+      logger.info(
+        "MySqlDbHandler->updateMember :: Updated member: " +
+          JSON.stringify(member)
+      );
+    } catch (error) {
+      logger.error(
+        "MySqlDbHandler->updateMember :: Failed to update member: " +
+          JSON.stringify(member),
+        error
+      );
+      throw error;
+    }
   }
 
-  async updateTeam(team: UpdateTeamType): Promise<void> {
-    throw new Error("Method not implemented: " + JSON.stringify(team));
+  async updateTeam(team: TeamType): Promise<void> {
+    let statement = `UPDATE ${schema.Table.Team} SET `;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const values: any[] = [];
+
+    if (team.TeamName !== undefined) {
+      statement += `${schema.Team.TeamName} = ?,`;
+      values.push(team.TeamName);
+    }
+    if (team.TotalMark !== undefined) {
+      statement += `${schema.Team.TotalMark} = ?,`;
+      values.push(team.TotalMark);
+    }
+    if (team.Member1UUID !== undefined) {
+      statement += `${schema.Team.Member1UUID} = ?,`;
+      values.push(team.Member1UUID);
+    }
+    if (team.Member2UUID !== undefined) {
+      statement += `${schema.Team.Member2UUID} = ?,`;
+      values.push(team.Member2UUID);
+    }
+    if (team.Member3UUID !== undefined) {
+      statement += `${schema.Team.Member3UUID} = ?,`;
+      values.push(team.Member3UUID);
+    }
+    if (team.Member4UUID !== undefined) {
+      statement += `${schema.Team.Member4UUID} = ?,`;
+      values.push(team.Member4UUID);
+    }
+    if (values.length === 0) {
+      return;
+    }
+
+    statement = statement.slice(0, -1); // Remove the last ','
+
+    statement += " WHERE UUID = ?";
+    values.push(team.UUID);
+
+    const sql = mysql.format(statement, values);
+
+    try {
+      await this.db_conn.execute(sql);
+
+      logger.info(
+        "MySqlDbHandler->updateTeam :: Updated team: " + JSON.stringify(team)
+      );
+    } catch (error) {
+      logger.error(
+        "MySqlDbHandler->updateTeam :: Failed to update team: " +
+          JSON.stringify(team),
+        error
+      );
+      throw error;
+    }
   }
 
-  async updateRound(round: UpdateRoundType): Promise<void> {
+  async updateRound(round: RoundType): Promise<void> {
     let statement = `UPDATE ${schema.Table.Round} SET `;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const values: any[] = [];
@@ -387,7 +471,7 @@ export class MySqlDbHandler implements IHandleDatabase {
     }
   }
 
-  async updateQuestion(question: UpdateQuestionType): Promise<void> {
+  async updateQuestion(question: QuestionType): Promise<void> {
     let statement = `UPDATE ${schema.Table.Question} SET `;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const values: any[] = [];
@@ -466,9 +550,9 @@ export class MySqlDbHandler implements IHandleDatabase {
     }
   }
 
-  async getQuiz(quizID?: number): Promise<GetQuizType[]> {
+  async getQuiz(quizID?: number): Promise<QuizType[]> {
     try {
-      const quizzes: GetQuizType[] = [];
+      const quizzes: QuizType[] = [];
       let sql: string;
       if (quizID) {
         const statement = `SELECT * FROM ${schema.Table.Quiz} WHERE ID = ?`;
@@ -508,10 +592,75 @@ export class MySqlDbHandler implements IHandleDatabase {
     }
   }
 
-  async getTeamsByQuizID(quizID: number): Promise<GetTeamType[]> {
+  async getMembersByTeamUUID(teamUUID: string): Promise<MemberType[]> {
     try {
-      const teams: GetTeamType[] = [];
-      const quiz: GetQuizType = (await this.getQuiz(quizID))[0];
+      const members: MemberType[] = [];
+      const team: TeamType = await this.getTeamByUUID(teamUUID);
+      if (team.Member1UUID) {
+        members.push(await this.getMemberByUUID(team.Member1UUID));
+      }
+      if (team.Member2UUID) {
+        members.push(await this.getMemberByUUID(team.Member2UUID));
+      }
+      if (team.Member3UUID) {
+        members.push(await this.getMemberByUUID(team.Member3UUID));
+      }
+      if (team.Member4UUID) {
+        members.push(await this.getMemberByUUID(team.Member4UUID));
+      }
+
+      logger.info(
+        "MySqlDbHandler->getMembersByTeamUUID :: Read members of team: " +
+          JSON.stringify(members)
+      );
+
+      return members;
+    } catch (error) {
+      logger.error(
+        "MySqlDbHandler->getMembersByTeamUUID :: Failed to read members of team: " +
+          teamUUID,
+        error
+      );
+      throw error;
+    }
+  }
+
+  async getMemberByUUID(memberUUID: string): Promise<MemberType> {
+    try {
+      const statement = `SELECT * FROM ${schema.Table.Member} WHERE UUID = ?`;
+      const values = [memberUUID];
+      const sql = mysql.format(statement, values);
+
+      const [_result] = await this.db_conn.execute(sql);
+      const result = JSON.parse(JSON.stringify(_result));
+
+      const member: MemberType = {
+        UUID: result[0].UUID,
+        Surname: result[0].SURNAME,
+        Name: result[0].NAME,
+        Lastname: result[0].LASTNAME,
+      };
+
+      logger.info(
+        "MySqlDbHandler->getMemberByUUID :: Read member: " +
+          JSON.stringify(member)
+      );
+
+      return member;
+    } catch (error) {
+      logger.error(
+        "MySqlDbHandler->getMemberByUUID :: Failed to read member: " +
+          memberUUID,
+        error
+      );
+      throw error;
+    }
+  }
+
+  async getTeamsByQuizID(quizID: number): Promise<TeamType[]> {
+    try {
+      const teams: TeamType[] = [];
+      const quiz: QuizType = (await this.getQuiz(quizID))[0];
       if (quiz.Team1UUID) {
         teams.push(await this.getTeamByUUID(quiz.Team1UUID));
       }
@@ -541,7 +690,7 @@ export class MySqlDbHandler implements IHandleDatabase {
     }
   }
 
-  async getTeamByUUID(teamUUID: string): Promise<GetTeamType> {
+  async getTeamByUUID(teamUUID: string): Promise<TeamType> {
     try {
       const statement = `SELECT * FROM ${schema.Table.Team} WHERE UUID = ?`;
       const values = [teamUUID];
@@ -550,84 +699,20 @@ export class MySqlDbHandler implements IHandleDatabase {
       const [_result] = await this.db_conn.execute(sql);
       const result = JSON.parse(JSON.stringify(_result));
 
-      const team: GetTeamType = {
+      const team: TeamType = {
         UUID: result[0][schema.Team.UUID],
         TeamName: result[0][schema.Team.TeamName],
-        Member1: {
-          UUID: "",
-          Surname: "",
-          Name: "",
-          Lastname: "",
-        },
-        Member2: {
-          UUID: "",
-          Surname: "",
-          Name: "",
-          Lastname: "",
-        },
-        Member3: {
-          UUID: "",
-          Surname: "",
-          Name: "",
-          Lastname: "",
-        },
-        Member4: {
-          UUID: "",
-          Surname: "",
-          Name: "",
-          Lastname: "",
-        },
+        Member1UUID: result[0][schema.Team.Member1UUID],
+        Member2UUID: result[0][schema.Team.Member2UUID],
+        Member3UUID: result[0][schema.Team.Member3UUID],
+        Member4UUID: result[0][schema.Team.Member4UUID],
+        TotalMark: result[0][schema.Team.TotalMark],
       };
-
-      const memberUUIDs: string[] = [
-        result[0].MEMBER_1_UUID,
-        result[0].MEMBER_2_UUID,
-        result[0].MEMBER_3_UUID,
-        result[0].MEMBER_4_UUID,
-      ];
-
-      const members: GetMemberType[] = [];
-      for (const memberUUID of memberUUIDs) {
-        if (!memberUUID) {
-          break;
-        }
-
-        const statement = `SELECT * FROM ${schema.Table.Member} WHERE UUID = ?`;
-        const values = [memberUUID];
-        const sql = mysql.format(statement, values);
-
-        const [_result] = await this.db_conn.execute(sql);
-        const result = JSON.parse(JSON.stringify(_result));
-
-        const member: GetMemberType = {
-          UUID: result[0].UUID,
-          Surname: result[0].SURNAME,
-          Name: result[0].NAME,
-          Lastname: result[0].LASTNAME,
-        };
-
-        members.push(member);
-      }
-
-      if (members[0]) {
-        team.Member1 = members[0];
-      }
-
-      if (members[1]) {
-        team.Member2 = members[1];
-      }
-
-      if (members[2]) {
-        team.Member3 = members[2];
-      }
-
-      if (members[3]) {
-        team.Member4 = members[3];
-      }
 
       logger.info(
         "MySqlDbHandler->getTeamByUUID :: Read team: " + JSON.stringify(team)
       );
+
       return team;
     } catch (error) {
       logger.error(
@@ -638,9 +723,9 @@ export class MySqlDbHandler implements IHandleDatabase {
     }
   }
 
-  async getRoundsByQuizID(quizID: number): Promise<GetRoundType[]> {
+  async getRoundsByQuizID(quizID: number): Promise<RoundType[]> {
     try {
-      const rounds: GetRoundType[] = [];
+      const rounds: RoundType[] = [];
       const statement = `SELECT * FROM ${schema.Table.Round} WHERE ${schema.Round.QuizID} = ?`;
       const values = [quizID];
       const sql = mysql.format(statement, values);
@@ -678,7 +763,7 @@ export class MySqlDbHandler implements IHandleDatabase {
     }
   }
 
-  async getRoundByUUID(roundUUID: string): Promise<GetRoundType> {
+  async getRoundByUUID(roundUUID: string): Promise<RoundType> {
     try {
       const statement = `SELECT * FROM ${schema.Table.Round} WHERE ${schema.Round.UUID} = ?`;
       const values = [roundUUID];
@@ -687,7 +772,7 @@ export class MySqlDbHandler implements IHandleDatabase {
       const [_result] = await this.db_conn.execute(sql);
       const result = JSON.parse(JSON.stringify(_result));
 
-      const round: GetRoundType = {
+      const round: RoundType = {
         UUID: result[0][schema.Round.UUID],
         QuizID: result[0][schema.Round.UUID],
         RoundName: result[0][schema.Round.UUID],
@@ -714,9 +799,9 @@ export class MySqlDbHandler implements IHandleDatabase {
     }
   }
 
-  async getQuestionsByRoundUUID(roundUUID: string): Promise<GetQuestionType[]> {
+  async getQuestionsByRoundUUID(roundUUID: string): Promise<QuestionType[]> {
     try {
-      const questions: GetQuestionType[] = [];
+      const questions: QuestionType[] = [];
       const statement = `SELECT * FROM ${schema.Table.Question} WHERE ${schema.Question.RoundUUID} = ?`;
       const values = [roundUUID];
       const sql = mysql.format(statement, values);
@@ -765,7 +850,7 @@ export class MySqlDbHandler implements IHandleDatabase {
     }
   }
 
-  async getQuestionByUUID(questionUUID: string): Promise<GetQuestionType> {
+  async getQuestionByUUID(questionUUID: string): Promise<QuestionType> {
     try {
       const statement = `SELECT * FROM ${schema.Table.Question} WHERE ${schema.Question.UUID} = ?`;
       const values = [questionUUID];
@@ -780,7 +865,7 @@ export class MySqlDbHandler implements IHandleDatabase {
         mediaBase64 = Buffer.from(blob).toString("utf-8");
       }
 
-      const question: GetQuestionType = {
+      const question: QuestionType = {
         UUID: result[0][schema.Question.UUID],
         SequenceNumber: result[0][schema.Question.SequenceNumber],
         Description: result[0][schema.Question.Description],
@@ -836,21 +921,21 @@ export class MySqlDbHandler implements IHandleDatabase {
 
   async deleteTeam(teamUUID: string): Promise<void> {
     try {
-      const team: GetTeamType = await this.getTeamByUUID(teamUUID);
-      if (team.Member1.UUID) {
-        await this.deleteMember(team.Member1.UUID);
+      const team: TeamType = await this.getTeamByUUID(teamUUID);
+      if (team.Member1UUID) {
+        await this.deleteMember(team.Member1UUID);
       }
 
-      if (team.Member2.UUID) {
-        await this.deleteMember(team.Member2.UUID);
+      if (team.Member2UUID) {
+        await this.deleteMember(team.Member2UUID);
       }
 
-      if (team.Member3.UUID) {
-        await this.deleteMember(team.Member3.UUID);
+      if (team.Member3UUID) {
+        await this.deleteMember(team.Member3UUID);
       }
 
-      if (team.Member4.UUID) {
-        await this.deleteMember(team.Member4.UUID);
+      if (team.Member4UUID) {
+        await this.deleteMember(team.Member4UUID);
       }
 
       const statement = `DELETE FROM ${schema.Table.Team} WHERE ${schema.Team.UUID} = ?`;

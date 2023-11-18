@@ -62,9 +62,9 @@ export enum Member {
 export enum Team {
   UUID = "UUID",
   TeamName = "TEAM_NAME",
-  Member1 = "MEMBER_1_UUID",
-  Member2 = "MEMBER_2_UUID",
-  Member3 = "MEMBER_3_UUID",
-  Member4 = "MEMBER_4_UUID",
+  Member1UUID = "MEMBER_1_UUID",
+  Member2UUID = "MEMBER_2_UUID",
+  Member3UUID = "MEMBER_3_UUID",
+  Member4UUID = "MEMBER_4_UUID",
   TotalMark = "TOTAL_MARK",
 }
