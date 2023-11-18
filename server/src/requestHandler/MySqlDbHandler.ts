@@ -1,811 +1,871 @@
-import { QuizLifeCycleStatusCode, QuizMasterSchema } from "./constants";
-import { IHandleDatabase, CreateParam, UpdateParam, GetParam } from "./IHandleDatabase";
-import * as mysql from 'mysql2/promise';
-import { v4 as uuidv4 } from 'uuid';
-import assert from 'node:assert';
-import logger from "../logger";
+import * as schema from "./TableSchema";
+import {
+  IHandleDatabase,
+  CreateQuizType,
+  CreateMemberType,
+  CreateTeamType,
+  CreateRoundType,
+  CreateQuestionType,
+  GetQuizType,
+  GetMemberType,
+  GetTeamType,
+  GetRoundType,
+  GetQuestionType,
+  UpdateQuizType,
+  UpdateMemberType,
+  UpdateTeamType,
+  UpdateRoundType,
+  UpdateQuestionType,
+} from "./IHandleDatabase";
+import * as mysql from "mysql2/promise";
+import { v4 as uuidv4 } from "uuid";
+import { logger } from "../logger";
+import dotenv from "dotenv";
 
 export class MySqlDbHandler implements IHandleDatabase {
-    private static instance: MySqlDbHandler;
-    private db_conn!: mysql.Connection;
+  private static instance: MySqlDbHandler;
+  private db_conn!: mysql.Connection;
 
-    static async getInstance(): Promise<IHandleDatabase> {
-        if (!this.instance) {
-            this.instance = new MySqlDbHandler();
+  static async getInstance(): Promise<IHandleDatabase> {
+    if (!this.instance) {
+      this.instance = new MySqlDbHandler();
 
-            require('dotenv').config();
-            const HOST = "localhost"
-            const USER = process.env.MYSQL_USER
-            const PASS = process.env.MYSQL_PASS
-            const DB = process.env.MYSQL_DB
+      dotenv.config();
+      const HOST = "localhost";
+      const USER = process.env.MYSQL_USER;
+      const PASS = process.env.MYSQL_PASS;
+      const DB = process.env.MYSQL_DB;
 
-            this.instance.db_conn = await mysql.createConnection({
-                host: HOST,
-                user: USER,
-                password: PASS,
-                database: DB
-            });
-        }
-
-        return this.instance;
+      this.instance.db_conn = await mysql.createConnection({
+        host: HOST,
+        user: USER,
+        password: PASS,
+        database: DB,
+      });
     }
 
-    async createQuizInstance(param: CreateParam.QuizInstance): Promise<number> {
-        let quizID: number;
+    return this.instance;
+  }
 
-        const statement = "INSERT INTO `QUIZ` (`EVENT_NAME`, `NUM_OF_ROUNDS`, `NUM_OF_TEAMS`, `LIFECYCLE_STATUS`) VALUES (?, ?, ?, ?)";
-        const values = [param.QuizEventName, param.NumberOfRounds, param.NumberOfTeams, QuizLifeCycleStatusCode.Draft];
-        const sql = mysql.format(statement, values);
+  async createQuiz(quiz: CreateQuizType): Promise<number> {
+    try {
+      const statement =
+        `INSERT INTO ${schema.Table.Quiz} ` +
+        `(${schema.Quiz.QuizEventname}, ${schema.Quiz.NumberOfRounds}, ${schema.Quiz.NumberOfTeams}, ${schema.Quiz.LifeycleStatusCode})  ` +
+        "VALUES (?, ?, ?, ?)";
+      const values = [
+        quiz.QuizEventName,
+        quiz.NumberOfRounds,
+        quiz.NumberOfTeams,
+        quiz.LifecycleStatusCode,
+      ];
+      const sql = mysql.format(statement, values);
+      const [result] = await this.db_conn.execute(sql);
 
-        try {
-            let [result, fields] = await this.db_conn.execute(sql);
+      const _result = JSON.parse(JSON.stringify(result));
+      const quizID: number = _result.insertId;
 
-            let _result = JSON.parse(JSON.stringify(result));
-            quizID = _result.insertId;
-            assert(!!quizID);
+      logger.info(
+        "MySqlDbHandler->createQuiz :: Created quiz: " + JSON.stringify(quiz)
+      );
 
-            logger.info(`DbHandlerMySql->createQuizInstance :: Quiz Instance Successfully Created; ID: ${quizID}`);
-        } catch (err) {
-            logger.error("DbHandlerMySql->createQuizInstance :: Failed to Create Quiz Instance");
-            logger.error(err);
-            throw err;
-        }
+      return quizID;
+    } catch (error) {
+      logger.error(
+        "MySqlDbHandler->createQuiz :: Failed to create quiz: " +
+          JSON.stringify(quiz),
+        error
+      );
+      throw error;
+    }
+  }
 
-        return quizID;
+  async createMember(member: CreateMemberType): Promise<string> {
+    try {
+      const memberUUID: string = uuidv4();
+      const statement =
+        `INSERT INTO ${schema.Table.Member} ` +
+        `(${schema.Member.UUID}, ${schema.Member.Surname}, ${schema.Member.Name}, ${schema.Member.Lastname}) ` +
+        "VALUES (?, ?, ?, ?)";
+      const values = [memberUUID, member.Surname, member.Name, member.Lastname];
+      const sql = mysql.format(statement, values);
+      await this.db_conn.execute(sql);
+
+      logger.info(
+        "MySqlDbHandler->createMember :: Created member: " +
+          JSON.stringify(member)
+      );
+      return memberUUID;
+    } catch (error) {
+      logger.error(
+        "MySqlDbHandler->createMember :: Failed to create member: " +
+          JSON.stringify(member),
+        error
+      );
+      throw error;
+    }
+  }
+
+  async createTeam(team: CreateTeamType): Promise<string> {
+    try {
+      const teamUUID: string = uuidv4();
+      const statement =
+        `INSERT INTO ${schema.Table.Team} ` +
+        `(${schema.Team.UUID}, ${schema.Team.TeamName}, ${schema.Team.Member1}, ${schema.Team.Member2}, ${schema.Team.Member3}, ${schema.Team.Member4}) ` +
+        "VALUES (?, ?, ?, ?, ?, ?)";
+      const values = [
+        teamUUID,
+        team.TeamName,
+        team.Member1UUID,
+        team.Member2UUID,
+        team.Member3UUID,
+        team.Member4UUID,
+      ];
+      const sql = mysql.format(statement, values);
+      await this.db_conn.execute(sql);
+      logger.info(
+        "MySqlDbHandler->createTeam :: Created team: " + JSON.stringify(team)
+      );
+      return teamUUID;
+    } catch (error) {
+      logger.error(
+        "MySqlDbHandler->createTeam :: Failed to create team:" +
+          JSON.stringify(team),
+        error
+      );
+      throw error;
+    }
+  }
+
+  async createRound(round: CreateRoundType): Promise<string> {
+    try {
+      const roundUUID: string = uuidv4();
+      const statement =
+        `INSERT INTO ${schema.Table.Round} ` +
+        `(${schema.Round.UUID}, ${schema.Round.QuizID}, ${schema.Round.RoundName}, ${schema.Round.SequenceNumber}, ${schema.Round.NumQuestionsEachTeam}, 
+          ${schema.Round.FullMarkEachQuestion},${schema.Round.IsMCQ},${schema.Round.IsAudioVisualRound},${schema.Round.IsPassable},${schema.Round.TimerSeconds}) ` +
+        "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+      const values = [
+        roundUUID,
+        round.QuizID,
+        round.RoundName,
+        round.SequenceNumber,
+        round.NumQuestionsEachTeam,
+        round.FullMarkEachQuestion,
+        round.IsMCQ,
+        round.IsAudioVisualRound,
+        round.IsPassable,
+        round.TimerSeconds,
+      ];
+      const sql = mysql.format(statement, values);
+      await this.db_conn.execute(sql);
+      logger.info(
+        "MySqlDbHandler->createRound :: Created round: " + JSON.stringify(round)
+      );
+      return roundUUID;
+    } catch (error) {
+      logger.error(
+        "MySqlDbHandler->createRound :: Failed to create round: " +
+          JSON.stringify(round),
+        error
+      );
+      throw error;
+    }
+  }
+
+  async createQuestion(question: CreateQuestionType): Promise<string> {
+    try {
+      const questionUUID: string = uuidv4();
+
+      const statement =
+        `INSERT INTO ${schema.Table.Question} ` +
+        `(${schema.Question.UUID}, ${schema.Question.RoundUUID}, ${schema.Question.SequenceNumber}, ${schema.Question.Description}, ${schema.Question.Option1}, 
+        ${schema.Question.Option2},${schema.Question.Option3},${schema.Question.Option4},${schema.Question.Answer},${schema.Question.MediaBase64}) ` +
+        "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+      const values = [
+        questionUUID,
+        question.RoundUUID,
+        question.SequenceNumber,
+        question.Description,
+        question.Option1,
+        question.Option2,
+        question.Option3,
+        question.Option4,
+        question.Answer,
+        question.MediaBase64,
+      ];
+      const sql = mysql.format(statement, values);
+      await this.db_conn.execute(sql);
+
+      delete question.MediaBase64; // Omit media binary from logging
+
+      logger.info(
+        "MySqlDbHandler->createQuestion :: Created question: " +
+          JSON.stringify(question)
+      );
+      return questionUUID;
+    } catch (error) {
+      logger.error(
+        "MySqlDbHandler->createQuestion :: Failed to create question: " +
+          JSON.stringify(question),
+        error
+      );
+      throw error;
+    }
+  }
+
+  async updateQuiz(quiz: UpdateQuizType): Promise<void> {
+    let statement = `UPDATE ${schema.Table.Quiz} SET `;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const values: any[] = [];
+
+    if (quiz.QuizEventName !== undefined) {
+      statement += `${schema.Quiz.QuizEventname} = ?,`;
+      values.push(quiz.QuizEventName);
     }
 
-    async createMemberInstance(param: CreateParam.MemberInstance): Promise<string> {
-        let memberUUID: string = uuidv4();
-
-        const statement = "INSERT INTO `MEMBER` (`UUID`, `SURNAME`, `NAME`, `LASTNAME`) VALUES (?, ?, ?, ?)";
-        const values = [memberUUID, param.Surname, param.Name, param.Lastname];
-        const sql = mysql.format(statement, values);
-
-        try {
-            let [result, fields] = await this.db_conn.execute(sql);
-
-            let _result = JSON.parse(JSON.stringify(result));
-            assert(_result.affectedRows === 1, "DbHandlerMySql->createMemberInstance :: Failed to Create Member Instance");
-
-            logger.info(`DbHandlerMySql->createMemberInstance :: Member Instance Successfully Created; UUID: ${memberUUID}`);
-        } catch (err) {
-            logger.error(err);
-            throw err;
-        }
-
-        return memberUUID;
+    if (quiz.StartDateTime !== undefined) {
+      statement += `${schema.Quiz.StartDateTime} = ?,`;
+      values.push(quiz.StartDateTime);
     }
 
-    async createTeamInstance(param: CreateParam.TeamInstance): Promise<string> {
-        let teamUUID: string = uuidv4();
-
-        const statement = "INSERT INTO `TEAM` (`UUID`, `TEAM_NAME`, `MEMBER_1_UUID`, `MEMBER_2_UUID`, MEMBER_3_UUID, MEMBER_4_UUID) VALUES (?, ?, ?, ?, ?, ?)";
-        const values = [teamUUID, param.TeamName, param.Member1UUID, param.Member2UUID, param.Member3UUID, param.Member4UUID];
-        const sql = mysql.format(statement, values);
-
-        try {
-            let [result, fields] = await this.db_conn.execute(sql);
-
-            let _result = JSON.parse(JSON.stringify(result));
-            assert(_result.affectedRows === 1, "DbHandlerMySql->createTeamInstance :: Failed to Create Team Instance");
-
-            logger.info(`DbHandlerMySql->createTeamInstance :: Team Instance Successfully Created; UUID: ${teamUUID}`);
-        } catch (err) {
-            logger.error(err);
-            throw err;
-        }
-
-        return teamUUID;
+    if (quiz.EndDateTime !== undefined) {
+      statement += `${schema.Quiz.EndDateTime} = ?,`;
+      values.push(quiz.EndDateTime);
     }
 
-    async createRoundTypeInstance(param: CreateParam.RoundTypeInstance): Promise<string> {
-        const statement = "INSERT IGNORE INTO `ROUND_TYPE` (`ID`, `NAME`, `NUM_Q_EACH_TEAM`, `FULL_MARK_EACH_Q`, `IS_MULTIPLE_CHOICE`, `IS_AUDIO_VISUAL`, `TIMER_SECONDS`, `IS_PASSABLE`) "
-            + "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
-        const values = [param.RoundTypeID, param.RoundTypeName, param.NumQuestionsEachTeam, param.FullMarkEachQuestion, param.IsMCQ, param.IsAVRound, param.TimerSeconds, param.IsPassable];
-        const sql = mysql.format(statement, values);
-
-        try {
-            let [result, fields] = await this.db_conn.execute(sql);
-
-            let _result = JSON.parse(JSON.stringify(result));
-            assert(_result.affectedRows === 1, "DbHandlerMySql->createRoundTypeInstance :: Failed to Create RoundType Instance");
-
-            logger.info(`DbHandlerMySql->createRoundTypeInstance :: RoundType Instance Successfully Created; UUID: ${param.RoundTypeID}`);
-        } catch (err) {
-            logger.error(err);
-            throw err;
-        }
-
-        return param.RoundTypeID;
+    if (quiz.LifecycleStatusCode !== undefined) {
+      statement += `${schema.Quiz.LifeycleStatusCode} = ?,`;
+      values.push(quiz.LifecycleStatusCode);
     }
 
-    async createRoundInstance(param: CreateParam.RoundInstance): Promise<string> {
-        let roundUUID: string = uuidv4();
-
-        const statement = "INSERT INTO `ROUND` (`UUID`, `ROUND_TYPE_ID`, `QUIZ_ID`, `SEQUENCE_NUM`) VALUES (?, ?, ?, ?)";
-        const values = [roundUUID, param.RoundTypeID, param.QuizID, param.SequenceNumber];
-        const sql = mysql.format(statement, values);
-
-        try {
-            let [result, fields] = await this.db_conn.execute(sql);
-
-            let _result = JSON.parse(JSON.stringify(result));
-            assert(_result.affectedRows === 1, "DbHandlerMySql->createRoundInstance :: Failed to Create Round Instance");
-
-            logger.info(`DbHandlerMySql->createRoundInstance :: Round Instance Successfully Created; UUID: ${roundUUID}`);
-        } catch (err) {
-            logger.error(err);
-            throw err;
-        }
-
-        return roundUUID;
+    if (quiz.NumberOfRounds !== undefined) {
+      statement += `${schema.Quiz.NumberOfRounds} = ?,`;
+      values.push(quiz.NumberOfRounds);
     }
 
-    async createQuestionInstance(param: CreateParam.QuestionInstance): Promise<string> {
-        let questionUUID: string = uuidv4();
-
-        const statement = "INSERT INTO `QUESTION` (`UUID`, `DESCRIPTION`, `OPTION_1`, `OPTION_2`, `OPTION_3`, `OPTION_4`, `ANSWER`, "
-            + "`MEDIA_BASE64`, `ROUND_UUID`, `SEQUENCE_NUM`) "
-            + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-        const values = [questionUUID, param.Description, param.Option1, param.Option2, param.Option3, param.Option4, param.Answer, param.MediaBase64, param.RoundUUID, param.SequenceNumber];
-        const sql = mysql.format(statement, values);
-
-        try {
-            let [result, fields] = await this.db_conn.execute(sql);
-
-            let _result = JSON.parse(JSON.stringify(result));
-
-            delete param.MediaBase64; // omit media binary from logging
-
-            assert(_result.affectedRows === 1, "DbHandlerMySql->createQuestionInstance :: Failed to Create Question Instance");
-
-            logger.info(`DbHandlerMySql->createQuestionInstance :: Question Instance ${questionUUID} Successfully Created: ${JSON.stringify(param)}`);
-        } catch (err) {
-            logger.error(err);
-            throw err;
-        }
-
-        return questionUUID;
+    if (quiz.NumberOfTeams !== undefined) {
+      statement += `${schema.Quiz.NumberOfTeams} = ?,`;
+      values.push(quiz.NumberOfTeams);
     }
 
-    async updateQuizInstance(quizID: number, param: UpdateParam.QuizInstance): Promise<void> {
-
-        let statement = "UPDATE QUIZ SET ";
-        let values: any = [];
-
-        if (param?.QuizEventName !== undefined) {
-            statement += `${QuizMasterSchema.Quiz.QuizEventname} = ?,`;
-            values.push(param.QuizEventName);
-        }
-
-        if (param?.StartDate !== undefined) {
-            statement += `${QuizMasterSchema.Quiz.StartDateTime} = ?,`;
-            values.push(param.StartDate);
-        }
-
-        if (param?.EndDate !== undefined) {
-            statement += `${QuizMasterSchema.Quiz.EndDateTime} = ?,`;
-            values.push(param.EndDate);
-        }
-
-        if (param?.LifecycleStatusCode !== undefined) {
-            statement += `${QuizMasterSchema.Quiz.LifeycleStatusCode} = ?,`;
-            values.push(param.LifecycleStatusCode);
-        }
-
-        if (param?.NumberOfRounds !== undefined) {
-            statement += `${QuizMasterSchema.Quiz.NumberOfRounds} = ?,`;
-            values.push(param.NumberOfRounds);
-        }
-
-        if (param?.NumberOfTeams !== undefined) {
-            statement += `${QuizMasterSchema.Quiz.NumberOfTeams} = ?,`;
-            values.push(param.NumberOfTeams);
-        }
-
-        if (param?.CurrentRoundSeq !== undefined) {
-            statement += `${QuizMasterSchema.Quiz.CurrentRoundSeq} = ?,`;
-            values.push(param.CurrentRoundSeq);
-        }
-
-        if (param?.CurrentQuestionSeq !== undefined) {
-            statement += `${QuizMasterSchema.Quiz.CurrentQuestionSeq} = ?,`;
-            values.push(param.CurrentQuestionSeq);
-        }
-
-        if (param?.Team1UUID !== undefined) {
-            statement += `${QuizMasterSchema.Quiz.Team1UUID} = ?,`;
-            values.push(param.Team1UUID);
-        }
-
-        if (param?.Team2UUID !== undefined) {
-            statement += `${QuizMasterSchema.Quiz.Team2UUID} = ?,`;
-            values.push(param.Team2UUID);
-        }
-
-        if (param?.Team3UUID !== undefined) {
-            statement += `${QuizMasterSchema.Quiz.Team3UUID} = ?,`;
-            values.push(param.Team3UUID);
-        }
-
-        if (param?.Team4UUID !== undefined) {
-            statement += `${QuizMasterSchema.Quiz.Team4UUID} = ?,`;
-            values.push(param.Team4UUID);
-        }
-
-        if (values.length === 0) {
-            logger.info(`DbHandlerMySql->updateQuizInstance :: No Value Passed to Update Quiz: ${quizID}`);
-            return;
-        }
-
-        statement = statement.slice(0, -1); // remove the last ','
-
-        statement += " WHERE ID = ?";
-        values.push(quizID);
-
-        const sql = mysql.format(statement, values);
-
-        try {
-            let [result, fields] = await this.db_conn.execute(sql);
-
-            let _result = JSON.parse(JSON.stringify(result));
-            assert(_result.affectedRows === 1, `DbHandlerMySql->updateQuizInstance :: Failed to Update Quiz ${quizID}: ${JSON.stringify(param)}`);
-
-            logger.info(`DbHandlerMySql->updateQuizInstance :: Quiz ${quizID} Updated: ${JSON.stringify(param)}`);
-        } catch (err) {
-            logger.error(err);
-            throw err;
-        }
-
-        return;
+    if (quiz.CurrentRoundSeq !== undefined) {
+      statement += `${schema.Quiz.CurrentRoundSeq} = ?,`;
+      values.push(quiz.CurrentRoundSeq);
     }
 
-    async updateMemberInstance(param: UpdateParam.MemberInstance): Promise<void> {
-        throw new Error("Method not implemented.");
-    }
-    async updateTeamInstance(param: UpdateParam.TeamInstance): Promise<void> {
-        throw new Error("Method not implemented.");
+    if (quiz.CurrentQuestionSeq !== undefined) {
+      statement += `${schema.Quiz.CurrentQuestionSeq} = ?,`;
+      values.push(quiz.CurrentQuestionSeq);
     }
 
-    async updateRoundInstance(roundUUID: string, param: UpdateParam.RoundInstance): Promise<void> {
-        let statement = "UPDATE ROUND SET ";
-        let values: any = [];
-
-        if (param?.RoundTypeID !== undefined) {
-            statement += `${QuizMasterSchema.Round.RoundTypeID} = ?,`;
-            values.push(param.RoundTypeID);
-        }
-
-        if (param?.SequenceNumber !== undefined) {
-            statement += `${QuizMasterSchema.Round.SequenceNumber} = ?,`;
-            values.push(param.SequenceNumber);
-        }
-
-        if (values.length === 0) {
-            logger.info(`DbHandlerMySql->updateRoundInstance :: No Value Passed to Update Round: ${roundUUID}`);
-            return;
-        }
-
-        statement = statement.slice(0, -1); // remove the last ','
-
-        statement += " WHERE UUID = ?";
-        values.push(roundUUID);
-
-        const sql = mysql.format(statement, values);
-
-        try {
-            let [result, fields] = await this.db_conn.execute(sql);
-
-            let _result = JSON.parse(JSON.stringify(result));
-            assert(_result.affectedRows === 1, `DbHandlerMySql->updateRoundInstance :: Failed to Update Round ${roundUUID}: ${JSON.stringify(param)}`);
-
-            logger.info(`DbHandlerMySql->updateRoundInstance :: Round ${roundUUID} Updated: ${JSON.stringify(param)}`);
-        } catch (err) {
-            logger.error(err);
-            throw err;
-        }
-
-        return;
+    if (quiz.Team1UUID !== undefined) {
+      statement += `${schema.Quiz.Team1UUID} = ?,`;
+      values.push(quiz.Team1UUID);
     }
 
-    async updateQuestionInstance(questionUUID: string, param: UpdateParam.QuestionInstance): Promise<void> {
-        let statement = "UPDATE QUESTION SET ";
-        let values: any = [];
-
-        if (param?.Description !== undefined) {
-            statement += `${QuizMasterSchema.Question.Description} = ?,`;
-            values.push(param.Description);
-        }
-
-        if (param?.Option1 !== undefined) {
-            statement += `${QuizMasterSchema.Question.Option1} = ?,`;
-            values.push(param.Option1);
-        }
-
-        if (param?.Option2 !== undefined) {
-            statement += `${QuizMasterSchema.Question.Option2} = ?,`;
-            values.push(param.Option2);
-        }
-
-        if (param?.Option3 !== undefined) {
-            statement += `${QuizMasterSchema.Question.Option3} = ?,`;
-            values.push(param.Option3);
-        }
-
-        if (param?.Option4 !== undefined) {
-            statement += `${QuizMasterSchema.Question.Option4} = ?,`;
-            values.push(param.Option4);
-        }
-
-        if (param?.Answer !== undefined) {
-            statement += `${QuizMasterSchema.Question.Answer} = ?,`;
-            values.push(param.Answer);
-        }
-
-        if (param?.MediaBase64 !== undefined) {
-            statement += `${QuizMasterSchema.Question.MediaBase64} = ?,`;
-            values.push(param.MediaBase64);
-        }
-
-        if (param?.TargetTeamUUID !== undefined) {
-            statement += `${QuizMasterSchema.Question.TargetTeamUUID} = ?,`;
-            values.push(param.TargetTeamUUID);
-        }
-
-        if (param?.ActualTeamUUID !== undefined) {
-            statement += `${QuizMasterSchema.Question.ActualTeamUUID} = ?,`;
-            values.push(param.ActualTeamUUID);
-        }
-
-        if (param?.AnswerGiven !== undefined) {
-            statement += `${QuizMasterSchema.Question.AnswerGiven} = ?,`;
-            values.push(param.AnswerGiven);
-        }
-
-        if (param?.ActualMarkGiven !== undefined) {
-            statement += `${QuizMasterSchema.Question.ActualMarkGiven} = ?,`;
-            values.push(param.ActualMarkGiven);
-        }
-
-        if (values.length === 0) {
-            logger.info(`DbHandlerMySql->updateQuestionInstance :: No Value Passed to Update Question: ${questionUUID}`);
-            return;
-        }
-
-        statement = statement.slice(0, -1); // remove the last ','
-
-        statement += " WHERE UUID = ?";
-        values.push(questionUUID);
-
-        const sql = mysql.format(statement, values);
-
-        try {
-            let [result, fields] = await this.db_conn.execute(sql);
-
-            let _result = JSON.parse(JSON.stringify(result));
-
-            delete param.MediaBase64; // omit from logging
-
-            assert(_result.affectedRows === 1, `DbHandlerMySql->updateQuestionInstance :: Failed to Update Question ${questionUUID}: ${JSON.stringify(param)}`);
-
-            logger.info(`DbHandlerMySql->updateQuestionInstance :: Question ${questionUUID} Updated: ${JSON.stringify(param)}`);
-        } catch (err) {
-            logger.error(err);
-            throw err;
-        }
-
-        return;
+    if (quiz.Team2UUID !== undefined) {
+      statement += `${schema.Quiz.Team2UUID} = ?,`;
+      values.push(quiz.Team2UUID);
     }
 
-    async getRoundTypes(): Promise<GetParam.RoundType[]> {
-        const roundTypes: GetParam.RoundType[] = [];
-        const statement: string = "SELECT * FROM ROUND_TYPE";
-
-        try {
-            let [result, fields] = await this.db_conn.execute(statement);
-            let _result = JSON.parse(JSON.stringify(result));
-
-            for (let eachRoundType of _result) {
-                const roundType: GetParam.RoundType = {
-                    RoundTypeID: eachRoundType.ID,
-                    RoundTypeName: eachRoundType.NAME,
-                    NumQuestionsEachTeam: eachRoundType.NUM_Q_EACH_TEAM,
-                    FullMarkEachQuestion: eachRoundType.FULL_MARK_EACH_Q,
-                    IsMCQ: eachRoundType.IS_MULTIPLE_CHOICE,
-                    IsAVRound: eachRoundType.IS_AUDIO_VISUAL,
-                    IsPassable: eachRoundType.IS_PASSABLE,
-                    TimerSeconds: eachRoundType.TIMER_SECONDS
-                }
-                roundTypes.push(roundType);
-            }
-
-            logger.info(`DbHandlerMySql->getRoundTypes :: Round Types Returned: ${roundTypes.length}`);
-        } catch (err) {
-            logger.error(`DbHandlerMySql->getRoundTypes :: Failed to Return Round Types`, err);
-            throw err;
-        }
-        return roundTypes;
+    if (quiz.Team3UUID !== undefined) {
+      statement += `${schema.Quiz.Team3UUID} = ?,`;
+      values.push(quiz.Team3UUID);
     }
 
-    async getRoundTypeByID(roundTypeID: string): Promise<GetParam.RoundType> {
-        let roundType: GetParam.RoundType;
-        const statement: string = "SELECT * FROM ROUND_TYPE WHERE ID = ?";
-        const values = [roundTypeID];
-        const sql = mysql.format(statement, values);
-
-        try {
-            let [result, fields] = await this.db_conn.execute(sql);
-            let _result = JSON.parse(JSON.stringify(result));
-
-            assert(_result.length === 1, `DbHandlerMySql->getRoundTypeByID :: Failed to Return Round Type by ID`);
-
-            roundType = {
-                RoundTypeID: _result[0].ID,
-                RoundTypeName: _result[0].NAME,
-                NumQuestionsEachTeam: _result[0].NUM_Q_EACH_TEAM,
-                FullMarkEachQuestion: _result[0].FULL_MARK_EACH_Q,
-                IsMCQ: _result[0].IS_MULTIPLE_CHOICE,
-                IsAVRound: _result[0].IS_AUDIO_VISUAL,
-                IsPassable: _result[0].IS_PASSABLE,
-                TimerSeconds: _result[0].TIMER_SECONDS
-            }
-
-            logger.info(`DbHandlerMySql->getRoundTypeByID :: Round Type by ID Returned: ${roundType.RoundTypeID}`);
-        } catch (err) {
-            logger.error(err);
-            throw err;
-        }
-        return roundType;
+    if (quiz.Team4UUID !== undefined) {
+      statement += `${schema.Quiz.Team4UUID} = ?,`;
+      values.push(quiz.Team4UUID);
     }
 
-    async getRoundsByQuizID(quizID: number): Promise<GetParam.Round[]> {
-        const rounds: GetParam.Round[] = [];
-        const statement: string = "SELECT * FROM ROUND WHERE QUIZ_ID = ?";
+    if (values.length === 0) {
+      return;
+    }
+
+    statement = statement.slice(0, -1); // Remove the last ','
+
+    statement += " WHERE ID = ?";
+    values.push(quiz.ID);
+
+    const sql = mysql.format(statement, values);
+
+    try {
+      await this.db_conn.execute(sql);
+
+      // const [result] = await this.db_conn.execute(sql);
+      // const _result = JSON.parse(JSON.stringify(result));
+      // assert(
+      //   _result.affectedRows === 1,
+      //   "MySqlDbHandler->updateQuiz :: Failed to update Quiz: " +
+      //     JSON.stringify(quiz)
+      // );
+
+      logger.info(
+        "MySqlDbHandler->updateQuiz :: Updated quiz: " + JSON.stringify(quiz)
+      );
+    } catch (error) {
+      logger.error(
+        "MySqlDbHandler->updateQuiz :: Failed to update Quiz: " +
+          JSON.stringify(quiz),
+        error
+      );
+      throw error;
+    }
+  }
+
+  async updateMember(member: UpdateMemberType): Promise<void> {
+    throw new Error("Method not implemented: " + JSON.stringify(member));
+  }
+
+  async updateTeam(team: UpdateTeamType): Promise<void> {
+    throw new Error("Method not implemented: " + JSON.stringify(team));
+  }
+
+  async updateRound(round: UpdateRoundType): Promise<void> {
+    let statement = `UPDATE ${schema.Table.Round} SET `;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const values: any[] = [];
+
+    if (round.RoundName !== undefined) {
+      statement += `${schema.Round.RoundName} = ?,`;
+      values.push(round.RoundName);
+    }
+    if (round.SequenceNumber !== undefined) {
+      statement += `${schema.Round.SequenceNumber} = ?,`;
+      values.push(round.SequenceNumber);
+    }
+    if (round.NumQuestionsEachTeam !== undefined) {
+      statement += `${schema.Round.NumQuestionsEachTeam} = ?,`;
+      values.push(round.NumQuestionsEachTeam);
+    }
+    if (round.FullMarkEachQuestion !== undefined) {
+      statement += `${schema.Round.FullMarkEachQuestion} = ?,`;
+      values.push(round.FullMarkEachQuestion);
+    }
+    if (round.IsMCQ !== undefined) {
+      statement += `${schema.Round.IsMCQ} = ?,`;
+      values.push(round.IsMCQ);
+    }
+    if (round.IsAudioVisualRound !== undefined) {
+      statement += `${schema.Round.IsAudioVisualRound} = ?,`;
+      values.push(round.IsAudioVisualRound);
+    }
+    if (round.IsPassable !== undefined) {
+      statement += `${schema.Round.IsPassable} = ?,`;
+      values.push(round.IsPassable);
+    }
+    if (round.TimerSeconds !== undefined) {
+      statement += `${schema.Round.TimerSeconds} = ?,`;
+      values.push(round.TimerSeconds);
+    }
+
+    if (values.length === 0) {
+      return;
+    }
+
+    statement = statement.slice(0, -1); // Remove the last ','
+
+    statement += " WHERE UUID = ?";
+    values.push(round.UUID);
+
+    const sql = mysql.format(statement, values);
+
+    try {
+      await this.db_conn.execute(sql);
+
+      logger.info(
+        "MySqlDbHandler->updateRound :: Updated round: " + JSON.stringify(round)
+      );
+    } catch (error) {
+      logger.error(
+        "MySqlDbHandler->updateRound :: Failed to update round: " +
+          JSON.stringify(round),
+        error
+      );
+      throw error;
+    }
+  }
+
+  async updateQuestion(question: UpdateQuestionType): Promise<void> {
+    let statement = `UPDATE ${schema.Table.Question} SET `;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const values: any[] = [];
+
+    if (question.Description !== undefined) {
+      statement += `${schema.Question.Description} = ?,`;
+      values.push(question.Description);
+    }
+    if (question.Option1 !== undefined) {
+      statement += `${schema.Question.Option1} = ?,`;
+      values.push(question.Option1);
+    }
+    if (question.Option2 !== undefined) {
+      statement += `${schema.Question.Option2} = ?,`;
+      values.push(question.Option2);
+    }
+    if (question.Option3 !== undefined) {
+      statement += `${schema.Question.Option3} = ?,`;
+      values.push(question.Option3);
+    }
+    if (question.Option4 !== undefined) {
+      statement += `${schema.Question.Option4} = ?,`;
+      values.push(question.Option4);
+    }
+    if (question.Answer !== undefined) {
+      statement += `${schema.Question.Answer} = ?,`;
+      values.push(question.Answer);
+    }
+    if (question.MediaBase64 !== undefined) {
+      statement += `${schema.Question.MediaBase64} = ?,`;
+      values.push(question.MediaBase64);
+    }
+    if (question.TargetTeamUUID !== undefined) {
+      statement += `${schema.Question.TargetTeamUUID} = ?,`;
+      values.push(question.TargetTeamUUID);
+    }
+    if (question.ActualTeamUUID !== undefined) {
+      statement += `${schema.Question.ActualTeamUUID} = ?,`;
+      values.push(question.ActualTeamUUID);
+    }
+    if (question.ActualMarkGiven !== undefined) {
+      statement += `${schema.Question.ActualMarkGiven} = ?,`;
+      values.push(question.ActualMarkGiven);
+    }
+    if (question.AnswerGiven !== undefined) {
+      statement += `${schema.Question.AnswerGiven} = ?,`;
+      values.push(question.AnswerGiven);
+    }
+
+    if (values.length === 0) {
+      return;
+    }
+
+    statement = statement.slice(0, -1); // Remove the last ','
+
+    statement += " WHERE UUID = ?";
+    values.push(question.UUID);
+
+    const sql = mysql.format(statement, values);
+
+    try {
+      await this.db_conn.execute(sql);
+      delete question.MediaBase64; // Omit from logging
+
+      logger.info(
+        "MySqlDbHandler->updateQuestion :: Updated question: " +
+          JSON.stringify(question)
+      );
+    } catch (error) {
+      logger.error(
+        "MySqlDbHandler->updateQuestion :: Failed to update question: " +
+          JSON.stringify(question),
+        error
+      );
+      throw error;
+    }
+  }
+
+  async getQuiz(quizID?: number): Promise<GetQuizType[]> {
+    try {
+      const quizzes: GetQuizType[] = [];
+      let sql: string;
+      if (quizID) {
+        const statement = `SELECT * FROM ${schema.Table.Quiz} WHERE ID = ?`;
         const values = [quizID];
-        const sql = mysql.format(statement, values);
+        sql = mysql.format(statement, values);
+      } else {
+        sql = `SELECT * FROM ${schema.Table.Quiz}`;
+      }
+      const [_result] = await this.db_conn.execute(sql);
+      const result = JSON.parse(JSON.stringify(_result));
 
-        try {
-            let [result, fields] = await this.db_conn.execute(sql);
-            let _result = JSON.parse(JSON.stringify(result));
-
-            // assert(_result.length > 0, `DbHandlerMySql->getRoundsByQuizID :: Failed to Return Rounds`); There can be quiz with no rounds created yet
-
-            for (let eachRound of _result) {
-                const round: GetParam.Round = {
-                    UUID: eachRound.UUID,
-                    QuizID: eachRound[QuizMasterSchema.Round.QuizID],
-                    RoundTypeID: eachRound.ROUND_TYPE_ID,
-                    SequenceNumber: eachRound.SEQUENCE_NUM
-                }
-                rounds.push(round);
-            }
-
-            logger.info(`DbHandlerMySql->getRoundsByQuizID :: ${rounds.length} Rounds Returned for Quiz: ${quizID}`);
-        } catch (err) {
-            logger.error(err);
-            throw err;
-        }
-        return rounds;
+      for (const quiz of result) {
+        quizzes.push({
+          ID: quiz[schema.Quiz.QuizID],
+          QuizEventName: quiz[schema.Quiz.QuizEventname],
+          StartDateTime: quiz[schema.Quiz.StartDateTime],
+          EndDateTime: quiz[schema.Quiz.EndDateTime],
+          LifecycleStatusCode: quiz[schema.Quiz.LifeycleStatusCode],
+          NumberOfRounds: quiz[schema.Quiz.NumberOfRounds],
+          NumberOfTeams: quiz[schema.Quiz.NumberOfTeams],
+          CurrentRoundSeq: quiz[schema.Quiz.CurrentRoundSeq],
+          CurrentQuestionSeq: quiz[schema.Quiz.CurrentQuestionSeq],
+          Team1UUID: quiz[schema.Quiz.Team1UUID],
+          Team2UUID: quiz[schema.Quiz.Team2UUID],
+          Team3UUID: quiz[schema.Quiz.Team2UUID],
+          Team4UUID: quiz[schema.Quiz.Team4UUID],
+        });
+      }
+      logger.info("MySqlDbHandler->getQuiz :: Read quiz: " + quizzes.length);
+      return quizzes;
+    } catch (error) {
+      logger.error(
+        "MySqlDbHandler->getQuiz :: Failed to read quiz: " + quizID,
+        error
+      );
+      throw error;
     }
+  }
 
-    async getQuizByID(quizID: number): Promise<GetParam.Quiz> {
-        let quiz: GetParam.Quiz;
+  async getTeamsByQuizID(quizID: number): Promise<GetTeamType[]> {
+    try {
+      const teams: GetTeamType[] = [];
+      const quiz: GetQuizType = (await this.getQuiz(quizID))[0];
+      if (quiz.Team1UUID) {
+        teams.push(await this.getTeamByUUID(quiz.Team1UUID));
+      }
+      if (quiz.Team2UUID) {
+        teams.push(await this.getTeamByUUID(quiz.Team2UUID));
+      }
+      if (quiz.Team3UUID) {
+        teams.push(await this.getTeamByUUID(quiz.Team3UUID));
+      }
+      if (quiz.Team4UUID) {
+        teams.push(await this.getTeamByUUID(quiz.Team4UUID));
+      }
 
-        try {
-            const statement: string = "SELECT * FROM QUIZ WHERE ID = ?";
-            const values = [quizID];
-            const sql = mysql.format(statement, values);
+      logger.info(
+        "MySqlDbHandler->getTeamsByQuizID :: Read teams of quiz: " +
+          JSON.stringify(teams)
+      );
 
-            let [result, fields] = await this.db_conn.execute(sql);
-            let _result = JSON.parse(JSON.stringify(result));
-
-            assert(_result.length === 1, `DbHandlerMySql->getQuizByID :: Failed to Return Quiz ID ${quizID}`);
-
-            quiz = {
-                QuizEventID: _result[0].ID,
-                QuizEventname: _result[0].EVENT_NAME,
-                LifeycleStatusCode: _result[0].LIFECYCLE_STATUS,
-                NumberOfRounds: _result[0].NUM_OF_ROUNDS,
-                NumberOfTeams: _result[0].NUM_OF_TEAMS,
-            } as GetParam.Quiz;
-
-            if (!!_result[0].START_DATE_TIME) {
-                quiz.StartDateTime = new Date(_result[0].START_DATE_TIME);
-            }
-            if (!!_result[0].END_DATE_TIME) {
-                quiz.EndDateTime = new Date(_result[0].END_DATE_TIME);
-            }
-            if (!!_result[0].CURR_ROUND_SEQ_NUM) {
-                quiz.CurrentRoundSeq = _result[0].CURR_ROUND_SEQ_NUM;
-            }
-            if (!!_result[0].CURR_QUESTION_SEQ_NUM) {
-                quiz.CurrentQuestionSeq = _result[0].CURR_QUESTION_SEQ_NUM;
-            }
-            if (!!_result[0].TEAM_1_UUID) {
-                quiz.Team1UUID = _result[0].TEAM_1_UUID;
-            }
-            if (!!_result[0].TEAM_2_UUID) {
-                quiz.Team2UUID = _result[0].TEAM_2_UUID;
-            }
-            if (!!_result[0].TEAM_3_UUID) {
-                quiz.Team3UUID = _result[0].TEAM_3_UUID;
-            }
-            if (!!_result[0].TEAM_4_UUID) {
-                quiz.Team4UUID = _result[0].TEAM_4_UUID;
-            }
-
-            logger.info(`DbHandlerMySql->getQuizByID :: Quiz Returned: ${quiz.QuizEventname}`);
-
-        } catch (err) {
-            logger.error(err);
-            throw err;
-        }
-
-        return quiz;
+      return teams;
+    } catch (error) {
+      logger.error(
+        "MySqlDbHandler->getTeamsByQuizID :: Failed to read teams of quiz: " +
+          quizID,
+        error
+      );
+      throw error;
     }
+  }
 
-    async getAllQuizzes(): Promise<GetParam.Quiz[]> {
-        const quizzes: GetParam.Quiz[] = [];
-        let quiz: GetParam.Quiz = {} as GetParam.Quiz;
+  async getTeamByUUID(teamUUID: string): Promise<GetTeamType> {
+    try {
+      const statement = `SELECT * FROM ${schema.Table.Team} WHERE UUID = ?`;
+      const values = [teamUUID];
+      const sql = mysql.format(statement, values);
 
-        try {
-            const sql: string = "SELECT * FROM QUIZ";
+      const [_result] = await this.db_conn.execute(sql);
+      const result = JSON.parse(JSON.stringify(_result));
 
-            let [result, fields] = await this.db_conn.execute(sql);
-            let _result = JSON.parse(JSON.stringify(result));
+      const team: GetTeamType = {
+        UUID: result[0][schema.Team.UUID],
+        TeamName: result[0][schema.Team.TeamName],
+        Member1: {
+          UUID: "",
+          Surname: "",
+          Name: "",
+          Lastname: "",
+        },
+        Member2: {
+          UUID: "",
+          Surname: "",
+          Name: "",
+          Lastname: "",
+        },
+        Member3: {
+          UUID: "",
+          Surname: "",
+          Name: "",
+          Lastname: "",
+        },
+        Member4: {
+          UUID: "",
+          Surname: "",
+          Name: "",
+          Lastname: "",
+        },
+      };
 
-            for (let entry of _result) {
-                quiz = {
-                    QuizEventID: entry[QuizMasterSchema.Quiz.QuizID],
-                    QuizEventname: entry[QuizMasterSchema.Quiz.QuizEventname],
-                    StartDateTime: entry[QuizMasterSchema.Quiz.StartDateTime],
-                    EndDateTime: entry[QuizMasterSchema.Quiz.EndDateTime],
-                    LifeycleStatusCode: entry[QuizMasterSchema.Quiz.LifeycleStatusCode],
-                    NumberOfRounds: entry[QuizMasterSchema.Quiz.NumberOfRounds],
-                    NumberOfTeams: entry[QuizMasterSchema.Quiz.NumberOfTeams],
-                    CurrentRoundSeq: entry[QuizMasterSchema.Quiz.CurrentRoundSeq],
-                    CurrentQuestionSeq: entry[QuizMasterSchema.Quiz.CurrentQuestionSeq],
-                    Team1UUID: entry[QuizMasterSchema.Quiz.Team1UUID],
-                    Team2UUID: entry[QuizMasterSchema.Quiz.Team2UUID],
-                    Team3UUID: entry[QuizMasterSchema.Quiz.Team2UUID],
-                    Team4UUID: entry[QuizMasterSchema.Quiz.Team4UUID]
+      const memberUUIDs: string[] = [
+        result[0].MEMBER_1_UUID,
+        result[0].MEMBER_2_UUID,
+        result[0].MEMBER_3_UUID,
+        result[0].MEMBER_4_UUID,
+      ];
 
-                };
-                quizzes.push(quiz);
-            }
-
-            logger.info(`DbHandlerMySql->getAllQuizzes :: Quizzes Returned: ${quizzes.length}`);
-
-        } catch (err) {
-            logger.error(err);
-            throw err;
-        }
-
-        return quizzes;
-    }
-
-    async getTeamByUUID(teamUUID: string): Promise<GetParam.Team> {
-        let team: GetParam.Team;
-
-        try {
-            const statement: string = "SELECT * FROM TEAM WHERE UUID = ?";
-            const values = [teamUUID];
-            const sql = mysql.format(statement, values);
-
-            let [result, fields] = await this.db_conn.execute(sql);
-            let _result = JSON.parse(JSON.stringify(result));
-
-            assert(_result.length === 1, `DbHandlerMySql->getTeamByUUID :: Failed to Return Team UUID ${teamUUID}`);
-
-            team = {
-                UUID: _result[0][QuizMasterSchema.Team.UUID],
-                TeamName: _result[0].TEAM_NAME,
-                Member1: {
-                    UUID: '',
-                    Surname: '',
-                    Name: '',
-                    Lastname: ''
-                },
-                Member2: {
-                    UUID: '',
-                    Surname: '',
-                    Name: '',
-                    Lastname: ''
-                },
-                Member3: {
-                    UUID: '',
-                    Surname: '',
-                    Name: '',
-                    Lastname: ''
-                },
-                Member4: {
-                    UUID: '',
-                    Surname: '',
-                    Name: '',
-                    Lastname: ''
-                },
-            };
-
-            let memberUUIDs = [_result[0].MEMBER_1_UUID, _result[0].MEMBER_2_UUID, _result[0].MEMBER_3_UUID, _result[0].MEMBER_4_UUID];
-            let members: GetParam.Member[] = [];
-
-            for (let memberUUID of memberUUIDs) {
-                if (!memberUUID) {
-                    break;
-                }
-                const statement: string = "SELECT * FROM MEMBER WHERE UUID = ?";
-                const values = [memberUUID];
-                const sql = mysql.format(statement, values);
-
-                let [result, fields] = await this.db_conn.execute(sql);
-                let _result = JSON.parse(JSON.stringify(result));
-
-                assert(_result.length === 1, `DbHandlerMySql->getTeamByUUID :: Failed to Return Member UUID ${memberUUID}`);
-
-                let member: GetParam.Member = {
-                    UUID: _result[0].UUID,
-                    Surname: _result[0].SURNAME,
-                    Name: _result[0].NAME,
-                    Lastname: _result[0].LASTNAME
-                }
-
-                members.push(member)
-            }
-
-            if (!!members[0]) {
-                team.Member1 = members[0];
-            }
-
-            if (!!members[1]) {
-                team.Member2 = members[1];
-            }
-
-            if (!!members[2]) {
-                team.Member3 = members[2];
-            }
-
-            if (!!members[3]) {
-                team.Member4 = members[3];
-            }
-
-            logger.info(`DbHandlerMySql->getTeamByUUID :: Team Returned: ${team.TeamName}`);
-
-        } catch (err) {
-            logger.error(err);
-            throw err;
+      const members: GetMemberType[] = [];
+      for (const memberUUID of memberUUIDs) {
+        if (!memberUUID) {
+          break;
         }
 
-        return team;
-    }
-
-    async getQuestionsByRoundUUID(roundUUID: string): Promise<GetParam.Question[]> {
-        const questions: GetParam.Question[] = [];
-        try {
-            const statement: string = "SELECT * FROM QUESTION WHERE ROUND_UUID = ?";
-            const values = [roundUUID];
-            const sql = mysql.format(statement, values);
-
-            let [result, fields] = await this.db_conn.execute(sql);
-            let _result = JSON.parse(JSON.stringify(result));
-
-            for (let _question of _result) {
-                const blob = _question[QuizMasterSchema.Question.MediaBase64];
-                let mediaBase64 = null;
-                if (blob !== null) {
-                    mediaBase64 = Buffer.from(blob).toString('utf-8');
-                }
-
-                const question: GetParam.Question = {
-                    UUID: _question.UUID,
-                    RoundUUID: _question.ROUND_UUID,
-                    SequenceNumber: _question.SEQUENCE_NUM,
-                    Description: _question.DESCRIPTION,
-                    Answer: _question.ANSWER,
-                    Option1: _question.OPTION_1,
-                    Option2: _question.OPTION_2,
-                    Option3: _question.OPTION_3,
-                    Option4: _question.OPTION_4,
-                    MediaBase64: mediaBase64,
-                    TargetTeamUUID: _question.TARGET_TEAM_UUID,
-                    ActualTeamUUID: _question.ACTUAL_TEAM_UUID,
-                    AnswerGiven: _question.ANSWER_GIVEN,
-                    ActualMarkGiven: _question.ACTUAL_MARK_GIVEN
-                }
-                questions.push(question);
-            }
-
-            if (questions.length) {
-                logger.info(`DbHandlerMySql->getQuestionsByRoundUUID :: ${questions.length} Questions Returned for Round: ${roundUUID}`);
-            } else {
-                logger.info(`DbHandlerMySql->getQuestionsByRoundUUID :: No Question Found For Round UUID: ${roundUUID}`);
-            }
-
-        } catch (err) {
-            logger.error(err);
-            throw err;
-        }
-        return questions;
-    }
-
-    async getRoundByUUID(roundUUID: string): Promise<GetParam.Round> {
-        let round: GetParam.Round;
-
-        try {
-            const statement: string = "SELECT * FROM ROUND WHERE UUID = ?";
-            const values = [roundUUID];
-            const sql = mysql.format(statement, values);
-
-            let [result, fields] = await this.db_conn.execute(sql);
-            let _result = JSON.parse(JSON.stringify(result));
-
-            assert(_result.length === 1, `DbHandlerMySql->getRoundByUUID :: Failed to Return Round UUID ${roundUUID}`);
-
-            round = {
-                UUID: _result[0][QuizMasterSchema.Round.UUID],
-                QuizID: _result[0][QuizMasterSchema.Round.QuizID],
-                RoundTypeID: _result[0][QuizMasterSchema.Round.RoundTypeID],
-                SequenceNumber: _result[0][QuizMasterSchema.Round.SequenceNumber]
-            };
-
-            logger.info(`DbHandlerMySql->getRoundByUUID :: Round Returned: ${JSON.stringify(round)}`);
-
-        } catch (err) {
-            logger.error(err);
-            throw err;
-        }
-
-        return round;
-    }
-
-    async deleteMemberInstance(memberUUID: string): Promise<void> {
-        const statement: string = "DELETE FROM MEMBER WHERE UUID = ?";
+        const statement = `SELECT * FROM ${schema.Table.Member} WHERE UUID = ?`;
         const values = [memberUUID];
         const sql = mysql.format(statement, values);
 
-        try {
-            let [result, fields] = await this.db_conn.execute(sql);
-            let _result = JSON.parse(JSON.stringify(result));
+        const [_result] = await this.db_conn.execute(sql);
+        const result = JSON.parse(JSON.stringify(_result));
 
-            assert(_result.affectedRows === 1, `DbHandlerMySql->deleteMemberInstance :: Failed to Delete Member Instance: ${memberUUID}`);
+        const member: GetMemberType = {
+          UUID: result[0].UUID,
+          Surname: result[0].SURNAME,
+          Name: result[0].NAME,
+          Lastname: result[0].LASTNAME,
+        };
 
-            logger.info(`DbHandlerMySql->deleteMemberInstance :: Member Instance Successfully Deleted: ${memberUUID}`);
-        } catch (err) {
-            logger.error(err);
-            throw err;
-        }
-        return;
+        members.push(member);
+      }
+
+      if (members[0]) {
+        team.Member1 = members[0];
+      }
+
+      if (members[1]) {
+        team.Member2 = members[1];
+      }
+
+      if (members[2]) {
+        team.Member3 = members[2];
+      }
+
+      if (members[3]) {
+        team.Member4 = members[3];
+      }
+
+      logger.info(
+        "MySqlDbHandler->getTeamByUUID :: Read team: " + JSON.stringify(team)
+      );
+      return team;
+    } catch (error) {
+      logger.error(
+        "MySqlDbHandler->getTeamByUUID :: Failed to read team: " + teamUUID,
+        error
+      );
+      throw error;
     }
+  }
 
-    async deleteTeamInstance(teamUUID: string): Promise<void> {
-        try {
-            const team: GetParam.Team = await this.getTeamByUUID(teamUUID);
-            if (!!team.Member1.UUID) {
-                await this.deleteMemberInstance(team.Member1.UUID);
-            }
-            if (!!team.Member2.UUID) {
-                await this.deleteMemberInstance(team.Member2.UUID);
-            }
-            if (!!team.Member3.UUID) {
-                await this.deleteMemberInstance(team.Member3.UUID);
-            }
-            if (!!team.Member4.UUID) {
-                await this.deleteMemberInstance(team.Member4.UUID);
-            }
+  async getRoundsByQuizID(quizID: number): Promise<GetRoundType[]> {
+    try {
+      const rounds: GetRoundType[] = [];
+      const statement = `SELECT * FROM ${schema.Table.Round} WHERE ${schema.Round.QuizID} = ?`;
+      const values = [quizID];
+      const sql = mysql.format(statement, values);
+      const [_result] = await this.db_conn.execute(sql);
+      const result = JSON.parse(JSON.stringify(_result));
 
-            const statement: string = "DELETE FROM TEAM WHERE UUID = ?";
-            const values = [teamUUID];
-            const sql = mysql.format(statement, values);
+      for (const round of result) {
+        rounds.push({
+          UUID: round[schema.Round.UUID],
+          QuizID: round[schema.Round.QuizID],
+          RoundName: round[schema.Round.RoundName],
+          SequenceNumber: round[schema.Round.SequenceNumber],
+          NumQuestionsEachTeam: round[schema.Round.NumQuestionsEachTeam],
+          FullMarkEachQuestion: round[schema.Round.FullMarkEachQuestion],
+          IsMCQ: round[schema.Round.IsMCQ],
+          IsAudioVisualRound: round[schema.Round.IsAudioVisualRound],
+          IsPassable: round[schema.Round.IsPassable],
+          TimerSeconds: round[schema.Round.TimerSeconds],
+        });
+      }
 
-            let [result, fields] = await this.db_conn.execute(sql);
-            let _result = JSON.parse(JSON.stringify(result));
+      logger.info(
+        "MySqlDbHandler->getRoundsByQuizID :: Read rounds of quiz: " +
+          JSON.stringify(rounds)
+      );
 
-            assert(_result.affectedRows === 1, `DbHandlerMySql->deleteTeamInstance :: Failed to Delete Team Instance: ${teamUUID}`);
-
-            logger.info(`DbHandlerMySql->deleteTeamInstance :: Team Instance Successfully Deleted: ${teamUUID}`);
-        } catch (err) {
-            logger.error(err);
-            throw err;
-        }
-        return;
+      return rounds;
+    } catch (error) {
+      logger.error(
+        "MySqlDbHandler->getRoundsByQuizID :: Failed to read rounds of quiz: " +
+          quizID,
+        error
+      );
+      throw error;
     }
+  }
+
+  async getRoundByUUID(roundUUID: string): Promise<GetRoundType> {
+    try {
+      const statement = `SELECT * FROM ${schema.Table.Round} WHERE ${schema.Round.UUID} = ?`;
+      const values = [roundUUID];
+      const sql = mysql.format(statement, values);
+
+      const [_result] = await this.db_conn.execute(sql);
+      const result = JSON.parse(JSON.stringify(_result));
+
+      const round: GetRoundType = {
+        UUID: result[0][schema.Round.UUID],
+        QuizID: result[0][schema.Round.UUID],
+        RoundName: result[0][schema.Round.UUID],
+        SequenceNumber: result[0][schema.Round.UUID],
+        NumQuestionsEachTeam: result[0][schema.Round.UUID],
+        FullMarkEachQuestion: result[0][schema.Round.UUID],
+        IsMCQ: result[0][schema.Round.UUID],
+        IsAudioVisualRound: result[0][schema.Round.UUID],
+        IsPassable: result[0][schema.Round.UUID],
+        TimerSeconds: result[0][schema.Round.UUID],
+      };
+
+      logger.info(
+        "MySqlDbHandler->getRoundByUUID :: Read round: " + JSON.stringify(round)
+      );
+
+      return round;
+    } catch (error) {
+      logger.error(
+        "MySqlDbHandler->getRoundByUUID :: Failed to read round: " + roundUUID,
+        error
+      );
+      throw error;
+    }
+  }
+
+  async getQuestionsByRoundUUID(roundUUID: string): Promise<GetQuestionType[]> {
+    try {
+      const questions: GetQuestionType[] = [];
+      const statement = `SELECT * FROM ${schema.Table.Question} WHERE ${schema.Question.RoundUUID} = ?`;
+      const values = [roundUUID];
+      const sql = mysql.format(statement, values);
+
+      const [_result] = await this.db_conn.execute(sql);
+      const result = JSON.parse(JSON.stringify(_result));
+
+      for (const question of result) {
+        const blob = question[schema.Question.MediaBase64];
+        let mediaBase64 = "";
+        if (blob !== null) {
+          mediaBase64 = Buffer.from(blob).toString("utf-8");
+        }
+
+        questions.push({
+          UUID: question[schema.Question.UUID],
+          SequenceNumber: question[schema.Question.SequenceNumber],
+          Description: question[schema.Question.Description],
+          Option1: question[schema.Question.Option1],
+          Option2: question[schema.Question.Option2],
+          Option3: question[schema.Question.Option3],
+          Option4: question[schema.Question.Option4],
+          Answer: question[schema.Question.Answer],
+          RoundUUID: question[schema.Question.RoundUUID],
+          MediaBase64: mediaBase64,
+          TargetTeamUUID: question[schema.Question.TargetTeamUUID],
+          ActualTeamUUID: question[schema.Question.ActualTeamUUID],
+          AnswerGiven: question[schema.Question.AnswerGiven],
+          ActualMarkGiven: question[schema.Question.ActualMarkGiven],
+        });
+      }
+
+      logger.info(
+        "MySqlDbHandler->getQuestionsByRoundUUID :: Read questions of round: " +
+          JSON.stringify(questions)
+      );
+
+      return questions;
+    } catch (error) {
+      logger.error(
+        "MySqlDbHandler->getQuestionsByRoundUUID :: Failed to read questions of round: " +
+          roundUUID,
+        error
+      );
+      throw error;
+    }
+  }
+
+  async getQuestionByUUID(questionUUID: string): Promise<GetQuestionType> {
+    try {
+      const statement = `SELECT * FROM ${schema.Table.Question} WHERE ${schema.Question.UUID} = ?`;
+      const values = [questionUUID];
+      const sql = mysql.format(statement, values);
+
+      const [_result] = await this.db_conn.execute(sql);
+      const result = JSON.parse(JSON.stringify(_result));
+
+      const blob = result[0][schema.Question.MediaBase64];
+      let mediaBase64 = "";
+      if (blob !== null) {
+        mediaBase64 = Buffer.from(blob).toString("utf-8");
+      }
+
+      const question: GetQuestionType = {
+        UUID: result[0][schema.Question.UUID],
+        SequenceNumber: result[0][schema.Question.SequenceNumber],
+        Description: result[0][schema.Question.Description],
+        Option1: result[0][schema.Question.Option1],
+        Option2: result[0][schema.Question.Option2],
+        Option3: result[0][schema.Question.Option3],
+        Option4: result[0][schema.Question.Option4],
+        Answer: result[0][schema.Question.Answer],
+        RoundUUID: result[0][schema.Question.RoundUUID],
+        MediaBase64: mediaBase64,
+        TargetTeamUUID: result[0][schema.Question.TargetTeamUUID],
+        ActualTeamUUID: result[0][schema.Question.ActualTeamUUID],
+        AnswerGiven: result[0][schema.Question.AnswerGiven],
+        ActualMarkGiven: result[0][schema.Question.ActualMarkGiven],
+      };
+
+      logger.info(
+        "MySqlDbHandler->getQuestionByUUID :: Read question: " +
+          JSON.stringify(question)
+      );
+
+      return question;
+    } catch (error) {
+      logger.error(
+        "MySqlDbHandler->getQuestionByUUID :: Failed to read question: " +
+          questionUUID,
+        error
+      );
+      throw error;
+    }
+  }
+
+  async deleteMember(memberUUID: string): Promise<void> {
+    const statement = `DELETE FROM ${schema.Table.Member} WHERE ${schema.Member.UUID} = ?`;
+    const values = [memberUUID];
+    const sql = mysql.format(statement, values);
+
+    try {
+      await this.db_conn.execute(sql);
+
+      logger.info(
+        "MySqlDbHandler->deleteMember :: Deleted member: " + memberUUID
+      );
+    } catch (error) {
+      logger.error(
+        "MySqlDbHandler->deleteMember :: Failed to delete member: " +
+          memberUUID,
+        error
+      );
+      throw error;
+    }
+  }
+
+  async deleteTeam(teamUUID: string): Promise<void> {
+    try {
+      const team: GetTeamType = await this.getTeamByUUID(teamUUID);
+      if (team.Member1.UUID) {
+        await this.deleteMember(team.Member1.UUID);
+      }
+
+      if (team.Member2.UUID) {
+        await this.deleteMember(team.Member2.UUID);
+      }
+
+      if (team.Member3.UUID) {
+        await this.deleteMember(team.Member3.UUID);
+      }
+
+      if (team.Member4.UUID) {
+        await this.deleteMember(team.Member4.UUID);
+      }
+
+      const statement = `DELETE FROM ${schema.Table.Team} WHERE ${schema.Team.UUID} = ?`;
+      const values = [teamUUID];
+      const sql = mysql.format(statement, values);
+
+      await this.db_conn.execute(sql);
+
+      logger.info(`MySqlDbHandler->deleteTeam :: Deleted team: ${teamUUID}`);
+    } catch (error) {
+      logger.error(
+        "MySqlDbHandler->deleteTeam :: Failed to delete team: " + teamUUID,
+        error
+      );
+      throw error;
+    }
+  }
 }
