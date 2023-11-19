@@ -2,9 +2,10 @@ import React from "react";
 import Navbar from "react-bootstrap/Navbar";
 import Container from "react-bootstrap/Container";
 
-export class HomeNavbar extends React.Component {
-  constructor() {
-    super({});
+interface NavBarProps {}
+export class HomeNavbar extends React.Component<NavBarProps> {
+  constructor(props: NavBarProps) {
+    super(props);
   }
 
   render() {

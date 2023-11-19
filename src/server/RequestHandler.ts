@@ -225,15 +225,6 @@ export default class RequestHandler {
         await this.db.updateQuestion(question);
         res.status(204).send("Recorded question response");
       }
-
-      /**
-       * Invalid endpoint
-       */
-
-      logger.error(
-        "RequestHandler->handleRequest :: Invalid endpoint: " + endpoint
-      );
-      res.status(400).send("Invalid endpoint: " + endpoint);
     } catch (error) {
       logger.error("RequestHandler->handleRequest: " + endpoint, error);
       res.status(500).send("Error occurred: " + JSON.stringify(error));

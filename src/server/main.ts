@@ -37,8 +37,11 @@ const start = async () => {
 
   app
     .route("/api/*")
-    .get(requestHandler.handleRequest)
-    .post(upload.array("Media"), requestHandler.handleRequest);
+    .get(requestHandler.handleRequest.bind(requestHandler))
+    .post(
+      upload.array("Media"),
+      requestHandler.handleRequest.bind(requestHandler)
+    );
 
   app.listen(PORT, () =>
     logger.info("Server listening: " + `http://localhost:${PORT}`)

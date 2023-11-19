@@ -8,7 +8,7 @@
             "console": "integratedTerminal",
             "internalConsoleOptions": "neverOpen",
             "name": "nodemon",
-            "program": "${workspaceFolder}/src/server/main.js",
+            "program": "${workspaceFolder}/dist/server/main.js",
             "request": "launch",
             "restart": true,
             "runtimeExecutable": "nodemon",
@@ -25,7 +25,7 @@
             "skipFiles": [
                 "<node_internals>/**"
             ],
-            "program": "${workspaceFolder}/src/server/main.js"
+            "program": "${workspaceFolder}/dist/server/main.js"
         }
     ]
 }

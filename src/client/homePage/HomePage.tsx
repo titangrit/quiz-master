@@ -51,7 +51,7 @@ export default class HomePage extends React.Component<object, HomePageState> {
         });
       }
 
-      this.quizzes = await response.json();
+      this.quizzes = (await response.json()).Quizzes || [];
 
       this.quizzes.push({
         ID: 999,
