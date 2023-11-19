@@ -14,7 +14,7 @@ const start = async () => {
 
   // const upload = multer({ dest: "uploads/" });
   const storage = multer.memoryStorage();
-  const upload = multer({ storage: storage });
+  const upload = multer({ storage });
 
   const PORT = process.env.PORT || 8000;
   const DB = process.env.DB || "sqlite";
@@ -36,7 +36,7 @@ const start = async () => {
   app.use(express.static(path.join(__dirname, "..", "..", "public")));
 
   app
-    .route("/quiz/*")
+    .route("/api/*")
     .get(requestHandler.handleRequest)
     .post(upload.array("Media"), requestHandler.handleRequest);
 

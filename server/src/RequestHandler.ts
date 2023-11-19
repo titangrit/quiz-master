@@ -254,11 +254,7 @@ export default class RequestHandler {
 
     // Sort descending by quiz ID
     const sorted = quizzes.sort((x, y) => {
-      // to suppress error: 'x.ID' is possibly 'undefined'
-      if (!x?.ID || !y.ID) {
-        return 1;
-      }
-      if (x.ID < y.ID) {
+      if (x.ID! < y.ID!) {
         return 1;
       } else {
         return -1;

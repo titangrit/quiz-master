@@ -1,4 +1,4 @@
-import * as schema from "./TableSchema";
+import * as schema from "./DbSchema";
 import {
   IHandleDatabase,
   QuizType,

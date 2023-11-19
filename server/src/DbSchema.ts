@@ -3,7 +3,6 @@ export enum Table {
   Round = "ROUND",
   Question = "QUESTION",
   Team = "TEAM",
-  Member = "MEMBER",
 }
 
 export enum Quiz {
