@@ -87,7 +87,7 @@ export default class HomePage extends React.Component<object, HomePageState> {
 
   makeQuizCards = () => {
     const cards = (
-      <>
+      <React.Fragment>
         {this.quizzes.map((quiz) => {
           let theme = "light";
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -277,7 +277,7 @@ export default class HomePage extends React.Component<object, HomePageState> {
             </Card>
           );
         })}
-      </>
+      </React.Fragment>
     );
     return cards;
   };
@@ -314,12 +314,12 @@ export default class HomePage extends React.Component<object, HomePageState> {
             </h1>
           </Row>
 
+          {/* New quiz button */}
           <Row className="d-flex justify-content-center">
             <Col md={5}>
-              {/* New quiz button */}
               <Button
                 variant="light"
-                className="custom-button mt-4 mb-4"
+                className="custom-button mt-4 mb-4 float-end"
                 // size="lg"
                 type="button"
                 onClick={() => {
@@ -328,7 +328,12 @@ export default class HomePage extends React.Component<object, HomePageState> {
               >
                 New Quiz
               </Button>
+            </Col>
+          </Row>
 
+          {/* Available quizzes */}
+          <Row className="d-flex justify-content-center">
+            <Col md={5}>
               {/* Error occurred message */}
               {this.state.serverError && (
                 <p style={{ color: "red" }}>
@@ -345,7 +350,6 @@ export default class HomePage extends React.Component<object, HomePageState> {
                 </h3>
               )}
 
-              {/* Available quizzes */}
               {this.state.gotQuizzes && (
                 <React.Fragment>
                   <h4>Quizzes</h4>
