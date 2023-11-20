@@ -1,7 +1,12 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
 import "bootstrap/dist/css/bootstrap.min.css";
-import { Container, Row, Col, Button, Spinner, Card } from "react-bootstrap";
+import Container from "react-bootstrap/Container";
+import Row from "react-bootstrap/Row";
+import Col from "react-bootstrap/Col";
+import Button from "react-bootstrap/Button";
+import Spinner from "react-bootstrap/Spinner";
+import Card from "react-bootstrap/Card";
 import "./../common/style.css";
 import { HomeNavbar } from "./HomeNavbar";
 import { server } from "./../../";
@@ -37,18 +42,14 @@ export default class HomePage extends React.Component<object, HomePageState> {
 
   getAllQuizzes = async () => {
     try {
-      const response = await fetch(
-        this.apiPath + server.Endpoint.get_all_quizzes,
-        {
-          method: "GET",
-          headers: { "Content-Type": "application/json" },
-        }
-      );
+      const apiEndpoint = this.apiPath + server.Endpoint.get_all_quizzes;
+      const response = await fetch(apiEndpoint, {
+        method: "GET",
+        headers: { "Content-Type": "application/json" },
+      });
 
       if (!response.ok) {
-        this.setState({
-          serverError: true,
-        });
+        throw `${apiEndpoint} responded ${response.statusText}; HTTP code: ${response.status}`;
       }
 
       this.quizzes = (await response.json()).Quizzes || [];
@@ -89,168 +90,134 @@ export default class HomePage extends React.Component<object, HomePageState> {
     const cards = (
       <React.Fragment>
         {this.quizzes.map((quiz) => {
-          let theme = "light";
+          const editButton = (
+            <Button
+              variant="light"
+              className="custom-button"
+              onClick={() => {
+                document.location.href = "/edit_quiz.html?quizID=" + quiz.ID;
+              }}
+            >
+              Edit
+            </Button>
+          );
+
+          const viewButton = (
+            <Button
+              variant="light"
+              className="custom-button"
+              onClick={() => {
+                document.location.href = "/view_quiz.html?quizID=" + quiz.ID;
+              }}
+            >
+              View
+            </Button>
+          );
+
+          const startButton = (
+            <Button
+              variant="light"
+              className="custom-button"
+              onClick={() => {
+                document.location.href = "/play_quiz.html?quizID=" + quiz.ID;
+              }}
+            >
+              Start
+            </Button>
+          );
+
+          const resumeButton = (
+            <Button
+              variant="light"
+              className="custom-button"
+              onClick={() => {
+                document.location.href =
+                  "/play_quiz.html?quizID=" + quiz.ID + "&resume=true";
+              }}
+            >
+              Resume
+            </Button>
+          );
+
+          const resultButton = (
+            <Button variant="light" className="custom-button">
+              Result
+            </Button>
+          );
+
+          const deleteButton = (
+            <Button variant="light" className="custom-button">
+              Delete
+            </Button>
+          );
+
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           const buttons: any[] = [];
-          if (
-            quiz.LifecycleStatusCode === server.QuizLifecycleStatusCode.Draft
-          ) {
-            theme = this.Theme.Light;
-            buttons.push(
-              <Row key="A" className="d-flex justify-content-left">
-                <Col md={3} className="mx-3">
-                  <Row>
-                    <Button
-                      variant="light"
-                      className="custom-button"
-                      onClick={() => {
-                        document.location.href =
-                          "/edit_quiz.html?quizID=" + quiz.ID;
-                      }}
-                    >
-                      Edit
-                    </Button>
-                  </Row>
-                </Col>
-                <Col md={3} className="mx-3">
-                  <Row>
-                    <Button
-                      variant="light"
-                      className="custom-button"
-                      onClick={() => {
-                        document.location.href =
-                          "/view_quiz.html?quizID=" + quiz.ID;
-                      }}
-                    >
-                      View
-                    </Button>
-                  </Row>
-                </Col>
-              </Row>
-            );
-          } else if (
-            quiz.LifecycleStatusCode === server.QuizLifecycleStatusCode.Ready
-          ) {
-            theme = this.Theme.Info;
-            buttons.push(
-              <Row key="A" className="d-flex justify-content-left">
-                <Col md={3} className="mx-3">
-                  <Row>
-                    <Button
-                      variant="light"
-                      className="custom-button"
-                      onClick={() => {
-                        document.location.href =
-                          "/play_quiz.html?quizID=" + quiz.ID;
-                      }}
-                    >
-                      Start
-                    </Button>
-                  </Row>
-                </Col>
-                <Col md={3} className="mx-3">
-                  <Row>
-                    <Button
-                      variant="light"
-                      className="custom-button"
-                      onClick={() => {
-                        document.location.href =
-                          "/edit_quiz.html?quizID=" + quiz.ID;
-                      }}
-                    >
-                      Edit
-                    </Button>
-                  </Row>
-                </Col>
-                <Col md={3} className="mx-3">
-                  <Row>
-                    <Button
-                      variant="light"
-                      className="custom-button"
-                      onClick={() => {
-                        document.location.href =
-                          "/view_quiz.html?quizID=" + quiz.ID;
-                      }}
-                    >
-                      View
-                    </Button>
-                  </Row>
-                </Col>
-              </Row>
-            );
-          } else if (
-            quiz.LifecycleStatusCode === server.QuizLifecycleStatusCode.Running
-          ) {
-            theme = this.Theme.Info;
-            buttons.push(
-              <Row key="A" className="d-flex justify-content-left">
-                <Col md={3} className="mx-3">
-                  <Row>
-                    <Button
-                      variant="light"
-                      className="custom-button"
-                      onClick={() => {
-                        document.location.href =
-                          "/play_quiz.html?quizID=" + quiz.ID + "&resume=true";
-                      }}
-                    >
-                      Resume
-                    </Button>
-                  </Row>
-                </Col>
-                <Col md={3} className="mx-3">
-                  <Row>
-                    <Button
-                      variant="light"
-                      className="custom-button"
-                      onClick={() => {
-                        document.location.href =
-                          "/view_quiz.html?quizID=" + quiz.ID;
-                      }}
-                    >
-                      View
-                    </Button>
-                  </Row>
-                </Col>
-              </Row>
-            );
-          } else if (
-            quiz.LifecycleStatusCode ===
-            server.QuizLifecycleStatusCode.Completed
-          ) {
-            theme = this.Theme.Primary;
-            buttons.push(
-              <Row key="A" className="d-flex justify-content-left">
-                <Col md={3} className="mx-3">
-                  <Row>
-                    <Button variant="light" className="custom-button">
-                      Result
-                    </Button>
-                  </Row>
-                </Col>
-                <Col md={3} className="mx-3">
-                  <Row>
-                    <Button
-                      variant="light"
-                      className="custom-button"
-                      onClick={() => {
-                        document.location.href =
-                          "/view_quiz.html?quizID=" + quiz.ID;
-                      }}
-                    >
-                      View
-                    </Button>
-                  </Row>
-                </Col>
-                <Col md={3} className="mx-3">
-                  <Row>
-                    <Button variant="light" className="custom-button">
-                      Delete
-                    </Button>
-                  </Row>
-                </Col>
-              </Row>
-            );
+          let theme = this.Theme.Light;
+
+          switch (quiz.LifecycleStatusCode) {
+            case server.QuizLifecycleStatusCode.Draft: {
+              theme = this.Theme.Light;
+              buttons.push(
+                <Row key="A" className="d-flex justify-content-left">
+                  <Col md={3} className="mx-3">
+                    <Row>{editButton}</Row>
+                  </Col>
+                  <Col md={3} className="mx-3">
+                    <Row>{viewButton}</Row>
+                  </Col>
+                </Row>
+              );
+              break;
+            }
+            case server.QuizLifecycleStatusCode.Ready: {
+              theme = this.Theme.Info;
+              buttons.push(
+                <Row key="A" className="d-flex justify-content-left">
+                  <Col md={3} className="mx-3">
+                    <Row>{startButton}</Row>
+                  </Col>
+                  <Col md={3} className="mx-3">
+                    <Row>{editButton}</Row>
+                  </Col>
+                  <Col md={3} className="mx-3">
+                    <Row>{viewButton}</Row>
+                  </Col>
+                </Row>
+              );
+              break;
+            }
+            case server.QuizLifecycleStatusCode.Running: {
+              theme = this.Theme.Info;
+              buttons.push(
+                <Row key="A" className="d-flex justify-content-left">
+                  <Col md={3} className="mx-3">
+                    <Row>{resumeButton}</Row>
+                  </Col>
+                  <Col md={3} className="mx-3">
+                    <Row>{viewButton}</Row>
+                  </Col>
+                </Row>
+              );
+              break;
+            }
+            case server.QuizLifecycleStatusCode.Completed: {
+              theme = this.Theme.Primary;
+              buttons.push(
+                <Row key="A" className="d-flex justify-content-left">
+                  <Col md={3} className="mx-3">
+                    <Row>{resultButton}</Row>
+                  </Col>
+                  <Col md={3} className="mx-3">
+                    <Row>{viewButton}</Row>
+                  </Col>
+                  <Col md={3} className="mx-3">
+                    <Row>{deleteButton}</Row>
+                  </Col>
+                </Row>
+              );
+              break;
+            }
           }
 
           return (
@@ -271,7 +238,6 @@ export default class HomePage extends React.Component<object, HomePageState> {
                   {!!quiz.EndDateTime &&
                     `Completed on ${quiz.EndDateTime.toLocaleString()}`}
                 </Card.Text>
-
                 {buttons}
               </Card.Body>
             </Card>
@@ -282,11 +248,11 @@ export default class HomePage extends React.Component<object, HomePageState> {
     return cards;
   };
 
-  getQuizCards = () => {
+  getQuizList = () => {
     if (this.quizzes.length > 0) {
       return this.makeQuizCards();
     } else {
-      return <p>No quiz to show. Click New to create a new quiz.</p>;
+      return <p>No quiz to show. Click New Quiz to create a new quiz.</p>;
     }
   };
 
@@ -314,14 +280,14 @@ export default class HomePage extends React.Component<object, HomePageState> {
             </h1>
           </Row>
 
-          {/* New quiz button */}
+          {/* New Quiz button */}
           <Row className="d-flex justify-content-center">
             <Col md={5}>
               <Button
                 variant="light"
                 className="custom-button mt-4 mb-4 float-end"
                 // size="lg"
-                type="button"
+                // type="button"
                 onClick={() => {
                   document.location.href = "/edit_quiz.html";
                 }}
@@ -334,33 +300,28 @@ export default class HomePage extends React.Component<object, HomePageState> {
           {/* Available quizzes */}
           <Row className="d-flex justify-content-center">
             <Col md={5}>
-              {/* Error occurred message */}
-              {this.state.serverError && (
-                <p style={{ color: "red" }}>
-                  An error occurred. Try refreshing the page or check the server
-                  log.
-                </p>
-              )}
+              <React.Fragment>
+                <h4>Quizzes</h4>
+                <Container className="quizzes-table-container mt-3 mb-3" fluid>
+                  {/* Server error */}
+                  {this.state.serverError && (
+                    <p style={{ color: "red" }}>A server error occurred</p>
+                  )}
 
-              {/* Loading message */}
-              {!this.state.gotQuizzes && !this.state.serverError && (
-                <h3>
-                  <Spinner animation="border" role="status" /> Loading Available
-                  Quizzes...
-                </h3>
-              )}
+                  {/* Loading message */}
+                  {!this.state.gotQuizzes && !this.state.serverError && (
+                    <React.Fragment>
+                      <p>Loading Available Quizzes</p>
+                      <Spinner animation="grow" role="status" />
+                    </React.Fragment>
+                  )}
 
-              {this.state.gotQuizzes && (
-                <React.Fragment>
-                  <h4>Quizzes</h4>
-                  <Container
-                    className="quizzes-table-container mt-3 mb-3"
-                    fluid
-                  >
-                    {this.getQuizCards()}
-                  </Container>
-                </React.Fragment>
-              )}
+                  {/* List available quizzes */}
+                  {this.state.gotQuizzes &&
+                    !this.state.serverError &&
+                    this.getQuizList()}
+                </Container>
+              </React.Fragment>
             </Col>
           </Row>
         </Container>
