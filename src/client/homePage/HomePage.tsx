@@ -8,8 +8,8 @@ import Button from "react-bootstrap/Button";
 import Spinner from "react-bootstrap/Spinner";
 import Card from "react-bootstrap/Card";
 import "./../common/style.css";
-import { HomeNavbar } from "./HomeNavbar";
-import { server } from "./../../";
+import { HomeNavbar, API_PATH } from "../common";
+import { QuizType, Endpoint, QuizLifecycleStatusCode } from "./../../server";
 
 interface HomePageState {
   serverError: boolean;
@@ -20,7 +20,6 @@ interface HomePageState {
  * Renders the home page
  */
 export default class HomePage extends React.Component<object, HomePageState> {
-  private apiPath: string = "/api/";
   readonly Theme = {
     Light: "light",
     Info: "info",
@@ -28,7 +27,7 @@ export default class HomePage extends React.Component<object, HomePageState> {
     Dark: "dark",
     White: "white",
   };
-  private quizzes: server.QuizType[];
+  private quizzes: QuizType[];
 
   constructor(props: object) {
     super(props);
@@ -42,7 +41,7 @@ export default class HomePage extends React.Component<object, HomePageState> {
 
   getAllQuizzes = async () => {
     try {
-      const apiEndpoint = this.apiPath + server.Endpoint.get_all_quizzes;
+      const apiEndpoint = API_PATH + Endpoint.get_all_quizzes;
       const response = await fetch(apiEndpoint, {
         method: "GET",
         headers: { "Content-Type": "application/json" },
@@ -58,25 +57,25 @@ export default class HomePage extends React.Component<object, HomePageState> {
         ID: 999,
         QuizEventName:
           "very very long text very very long text very very long text very very long text very very long text very very long text very very long text very very long text",
-        LifecycleStatusCode: server.QuizLifecycleStatusCode.Running,
+        LifecycleStatusCode: QuizLifecycleStatusCode.Running,
       });
       this.quizzes.push({
         ID: 9998,
         QuizEventName: "quiz6",
-        LifecycleStatusCode: server.QuizLifecycleStatusCode.Running,
+        LifecycleStatusCode: QuizLifecycleStatusCode.Running,
       });
       this.quizzes.push({
         ID: 9997,
         QuizEventName: "quiz7",
         EndDateTime: new Date(),
-        LifecycleStatusCode: server.QuizLifecycleStatusCode.Completed,
+        LifecycleStatusCode: QuizLifecycleStatusCode.Completed,
       });
       this.quizzes.push({
         ID: 9996,
         QuizEventName: "quiz8",
         EndDateTime: new Date(),
         StartDateTime: new Date(),
-        LifecycleStatusCode: server.QuizLifecycleStatusCode.Completed,
+        LifecycleStatusCode: QuizLifecycleStatusCode.Completed,
       });
     } catch (error) {
       console.error(error);
@@ -156,7 +155,7 @@ export default class HomePage extends React.Component<object, HomePageState> {
           let theme = this.Theme.Light;
 
           switch (quiz.LifecycleStatusCode) {
-            case server.QuizLifecycleStatusCode.Draft: {
+            case QuizLifecycleStatusCode.Draft: {
               theme = this.Theme.Light;
               buttons.push(
                 <Row key="A" className="d-flex justify-content-left">
@@ -170,7 +169,7 @@ export default class HomePage extends React.Component<object, HomePageState> {
               );
               break;
             }
-            case server.QuizLifecycleStatusCode.Ready: {
+            case QuizLifecycleStatusCode.Ready: {
               theme = this.Theme.Info;
               buttons.push(
                 <Row key="A" className="d-flex justify-content-left">
@@ -187,7 +186,7 @@ export default class HomePage extends React.Component<object, HomePageState> {
               );
               break;
             }
-            case server.QuizLifecycleStatusCode.Running: {
+            case QuizLifecycleStatusCode.Running: {
               theme = this.Theme.Info;
               buttons.push(
                 <Row key="A" className="d-flex justify-content-left">
@@ -201,7 +200,7 @@ export default class HomePage extends React.Component<object, HomePageState> {
               );
               break;
             }
-            case server.QuizLifecycleStatusCode.Completed: {
+            case QuizLifecycleStatusCode.Completed: {
               theme = this.Theme.Primary;
               buttons.push(
                 <Row key="A" className="d-flex justify-content-left">
@@ -230,7 +229,7 @@ export default class HomePage extends React.Component<object, HomePageState> {
               }
             >
               <Card.Header>
-                {server.QuizLifecycleStatusCode[quiz.LifecycleStatusCode || 1]}
+                {QuizLifecycleStatusCode[quiz.LifecycleStatusCode || 1]}
               </Card.Header>
               <Card.Body>
                 <Card.Title>{quiz.QuizEventName}</Card.Title>

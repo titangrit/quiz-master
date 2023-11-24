@@ -1,2 +1,11 @@
-export { QuizType, TeamType, RoundType, QuestionType } from "./IHandleDatabase";
-export { QuizLifecycleStatusCode, Endpoint } from "./constants";
+import { QuizType, TeamType, RoundType, QuestionType } from "./IHandleDatabase";
+import { QuizLifecycleStatusCode, Endpoint } from "./constants";
+
+export {
+  QuizType,
+  TeamType,
+  RoundType,
+  QuestionType,
+  QuizLifecycleStatusCode,
+  Endpoint,
+};

@@ -1,6 +1,6 @@
 {
     "watch": [
-        "server/src"
+        "src/server"
     ],
     "ext": ".ts,.js",
     "ignore": [],

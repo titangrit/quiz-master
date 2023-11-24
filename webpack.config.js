@@ -19,10 +19,10 @@ module.exports = {
     //     import: './client/newQuiz/renderNewQuiz.js',
     //     // dependOn: ['common', 'react'],
     // },
-    // edit_quiz: {
-    //   import: "./client/editQuiz/renderEditQuiz.js",
-    //   // dependOn: ['common', 'react'],
-    // },
+    edit_quiz: {
+      import: "./src/client/editActivity/EditQuiz.tsx",
+      // dependOn: ['common', 'react'],
+    },
     // view_quiz: {
     //   import: "./client/viewQuiz/renderViewQuiz.js",
     //   // dependOn: ['common', 'react'],
