@@ -53,6 +53,7 @@ export default class RequestHandler {
           const roundUUID = req.query.roundUUID as string;
           if (!roundUUID) {
             res.status(404).send("Invalid round UUID: " + req.query.roundUUID);
+            break;
           }
           const questions: QuestionType[] =
             await this.db.getQuestionsByRoundUUID(roundUUID);
@@ -70,22 +71,25 @@ export default class RequestHandler {
         }
         case Endpoint.create_quiz_teams: {
           const quizID: number = req.body.QuizID;
-          const teams: TeamType[] = req.body.Teams;
+          const teams: TeamType[] = req.body.Teams || [];
           const quiz: QuizType[] = await this.db.getQuiz(quizID);
           if (quiz.length === 0) {
             res.status(400).send("Invalid quiz ID: " + req.body.QuizID);
+            break;
           }
-          if (teams?.length) {
+          if (!teams.length) {
             res.status(200).send("No value for Teams provided");
+            break;
           }
           await this.createQuizTeams(quizID, teams);
           res.status(201).send("Created teams");
           break;
         }
         case Endpoint.create_quiz_rounds: {
-          const rounds: RoundType[] = req.body.Rounds;
-          if (rounds?.length) {
+          const rounds: RoundType[] = req.body.Rounds || [];
+          if (!rounds.length) {
             res.status(200).send("No value for Rounds provided");
+            break;
           }
           for (const round of rounds) {
             await this.db.createRound(round);
@@ -94,9 +98,10 @@ export default class RequestHandler {
           break;
         }
         case Endpoint.create_quiz_round_questions: {
-          const questions: QuestionType[] = req.body.Questions;
-          if (questions?.length) {
+          const questions: QuestionType[] = req.body.Questions || [];
+          if (!questions.length) {
             res.status(200).send("No value for Questions provided");
+            break;
           }
           const files = req.files as object;
           const media: File[] = [];
@@ -130,9 +135,10 @@ export default class RequestHandler {
           break;
         }
         case Endpoint.edit_quiz_teams: {
-          const teams: TeamType[] = req.body.Teams;
-          if (teams?.length) {
+          const teams: TeamType[] = req.body.Teams || [];
+          if (!teams.length) {
             res.status(200).send("No value for Teams provided");
+            break;
           }
           for (const team of teams) {
             await this.db.updateTeam(team);
@@ -141,9 +147,10 @@ export default class RequestHandler {
           break;
         }
         case Endpoint.edit_quiz_rounds: {
-          const rounds: RoundType[] = req.body.Rounds;
-          if (rounds?.length) {
+          const rounds: RoundType[] = req.body.Rounds || [];
+          if (!rounds.length) {
             res.status(200).send("No value for Rounds provided");
+            break;
           }
           for (const round of rounds) {
             await this.db.updateRound(round);
@@ -152,9 +159,10 @@ export default class RequestHandler {
           break;
         }
         case Endpoint.edit_quiz_round_questions: {
-          const questions: QuestionType[] = req.body.Questions;
-          if (questions?.length) {
+          const questions: QuestionType[] = req.body.Questions || [];
+          if (!questions.length) {
             res.status(200).send("No value for Questions provided");
+            break;
           }
           const files = req.files as object;
           const media: File[] = [];
@@ -231,209 +239,209 @@ export default class RequestHandler {
         }
       }
 
-      /**
-       * GET endpoints
-       */
+      //   /**
+      //    * GET endpoints
+      //    */
 
-      if (endpoint === Endpoint.get_all_quizzes) {
-        const quizzes: QuizType[] = await this.getAllQuizzes();
-        res.json({ Quizzes: quizzes });
-      }
+      //   if (endpoint === Endpoint.get_all_quizzes) {
+      //     const quizzes: QuizType[] = await this.getAllQuizzes();
+      //     res.json({ Quizzes: quizzes });
+      //   }
 
-      if (endpoint === Endpoint.get_quiz) {
-        const quizID = this.getQuizID(req, res);
-        const quiz: QuizType[] = await this.db.getQuiz(quizID);
-        res.json({ Quiz: quiz[0] });
-      }
+      //   if (endpoint === Endpoint.get_quiz) {
+      //     const quizID = this.getQuizID(req, res);
+      //     const quiz: QuizType[] = await this.db.getQuiz(quizID);
+      //     res.json({ Quiz: quiz[0] });
+      //   }
 
-      if (endpoint === Endpoint.get_quiz_teams) {
-        const quizID = this.getQuizID(req, res);
-        const teams: TeamType[] = await this.db.getTeamsByQuizID(quizID);
-        res.json({ Teams: teams });
-      }
+      //   if (endpoint === Endpoint.get_quiz_teams) {
+      //     const quizID = this.getQuizID(req, res);
+      //     const teams: TeamType[] = await this.db.getTeamsByQuizID(quizID);
+      //     res.json({ Teams: teams });
+      //   }
 
-      if (endpoint === Endpoint.get_quiz_rounds) {
-        const quizID = this.getQuizID(req, res);
-        const rounds: RoundType[] = await this.db.getRoundsByQuizID(quizID);
-        res.json({ Rounds: rounds });
-      }
+      //   if (endpoint === Endpoint.get_quiz_rounds) {
+      //     const quizID = this.getQuizID(req, res);
+      //     const rounds: RoundType[] = await this.db.getRoundsByQuizID(quizID);
+      //     res.json({ Rounds: rounds });
+      //   }
 
-      if (endpoint === Endpoint.get_quiz_round_questions) {
-        const roundUUID = req.query.roundUUID as string;
-        if (!roundUUID) {
-          res.status(404).send("Invalid round UUID: " + req.query.roundUUID);
-        }
-        const questions: QuestionType[] = await this.db.getQuestionsByRoundUUID(
-          roundUUID
-        );
-        res.json({ Questions: questions });
-      }
+      //   if (endpoint === Endpoint.get_quiz_round_questions) {
+      //     const roundUUID = req.query.roundUUID as string;
+      //     if (!roundUUID) {
+      //       res.status(404).send("Invalid round UUID: " + req.query.roundUUID);
+      //     }
+      //     const questions: QuestionType[] = await this.db.getQuestionsByRoundUUID(
+      //       roundUUID
+      //     );
+      //     res.json({ Questions: questions });
+      //   }
 
-      /**
-       * CREATE endpoints
-       */
+      //   /**
+      //    * CREATE endpoints
+      //    */
 
-      if (endpoint === Endpoint.create_quiz) {
-        const quiz: QuizType = req.body.Quiz;
-        const quizID: number = await this.db.createQuiz(quiz);
-        res.json({ QuizID: quizID });
-      }
+      //   if (endpoint === Endpoint.create_quiz) {
+      //     const quiz: QuizType = req.body.Quiz;
+      //     const quizID: number = await this.db.createQuiz(quiz);
+      //     res.json({ QuizID: quizID });
+      //   }
 
-      if (endpoint === Endpoint.create_quiz_teams) {
-        const quizID: number = req.body.QuizID;
-        const teams: TeamType[] = req.body.Teams;
-        const quiz: QuizType[] = await this.db.getQuiz(quizID);
-        if (quiz.length === 0) {
-          res.status(400).send("Invalid quiz ID: " + req.body.QuizID);
-        }
-        if (teams?.length) {
-          res.status(200).send("No value for Teams provided");
-        }
-        await this.createQuizTeams(quizID, teams);
-        res.status(201).send("Created teams");
-      }
+      //   if (endpoint === Endpoint.create_quiz_teams) {
+      //     const quizID: number = req.body.QuizID;
+      //     const teams: TeamType[] = req.body.Teams;
+      //     const quiz: QuizType[] = await this.db.getQuiz(quizID);
+      //     if (quiz.length === 0) {
+      //       res.status(400).send("Invalid quiz ID: " + req.body.QuizID);
+      //     }
+      //     if (teams?.length) {
+      //       res.status(200).send("No value for Teams provided");
+      //     }
+      //     await this.createQuizTeams(quizID, teams);
+      //     res.status(201).send("Created teams");
+      //   }
 
-      if (endpoint === Endpoint.create_quiz_rounds) {
-        const rounds: RoundType[] = req.body.Rounds;
-        if (rounds?.length) {
-          res.status(200).send("No value for Rounds provided");
-        }
-        for (const round of rounds) {
-          await this.db.createRound(round);
-        }
-        res.status(201).send("Created rounds");
-      }
+      //   if (endpoint === Endpoint.create_quiz_rounds) {
+      //     const rounds: RoundType[] = req.body.Rounds;
+      //     if (rounds?.length) {
+      //       res.status(200).send("No value for Rounds provided");
+      //     }
+      //     for (const round of rounds) {
+      //       await this.db.createRound(round);
+      //     }
+      //     res.status(201).send("Created rounds");
+      //   }
 
-      if (endpoint === Endpoint.create_quiz_round_questions) {
-        const questions: QuestionType[] = req.body.Questions;
-        if (questions?.length) {
-          res.status(200).send("No value for Questions provided");
-        }
-        const files = req.files as object;
-        const media: File[] = [];
-        Object.keys(files).forEach(function (key) {
-          // media.push(files[key as keyof Request["files"]]);
-          media.push(files[key as keyof typeof files]);
-        });
+      //   if (endpoint === Endpoint.create_quiz_round_questions) {
+      //     const questions: QuestionType[] = req.body.Questions;
+      //     if (questions?.length) {
+      //       res.status(200).send("No value for Questions provided");
+      //     }
+      //     const files = req.files as object;
+      //     const media: File[] = [];
+      //     Object.keys(files).forEach(function (key) {
+      //       // media.push(files[key as keyof Request["files"]]);
+      //       media.push(files[key as keyof typeof files]);
+      //     });
 
-        for (const question of questions) {
-          const file: File | undefined = media.find(
-            (x: File) => parseInt(x.originalname) === question.SequenceNumber
-          );
-          const mediaBase64 = file?.buffer
-            ? Buffer.from(file.buffer).toString("base64")
-            : "";
+      //     for (const question of questions) {
+      //       const file: File | undefined = media.find(
+      //         (x: File) => parseInt(x.originalname) === question.SequenceNumber
+      //       );
+      //       const mediaBase64 = file?.buffer
+      //         ? Buffer.from(file.buffer).toString("base64")
+      //         : "";
 
-          question.MediaBase64 = mediaBase64;
-          await this.db.createQuestion(question);
-        }
+      //       question.MediaBase64 = mediaBase64;
+      //       await this.db.createQuestion(question);
+      //     }
 
-        res.status(201).send("Created questions");
-      }
+      //     res.status(201).send("Created questions");
+      //   }
 
-      /**
-       * EDIT endpoints
-       */
+      //   /**
+      //    * EDIT endpoints
+      //    */
 
-      if (endpoint === Endpoint.edit_quiz) {
-        const quiz: QuizType = req.body.Quiz;
-        await this.db.updateQuiz(quiz);
-        res.status(204).send("Updated quiz");
-      }
+      //   if (endpoint === Endpoint.edit_quiz) {
+      //     const quiz: QuizType = req.body.Quiz;
+      //     await this.db.updateQuiz(quiz);
+      //     res.status(204).send("Updated quiz");
+      //   }
 
-      if (endpoint === Endpoint.edit_quiz_teams) {
-        const teams: TeamType[] = req.body.Teams;
-        if (teams?.length) {
-          res.status(200).send("No value for Teams provided");
-        }
-        for (const team of teams) {
-          await this.db.updateTeam(team);
-        }
-        res.status(204).send("Updated teams");
-      }
+      //   if (endpoint === Endpoint.edit_quiz_teams) {
+      //     const teams: TeamType[] = req.body.Teams;
+      //     if (teams?.length) {
+      //       res.status(200).send("No value for Teams provided");
+      //     }
+      //     for (const team of teams) {
+      //       await this.db.updateTeam(team);
+      //     }
+      //     res.status(204).send("Updated teams");
+      //   }
 
-      if (endpoint === Endpoint.edit_quiz_rounds) {
-        const rounds: RoundType[] = req.body.Rounds;
-        if (rounds?.length) {
-          res.status(200).send("No value for Rounds provided");
-        }
-        for (const round of rounds) {
-          await this.db.updateRound(round);
-        }
-        res.status(204).send("Updated rounds");
-      }
+      //   if (endpoint === Endpoint.edit_quiz_rounds) {
+      //     const rounds: RoundType[] = req.body.Rounds;
+      //     if (rounds?.length) {
+      //       res.status(200).send("No value for Rounds provided");
+      //     }
+      //     for (const round of rounds) {
+      //       await this.db.updateRound(round);
+      //     }
+      //     res.status(204).send("Updated rounds");
+      //   }
 
-      if (endpoint === Endpoint.edit_quiz_round_questions) {
-        const questions: QuestionType[] = req.body.Questions;
-        if (questions?.length) {
-          res.status(200).send("No value for Questions provided");
-        }
-        const files = req.files as object;
-        const media: File[] = [];
-        Object.keys(files).forEach(function (key) {
-          // media.push(files[key as keyof Request["files"]]);
-          media.push(files[key as keyof typeof files]);
-        });
+      //   if (endpoint === Endpoint.edit_quiz_round_questions) {
+      //     const questions: QuestionType[] = req.body.Questions;
+      //     if (questions?.length) {
+      //       res.status(200).send("No value for Questions provided");
+      //     }
+      //     const files = req.files as object;
+      //     const media: File[] = [];
+      //     Object.keys(files).forEach(function (key) {
+      //       // media.push(files[key as keyof Request["files"]]);
+      //       media.push(files[key as keyof typeof files]);
+      //     });
 
-        for (const question of questions) {
-          const file: File | undefined = media.find(
-            (x: File) => parseInt(x.originalname) === question.SequenceNumber
-          );
-          const mediaBase64 = file?.buffer
-            ? Buffer.from(file.buffer).toString("base64")
-            : "";
+      //     for (const question of questions) {
+      //       const file: File | undefined = media.find(
+      //         (x: File) => parseInt(x.originalname) === question.SequenceNumber
+      //       );
+      //       const mediaBase64 = file?.buffer
+      //         ? Buffer.from(file.buffer).toString("base64")
+      //         : "";
 
-          question.MediaBase64 = mediaBase64;
-          await this.db.updateQuestion(question);
-        }
+      //       question.MediaBase64 = mediaBase64;
+      //       await this.db.updateQuestion(question);
+      //     }
 
-        res.status(204).send("Updated questions");
-      }
+      //     res.status(204).send("Updated questions");
+      //   }
 
-      /**
-       * Quiz status endpoint
-       */
+      //   /**
+      //    * Quiz status endpoint
+      //    */
 
-      if (endpoint === Endpoint.set_quiz_status) {
-        const quizID: number = req.body.QuizID;
-        const status: QuizLifecycleStatusCode =
-          req.body.QuizLifecycleStatusCode;
-        const quiz: QuizType = { ID: quizID, LifecycleStatusCode: status };
-        await this.db.updateQuiz(quiz);
-        res.status(204).send("Updated quiz status");
-      }
+      //   if (endpoint === Endpoint.set_quiz_status) {
+      //     const quizID: number = req.body.QuizID;
+      //     const status: QuizLifecycleStatusCode =
+      //       req.body.QuizLifecycleStatusCode;
+      //     const quiz: QuizType = { ID: quizID, LifecycleStatusCode: status };
+      //     await this.db.updateQuiz(quiz);
+      //     res.status(204).send("Updated quiz status");
+      //   }
 
-      /**
-       * Quiz progress endpoint
-       */
+      //   /**
+      //    * Quiz progress endpoint
+      //    */
 
-      if (endpoint === Endpoint.record_quiz_progress) {
-        const quizID: number = req.body.QuizID;
-        const currentRoundSeq: number = req.body.CurrentRoundSeq;
-        const currentQuestionSeq: number = req.body.CurrentQuestionSeq;
-        const quiz: QuizType = {
-          ID: quizID,
-          CurrentRoundSeq: currentRoundSeq,
-          CurrentQuestionSeq: currentQuestionSeq,
-        };
-        await this.db.updateQuiz(quiz);
-        res.status(204).send("Updated quiz progress");
-      }
+      //   if (endpoint === Endpoint.record_quiz_progress) {
+      //     const quizID: number = req.body.QuizID;
+      //     const currentRoundSeq: number = req.body.CurrentRoundSeq;
+      //     const currentQuestionSeq: number = req.body.CurrentQuestionSeq;
+      //     const quiz: QuizType = {
+      //       ID: quizID,
+      //       CurrentRoundSeq: currentRoundSeq,
+      //       CurrentQuestionSeq: currentQuestionSeq,
+      //     };
+      //     await this.db.updateQuiz(quiz);
+      //     res.status(204).send("Updated quiz progress");
+      //   }
 
-      if (endpoint === Endpoint.record_team_response) {
-        const questionUUID: string = req.body.QuestionUUID;
-        const actualTeamUUID: string = req.body.ActualTeamUUID;
-        const actualMarkGiven: number = req.body.ActualMarkGiven;
-        const answerGiven: string = req.body.AnswerGiven;
-        const question: QuestionType = {
-          UUID: questionUUID,
-          ActualTeamUUID: actualTeamUUID,
-          ActualMarkGiven: actualMarkGiven,
-          AnswerGiven: answerGiven,
-        };
-        await this.db.updateQuestion(question);
-        res.status(204).send("Recorded question response");
-      }
+      //   if (endpoint === Endpoint.record_team_response) {
+      //     const questionUUID: string = req.body.QuestionUUID;
+      //     const actualTeamUUID: string = req.body.ActualTeamUUID;
+      //     const actualMarkGiven: number = req.body.ActualMarkGiven;
+      //     const answerGiven: string = req.body.AnswerGiven;
+      //     const question: QuestionType = {
+      //       UUID: questionUUID,
+      //       ActualTeamUUID: actualTeamUUID,
+      //       ActualMarkGiven: actualMarkGiven,
+      //       AnswerGiven: answerGiven,
+      //     };
+      //     await this.db.updateQuestion(question);
+      //     res.status(204).send("Recorded question response");
+      //   }
     } catch (error) {
       logger.error("RequestHandler->handleRequest: " + endpoint, error);
       res.status(500).send("Error occurred: " + JSON.stringify(error));
