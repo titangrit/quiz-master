@@ -604,9 +604,9 @@ export class MySqlDbHandler implements IHandleDatabase {
           SequenceNumber: round[schema.Round.SequenceNumber],
           NumQuestionsEachTeam: round[schema.Round.NumQuestionsEachTeam],
           FullMarkEachQuestion: round[schema.Round.FullMarkEachQuestion],
-          IsMCQ: round[schema.Round.IsMCQ],
-          IsAudioVisualRound: round[schema.Round.IsAudioVisualRound],
-          IsPassable: round[schema.Round.IsPassable],
+          IsMCQ: !!round[schema.Round.IsMCQ],
+          IsAudioVisualRound: !!round[schema.Round.IsAudioVisualRound],
+          IsPassable: !!round[schema.Round.IsPassable],
           TimerSeconds: round[schema.Round.TimerSeconds],
         });
       }
@@ -643,9 +643,9 @@ export class MySqlDbHandler implements IHandleDatabase {
         SequenceNumber: result[0][schema.Round.SequenceNumber],
         NumQuestionsEachTeam: result[0][schema.Round.NumQuestionsEachTeam],
         FullMarkEachQuestion: result[0][schema.Round.FullMarkEachQuestion],
-        IsMCQ: result[0][schema.Round.IsMCQ],
-        IsAudioVisualRound: result[0][schema.Round.IsAudioVisualRound],
-        IsPassable: result[0][schema.Round.IsPassable],
+        IsMCQ: !!result[0][schema.Round.IsMCQ],
+        IsAudioVisualRound: !!result[0][schema.Round.IsAudioVisualRound],
+        IsPassable: !!result[0][schema.Round.IsPassable],
         TimerSeconds: result[0][schema.Round.TimerSeconds],
       };
 
@@ -700,7 +700,7 @@ export class MySqlDbHandler implements IHandleDatabase {
 
       logger.info(
         "MySqlDbHandler->getQuestionsByRoundUUID :: Read questions of round: " +
-          JSON.stringify(questions)
+          questions.length
       );
 
       return questions;

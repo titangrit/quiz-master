@@ -38,7 +38,7 @@ export enum Question {
   UUID = "UUID",
   RoundUUID = "ROUND_UUID",
   SequenceNumber = "SEQUENCE_NUM",
-  Description = " DESCRIPTION",
+  Description = "DESCRIPTION",
   Option1 = "OPTION_1",
   Option2 = "OPTION_2",
   Option3 = "OPTION_3",
