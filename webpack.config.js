@@ -12,7 +12,7 @@ module.exports = {
   // entry: "./src/client/index.js",
   entry: {
     index: {
-      import: "./src/client/homePage/HomePage.tsx",
+      import: "./src/client/HomePage.tsx",
       // dependOn: ['common', 'react'],
     },
     // new_quiz: {
@@ -23,10 +23,10 @@ module.exports = {
       import: "./src/client/editActivity/EditQuiz.tsx",
       // dependOn: ['common', 'react'],
     },
-    // view_quiz: {
-    //   import: "./client/viewQuiz/renderViewQuiz.js",
-    //   // dependOn: ['common', 'react'],
-    // },
+    view_quiz: {
+      import: "./client/QuizInstancePage.js",
+      // dependOn: ['common', 'react'],
+    },
     // play_quiz: {
     //   import: "./client/playQuiz/renderPlayQuiz.js",
     //   // dependOn: ['common', 'react'],

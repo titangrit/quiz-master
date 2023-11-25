@@ -8,8 +8,8 @@ import Button from "react-bootstrap/Button";
 import Spinner from "react-bootstrap/Spinner";
 import Card from "react-bootstrap/Card";
 import "./../common/style.css";
-import { HomeNavbar, API_PATH } from "../common";
-import { QuizType, Endpoint, QuizLifecycleStatusCode } from "./../../server";
+import { HomeNavbar, API_PATH } from "./common";
+import { QuizType, Endpoint, QuizLifecycleStatusCode } from "../server";
 
 interface HomePageState {
   serverError: boolean;
