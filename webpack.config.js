@@ -23,10 +23,10 @@ module.exports = {
       import: "./src/client/editActivity/EditQuiz.tsx",
       // dependOn: ['common', 'react'],
     },
-    view_quiz: {
-      import: "./client/QuizInstancePage.js",
-      // dependOn: ['common', 'react'],
-    },
+    // view_quiz: {
+    //   import: "./client/QuizInstancePage.js",
+    //   // dependOn: ['common', 'react'],
+    // },
     // play_quiz: {
     //   import: "./client/playQuiz/renderPlayQuiz.js",
     //   // dependOn: ['common', 'react'],

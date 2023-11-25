@@ -506,7 +506,7 @@ export class MySqlDbHandler implements IHandleDatabase {
           CurrentQuestionSeq: quiz[schema.Quiz.CurrentQuestionSeq],
           Team1UUID: quiz[schema.Quiz.Team1UUID],
           Team2UUID: quiz[schema.Quiz.Team2UUID],
-          Team3UUID: quiz[schema.Quiz.Team2UUID],
+          Team3UUID: quiz[schema.Quiz.Team3UUID],
           Team4UUID: quiz[schema.Quiz.Team4UUID],
         });
       }
@@ -638,15 +638,15 @@ export class MySqlDbHandler implements IHandleDatabase {
 
       const round: RoundType = {
         UUID: result[0][schema.Round.UUID],
-        QuizID: result[0][schema.Round.UUID],
-        RoundName: result[0][schema.Round.UUID],
-        SequenceNumber: result[0][schema.Round.UUID],
-        NumQuestionsEachTeam: result[0][schema.Round.UUID],
-        FullMarkEachQuestion: result[0][schema.Round.UUID],
-        IsMCQ: result[0][schema.Round.UUID],
-        IsAudioVisualRound: result[0][schema.Round.UUID],
-        IsPassable: result[0][schema.Round.UUID],
-        TimerSeconds: result[0][schema.Round.UUID],
+        QuizID: result[0][schema.Round.QuizID],
+        RoundName: result[0][schema.Round.RoundName],
+        SequenceNumber: result[0][schema.Round.SequenceNumber],
+        NumQuestionsEachTeam: result[0][schema.Round.NumQuestionsEachTeam],
+        FullMarkEachQuestion: result[0][schema.Round.FullMarkEachQuestion],
+        IsMCQ: result[0][schema.Round.IsMCQ],
+        IsAudioVisualRound: result[0][schema.Round.IsAudioVisualRound],
+        IsPassable: result[0][schema.Round.IsPassable],
+        TimerSeconds: result[0][schema.Round.TimerSeconds],
       };
 
       logger.info(

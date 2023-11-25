@@ -62,7 +62,7 @@ export default class RoundInfo extends React.Component<
       }
 
       // post new rounds
-      const apiEndpoint = API_PATH + Endpoint.create_quiz_teams;
+      const apiEndpoint = API_PATH + Endpoint.create_quiz_rounds;
       const response = await fetch(apiEndpoint, {
         method: "POST",
         headers: { "Content-Type": "application/json" },

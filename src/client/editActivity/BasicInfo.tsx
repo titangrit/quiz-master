@@ -7,7 +7,7 @@ import FloatingLabel from "react-bootstrap/FloatingLabel";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import { API_PATH } from "../common";
-import { QuizType, Endpoint } from "./../../server";
+import { QuizType, QuizLifecycleStatusCode, Endpoint } from "./../../server";
 
 interface BasicInfoState {
   serverError: boolean;
@@ -56,13 +56,14 @@ export default class BasicInfo extends React.Component<
         QuizEventName: quizEventName,
         NumberOfTeams: numOfTeams,
         NumberOfRounds: numOfRounds,
+        LifecycleStatusCode: QuizLifecycleStatusCode.Draft,
       };
 
       const apiEndpoint = API_PATH + Endpoint.create_quiz;
       const response = await fetch(apiEndpoint, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(newQuiz),
+        body: JSON.stringify({ Quiz: newQuiz }),
       });
 
       if (!response.ok) {

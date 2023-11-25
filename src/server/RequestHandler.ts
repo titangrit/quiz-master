@@ -103,22 +103,31 @@ export default class RequestHandler {
             res.status(200).send("No value for Questions provided");
             break;
           }
-          const files = req.files as object;
+
+          const round: RoundType = await this.db.getRoundByUUID(
+            questions[0].RoundUUID!
+          );
+
           const media: File[] = [];
-          Object.keys(files).forEach(function (key) {
-            // media.push(files[key as keyof Request["files"]]);
-            media.push(files[key as keyof typeof files]);
-          });
+          if (round.IsAudioVisualRound) {
+            const files = req.files as object;
+            Object.keys(files).forEach(function (key) {
+              // media.push(files[key as keyof Request["files"]]);
+              media.push(files[key as keyof typeof files]);
+            });
+          }
 
           for (const question of questions) {
-            const file: File | undefined = media.find(
-              (x: File) => parseInt(x.originalname) === question.SequenceNumber
-            );
-            const mediaBase64 = file?.buffer
-              ? Buffer.from(file.buffer).toString("base64")
-              : "";
-
-            question.MediaBase64 = mediaBase64;
+            if (round.IsAudioVisualRound) {
+              const file: File | undefined = media.find(
+                (x: File) =>
+                  parseInt(x.originalname) === question.SequenceNumber
+              );
+              const mediaBase64 = file?.buffer
+                ? Buffer.from(file.buffer).toString("base64")
+                : "";
+              question.MediaBase64 = mediaBase64;
+            }
             await this.db.createQuestion(question);
           }
 

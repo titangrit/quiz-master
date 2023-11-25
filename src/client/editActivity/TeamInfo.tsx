@@ -6,7 +6,6 @@ import Col from "react-bootstrap/Col";
 import FloatingLabel from "react-bootstrap/FloatingLabel";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
-import Accordion from "react-bootstrap/Accordion";
 import { API_PATH } from "../common";
 import { TeamType, Endpoint } from "./../../server";
 
@@ -47,11 +46,11 @@ export default class TeamInfo extends React.Component<
       const teams: TeamType[] = [];
       for (let i = 0; i < this.props.numOfTeams; i++) {
         const team: TeamType = {
-          TeamName: form[`team${i + 1}+Name`].value,
-          Member1Name: form[`team${i + 1}+Member1`].value,
-          Member2Name: form[`team${i + 1}+Member2`].value,
-          Member3Name: form[`team${i + 1}+Member3`].value,
-          Member4Name: form[`team${i + 1}+Member4`].value,
+          TeamName: form[`team${i + 1}Name`].value,
+          Member1Name: form[`team${i + 1}Member1`].value,
+          Member2Name: form[`team${i + 1}Member2`].value,
+          Member3Name: form[`team${i + 1}Member3`].value,
+          Member4Name: form[`team${i + 1}Member4`].value,
         };
         teams.push(team);
       }
@@ -113,85 +112,76 @@ export default class TeamInfo extends React.Component<
                             <Form.Control
                               type="text"
                               placeholder={`Team ${i + 1} Name`}
+                              defaultValue={`Team-${i + 1}`}
                               required
                             />
                           </FloatingLabel>
                         </Row>
                       </Col>
                     </Row>
-                    <Accordion className="mt-4" alwaysOpen>
-                      <Accordion.Item eventKey="i">
-                        <Accordion.Header>Team Members</Accordion.Header>
-                        <Accordion.Body>
-                          {/* Member 1 and 2*/}
-                          <Row className="mt-2 d-flex justify-content-left">
-                            {/* Member 1 */}
-                            <Col md={3}>
-                              <Row>
-                                <FloatingLabel
-                                  controlId={`team${i + 1}+Member1`}
-                                  label={"Member 1 Name"}
-                                  className="px-1"
-                                >
-                                  <Form.Control
-                                    type="text"
-                                    placeholder={"Member 1 Name"}
-                                  />
-                                </FloatingLabel>
-                              </Row>
-                            </Col>
-                            {/* Member 2 */}
-                            <Col md={3}>
-                              <Row>
-                                <FloatingLabel
-                                  controlId={`team${i + 1}+Member2`}
-                                  label={"Member 2 Name"}
-                                  className="px-1"
-                                >
-                                  <Form.Control
-                                    type="text"
-                                    placeholder={"Member 2 Name"}
-                                  />
-                                </FloatingLabel>
-                              </Row>
-                            </Col>
-                          </Row>
-                          {/* Member 3 and 4*/}
-                          <Row className="mt-4 d-flex justify-content-left">
-                            {/* Member 3 */}
-                            <Col md={3}>
-                              <Row>
-                                <FloatingLabel
-                                  controlId={`team${i + 1}+Member3`}
-                                  label={"Member 3 Name"}
-                                  className="px-1"
-                                >
-                                  <Form.Control
-                                    type="text"
-                                    placeholder={"Member 3 Name"}
-                                  />
-                                </FloatingLabel>
-                              </Row>
-                            </Col>
-                            {/* Member 4 */}
-                            <Col md={3}>
-                              <Row>
-                                <FloatingLabel
-                                  controlId={`team${i + 1}+Member4`}
-                                  label={"Member 4 Name"}
-                                  className="px-1"
-                                >
-                                  <Form.Control
-                                    type="text"
-                                    placeholder={"Member 4 Name"}
-                                  />
-                                </FloatingLabel>
-                              </Row>
-                            </Col>
-                          </Row>
-                        </Accordion.Body>
-                      </Accordion.Item>
-                    </Accordion>
+                    {/* Member 1 and 2*/}
+                    <Row className="mt-2 d-flex justify-content-left">
+                      {/* Member 1 */}
+                      <Col md={3}>
+                        <Row>
+                          <FloatingLabel
+                            controlId={`team${i + 1}Member1`}
+                            label={"Member 1 Name"}
+                            className="px-1"
+                          >
+                            <Form.Control
+                              type="text"
+                              placeholder={"Member 1 Name"}
+                            />
+                          </FloatingLabel>
+                        </Row>
+                      </Col>
+                      {/* Member 2 */}
+                      <Col md={3}>
+                        <Row>
+                          <FloatingLabel
+                            controlId={`team${i + 1}Member2`}
+                            label={"Member 2 Name"}
+                            className="px-1"
+                          >
+                            <Form.Control
+                              type="text"
+                              placeholder={"Member 2 Name"}
+                            />
+                          </FloatingLabel>
+                        </Row>
+                      </Col>
+                      {/* Member 3 */}
+                      <Col md={3}>
+                        <Row>
+                          <FloatingLabel
+                            controlId={`team${i + 1}Member3`}
+                            label={"Member 3 Name"}
+                            className="px-1"
+                          >
+                            <Form.Control
+                              type="text"
+                              placeholder={"Member 3 Name"}
+                            />
+                          </FloatingLabel>
+                        </Row>
+                      </Col>
+                      {/* Member 4 */}
+                      <Col md={3}>
+                        <Row>
+                          <FloatingLabel
+                            controlId={`team${i + 1}Member4`}
+                            label={"Member 4 Name"}
+                            className="px-1"
+                          >
+                            <Form.Control
+                              type="text"
+                              placeholder={"Member 4 Name"}
+                            />
+                          </FloatingLabel>
+                        </Row>
+                      </Col>
+                    </Row>
                   </React.Fragment>
                 );
               }
@@ -208,20 +198,6 @@ export default class TeamInfo extends React.Component<
                     className="custom-button"
                   >
                     Save and Continue
-                  </Button>
-                </Row>
-
-                <Row className="mb-4">
-                  <Button
-                    variant="secondary"
-                    size="lg"
-                    type="button"
-                    className="custom-button"
-                    onClick={() => {
-                      this.props.nextStep();
-                    }}
-                  >
-                    Skip
                   </Button>
                 </Row>
 

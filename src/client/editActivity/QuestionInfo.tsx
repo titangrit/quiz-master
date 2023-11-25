@@ -127,18 +127,18 @@ class QuestionInfoEachRound extends React.Component<
                           >{`Question ${i}`}</FormLabel>
                           <FloatingLabel
                             controlId={`question${i}Statement`}
-                            label={`To Team ${
+                            label={`To team ${
                               i % this.props.numOfTeams
                                 ? i % this.props.numOfTeams
                                 : this.props.numOfTeams
-                            } ${this.props.teams[i - 1]["TeamName"] || ""}`}
+                            } (${this.props.teams[i - 1]["TeamName"]})`}
                             className="px-1"
                           >
                             <Form.Control
                               as="textarea"
                               placeholder={"Question statement"}
                               style={{ height: "100px" }}
-                              value="temp"
+                              defaultValue="temp"
                               required
                             />
                           </FloatingLabel>
@@ -179,7 +179,7 @@ class QuestionInfoEachRound extends React.Component<
                                   <Form.Control
                                     type="text"
                                     placeholder="Option A"
-                                    value="temp"
+                                    defaultValue="temp"
                                     required
                                   />
                                 </FloatingLabel>
@@ -193,7 +193,7 @@ class QuestionInfoEachRound extends React.Component<
                                   <Form.Control
                                     type="text"
                                     placeholder="Option B"
-                                    value="temp"
+                                    defaultValue="temp"
                                     required
                                   />
                                 </FloatingLabel>
@@ -209,7 +209,7 @@ class QuestionInfoEachRound extends React.Component<
                                   <Form.Control
                                     type="text"
                                     placeholder="Option C"
-                                    value="temp"
+                                    defaultValue="temp"
                                     required
                                   />
                                 </FloatingLabel>
@@ -223,7 +223,7 @@ class QuestionInfoEachRound extends React.Component<
                                   <Form.Control
                                     type="text"
                                     placeholder="Option D"
-                                    value="temp"
+                                    defaultValue="temp"
                                     required
                                   />
                                 </FloatingLabel>
@@ -259,7 +259,7 @@ class QuestionInfoEachRound extends React.Component<
                                 <Form.Control
                                   type="text"
                                   placeholder="Answer"
-                                  value="temp"
+                                  defaultValue="temp"
                                   required
                                 />
                               </FloatingLabel>
