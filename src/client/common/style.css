@@ -119,6 +119,11 @@ div.bgCircle {
     box-shadow: #121212 0 0 0 3px, transparent 0 0 0 0;
 }
 
+.custom-button-margin {
+    margin-left: 1rem;
+    margin-right: 1rem;
+}
+
 .available-quizzes {
     margin-top: 10px;
     margin-bottom: 10px;
@@ -134,7 +139,7 @@ div.bgCircle {
     /* background-color: #fff; */
     /* border-radius: 12px; */
     /* width: 700px; */
-    height: 60vh;
+    height: 65vh;
     overflow-x: hidden;
     overflow-y: auto;
     /* text-align: center; */

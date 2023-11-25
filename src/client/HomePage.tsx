@@ -7,7 +7,7 @@ import Col from "react-bootstrap/Col";
 import Button from "react-bootstrap/Button";
 import Spinner from "react-bootstrap/Spinner";
 import Card from "react-bootstrap/Card";
-import "./../common/style.css";
+import "./common/style.css";
 import { HomeNavbar, API_PATH } from "./common";
 import { QuizType, Endpoint, QuizLifecycleStatusCode } from "../server";
 
@@ -92,7 +92,7 @@ export default class HomePage extends React.Component<object, HomePageState> {
           const editButton = (
             <Button
               variant="light"
-              className="custom-button"
+              className="custom-button custom-button-margin"
               onClick={() => {
                 document.location.href = "/edit_quiz.html?quizID=" + quiz.ID;
               }}
@@ -101,22 +101,10 @@ export default class HomePage extends React.Component<object, HomePageState> {
             </Button>
           );
 
-          const viewButton = (
-            <Button
-              variant="light"
-              className="custom-button"
-              onClick={() => {
-                document.location.href = "/view_quiz.html?quizID=" + quiz.ID;
-              }}
-            >
-              View
-            </Button>
-          );
-
           const startButton = (
             <Button
               variant="light"
-              className="custom-button"
+              className="custom-button custom-button-margin"
               onClick={() => {
                 document.location.href = "/play_quiz.html?quizID=" + quiz.ID;
               }}
@@ -128,7 +116,7 @@ export default class HomePage extends React.Component<object, HomePageState> {
           const resumeButton = (
             <Button
               variant="light"
-              className="custom-button"
+              className="custom-button custom-button-margin"
               onClick={() => {
                 document.location.href =
                   "/play_quiz.html?quizID=" + quiz.ID + "&resume=true";
@@ -139,13 +127,19 @@ export default class HomePage extends React.Component<object, HomePageState> {
           );
 
           const resultButton = (
-            <Button variant="light" className="custom-button">
+            <Button
+              variant="light"
+              className="custom-button custom-button-margin"
+            >
               Result
             </Button>
           );
 
           const deleteButton = (
-            <Button variant="light" className="custom-button">
+            <Button
+              variant="light"
+              className="custom-button custom-button-margin"
+            >
               Delete
             </Button>
           );
@@ -159,11 +153,11 @@ export default class HomePage extends React.Component<object, HomePageState> {
               theme = this.Theme.Light;
               buttons.push(
                 <Row key="A" className="d-flex justify-content-left">
-                  <Col md={3} className="mx-3">
-                    <Row>{editButton}</Row>
+                  <Col>
+                    <Row></Row>
                   </Col>
-                  <Col md={3} className="mx-3">
-                    <Row>{viewButton}</Row>
+                  <Col>
+                    <Row>{editButton}</Row>
                   </Col>
                 </Row>
               );
@@ -173,14 +167,11 @@ export default class HomePage extends React.Component<object, HomePageState> {
               theme = this.Theme.Info;
               buttons.push(
                 <Row key="A" className="d-flex justify-content-left">
-                  <Col md={3} className="mx-3">
+                  <Col>
                     <Row>{startButton}</Row>
                   </Col>
-                  <Col md={3} className="mx-3">
+                  <Col>
                     <Row>{editButton}</Row>
-                  </Col>
-                  <Col md={3} className="mx-3">
-                    <Row>{viewButton}</Row>
                   </Col>
                 </Row>
               );
@@ -190,27 +181,24 @@ export default class HomePage extends React.Component<object, HomePageState> {
               theme = this.Theme.Info;
               buttons.push(
                 <Row key="A" className="d-flex justify-content-left">
-                  <Col md={3} className="mx-3">
-                    <Row>{resumeButton}</Row>
+                  <Col>
+                    <Row></Row>
                   </Col>
-                  <Col md={3} className="mx-3">
-                    <Row>{viewButton}</Row>
+                  <Col>
+                    <Row>{resumeButton}</Row>
                   </Col>
                 </Row>
               );
               break;
             }
             case QuizLifecycleStatusCode.Completed: {
-              theme = this.Theme.Primary;
+              theme = this.Theme.Dark;
               buttons.push(
                 <Row key="A" className="d-flex justify-content-left">
-                  <Col md={3} className="mx-3">
+                  <Col>
                     <Row>{resultButton}</Row>
                   </Col>
-                  <Col md={3} className="mx-3">
-                    <Row>{viewButton}</Row>
-                  </Col>
-                  <Col md={3} className="mx-3">
+                  <Col>
                     <Row>{deleteButton}</Row>
                   </Col>
                 </Row>
@@ -230,14 +218,25 @@ export default class HomePage extends React.Component<object, HomePageState> {
             >
               <Card.Header>
                 {QuizLifecycleStatusCode[quiz.LifecycleStatusCode || 1]}
+                {!!quiz.EndDateTime &&
+                  ` on ${quiz.EndDateTime.toLocaleString()}`}
               </Card.Header>
               <Card.Body>
-                <Card.Title>{quiz.QuizEventName}</Card.Title>
-                <Card.Text>
-                  {!!quiz.EndDateTime &&
-                    `Completed on ${quiz.EndDateTime.toLocaleString()}`}
-                </Card.Text>
-                {buttons}
+                <Card.Title>
+                  <Row>
+                    <Col>
+                      <a
+                        style={{
+                          color: theme === this.Theme.Light ? "black" : "white",
+                        }}
+                        href={"/view_quiz.html?quizID=" + quiz.ID}
+                      >
+                        {quiz.QuizEventName}
+                      </a>
+                    </Col>
+                    <Col>{buttons}</Col>
+                  </Row>
+                </Card.Title>
               </Card.Body>
             </Card>
           );
@@ -284,7 +283,7 @@ export default class HomePage extends React.Component<object, HomePageState> {
             <Col md={5}>
               <Button
                 variant="light"
-                className="custom-button mt-4 mb-4 float-end"
+                className="custom-button mt-2 mb-2 float-end"
                 // size="lg"
                 // type="button"
                 onClick={() => {
@@ -300,8 +299,10 @@ export default class HomePage extends React.Component<object, HomePageState> {
           <Row className="d-flex justify-content-center">
             <Col md={5}>
               <React.Fragment>
-                <h4>Quizzes</h4>
-                <Container className="quizzes-table-container mt-3 mb-3" fluid>
+                <Container>
+                  <h4>Quizzes</h4>
+                </Container>
+                <Container className="quizzes-table-container mt-2 mb-2" fluid>
                   {/* Server error */}
                   {this.state.serverError && (
                     <p style={{ color: "red" }}>A server error occurred</p>
