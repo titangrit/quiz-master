@@ -45,6 +45,7 @@ class QuestionInfoEachRound extends React.Component<
 
       const form = event.currentTarget;
 
+      const formData: FormData = new FormData();
       const questions: QuestionType[] = [];
 
       const totalNumQuestions =
@@ -63,23 +64,29 @@ class QuestionInfoEachRound extends React.Component<
           RoundUUID: this.props.roundData.UUID!,
           SequenceNumber: i,
           Description: form[`question${i}Statement`].value,
-          Option1: `optionAQuestion${i}`,
-          Option2: `optionBQuestion${i}`,
-          Option3: `optionCQuestion${i}`,
-          Option4: `optionDQuestion${i}`,
+          Option1: form[`optionAQuestion${i}`].value,
+          Option2: form[`optionBQuestion${i}`].value,
+          Option3: form[`optionCQuestion${i}`].value,
+          Option4: form[`optionDQuestion${i}`].value,
           Answer: answer,
           TargetTeamUUID: this.props.teams[i - 1]["UUID"],
         };
 
         questions.push(question);
+
+        if (this.props.roundData.IsAudioVisualRound) {
+          formData.append("Media", form[`mediaQuestion${i}`].files[0], `${i}`);
+        }
       }
+
+      formData.append("Questions", JSON.stringify(questions));
 
       // post new questions
       const apiEndpoint = API_PATH + Endpoint.create_quiz_round_questions;
       const response = await fetch(apiEndpoint, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ Questions: questions }),
+        // headers: { "Content-Type": "application/json" },
+        body: formData,
       });
 
       if (!response.ok) {

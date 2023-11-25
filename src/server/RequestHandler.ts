@@ -98,7 +98,8 @@ export default class RequestHandler {
           break;
         }
         case Endpoint.create_quiz_round_questions: {
-          const questions: QuestionType[] = req.body.Questions || [];
+          const questions: QuestionType[] =
+            JSON.parse(req.body.Questions) || [];
           if (!questions.length) {
             res.status(200).send("No value for Questions provided");
             break;
@@ -168,7 +169,8 @@ export default class RequestHandler {
           break;
         }
         case Endpoint.edit_quiz_round_questions: {
-          const questions: QuestionType[] = req.body.Questions || [];
+          const questions: QuestionType[] =
+            JSON.parse(req.body.Questions) || [];
           if (!questions.length) {
             res.status(200).send("No value for Questions provided");
             break;
