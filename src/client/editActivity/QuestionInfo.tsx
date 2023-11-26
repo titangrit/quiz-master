@@ -52,25 +52,24 @@ class QuestionInfoEachRound extends React.Component<
         this.props.numOfTeams * this.props.roundData.NumQuestionsEachTeam!;
 
       for (let i = 1; i <= totalNumQuestions; i++) {
-        let answer: string;
-        if (this.props.roundData.IsMCQ) {
-          const correctOption = form[`correctOptionQuestion${i}`].value;
-          answer = form[`option${correctOption}Question${i}`].value;
-        } else {
-          answer = form[`answerQuestion${i}`].value;
-        }
-
         const question: QuestionType = {
           RoundUUID: this.props.roundData.UUID!,
           SequenceNumber: i,
           Description: form[`question${i}Statement`].value,
-          Option1: form[`optionAQuestion${i}`].value,
-          Option2: form[`optionBQuestion${i}`].value,
-          Option3: form[`optionCQuestion${i}`].value,
-          Option4: form[`optionDQuestion${i}`].value,
-          Answer: answer,
           TargetTeamUUID: this.props.teams[i - 1]["UUID"],
         };
+
+        if (this.props.roundData.IsMCQ) {
+          question.Option1 = form[`optionAQuestion${i}`].value;
+          question.Option2 = form[`optionBQuestion${i}`].value;
+          question.Option3 = form[`optionCQuestion${i}`].value;
+          question.Option4 = form[`optionDQuestion${i}`].value;
+
+          const correctOption = form[`correctOptionQuestion${i}`].value;
+          question.Answer = form[`option${correctOption}Question${i}`].value;
+        } else {
+          question.Answer = form[`answerQuestion${i}`].value;
+        }
 
         questions.push(question);
 
