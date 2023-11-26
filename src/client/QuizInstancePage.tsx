@@ -184,7 +184,7 @@ export default class QuizInstancePage extends React.Component<
 
           {/* Basic data */}
 
-          <Row className="d-flex justify-content-left mt-5">
+          <Row className="d-flex justify-content-left mt-4">
             <p style={{ color: "grey" }}>
               {"Quiz event name: " + this.quiz.QuizEventName}
             </p>
@@ -303,7 +303,7 @@ export default class QuizInstancePage extends React.Component<
                       <Col md={3}>
                         <Row>
                           <p style={{ color: "grey" }}>
-                            {`Time limit for each question: ${round.TimerSeconds} seconds`}
+                            {`Time limit of each question: ${round.TimerSeconds} seconds`}
                           </p>
                         </Row>
                       </Col>
@@ -368,7 +368,9 @@ export default class QuizInstancePage extends React.Component<
                     <React.Fragment>
                       <Row className="d-flex justify-content-left mt-3">
                         <p style={{ color: "grey" }}>
-                          {`Question ${question.SequenceNumber} (for ${
+                          {`Question ${
+                            question.SequenceNumber
+                          } statement (for ${
                             this.teams[teamIndex! - 1].TeamName
                           }): ${question.Description}`}
                         </p>

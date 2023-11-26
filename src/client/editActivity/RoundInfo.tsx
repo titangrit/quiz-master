@@ -107,16 +107,16 @@ export default class RoundInfo extends React.Component<
               for (let i = 0; i < this.props.numOfRounds; i++) {
                 rounds.push(
                   <React.Fragment key={i}>
-                    <Row className="mt-5 d-flex">
-                      <Col md={3}>
-                        <p style={{ fontWeight: "bold" }}>{`Round ${i + 1}`}</p>
-                      </Col>
+                    <Row className="mt-5 d-flex border-bottom">
+                      <h5 style={{ color: "grey" }}>{`Round ${
+                        i + 1
+                      } definition`}</h5>
                     </Row>
                     <Row className="mt-3 d-flex">
                       <Col md={3}>
                         <FloatingLabel
                           controlId={`round${i + 1}Name`}
-                          label={`Round ${i + 1} Name *Required`}
+                          label={"Round Name *Required"}
                           className="px-1"
                         >
                           <Form.Control
@@ -131,7 +131,7 @@ export default class RoundInfo extends React.Component<
                       <Col md={3}>
                         <FloatingLabel
                           controlId={`round${i + 1}NumQuestions`}
-                          label="No. of Questions for Each Team"
+                          label="No. of questions for each team"
                           className="px-1"
                         >
                           <Form.Select aria-label="Floating label">
@@ -147,7 +147,7 @@ export default class RoundInfo extends React.Component<
                       <Col md={3}>
                         <FloatingLabel
                           controlId={`round${i + 1}FullMarkEachQ`}
-                          label="Full Mark of Each Question"
+                          label="Maximum mark of each question"
                           className="px-1"
                         >
                           <Form.Select aria-label="Floating label">
@@ -161,7 +161,7 @@ export default class RoundInfo extends React.Component<
                       <Col md={3}>
                         <FloatingLabel
                           controlId={`round${i + 1}TimerSeconds`}
-                          label="Maximum Time for Each Question in Seconds"
+                          label="Time limit of each question in seconds"
                           className="px-1"
                         >
                           <Form.Select aria-label="Floating label">
@@ -180,21 +180,21 @@ export default class RoundInfo extends React.Component<
                         <Form.Check
                           type="checkbox"
                           id={`round${i + 1}IsMCQ`}
-                          label="Multiple Choice Questions"
+                          label="MCQ"
                         />
                       </Col>
                       <Col md={3}>
                         <Form.Check
                           type="checkbox"
                           id={`round${i + 1}IsPassable`}
-                          label="Questions Pass to Next Team"
+                          label="Questions can be passed"
                         />
                       </Col>
                       <Col md={3}>
                         <Form.Check
                           type="checkbox"
                           id={`round${i + 1}IsAVRound`}
-                          label="Audio/Visual Round"
+                          label="Audio/Visual"
                         />
                       </Col>
                     </Row>
@@ -203,10 +203,13 @@ export default class RoundInfo extends React.Component<
               }
               return rounds;
             })()}
+
+            <Row className="d-flex justify-content-left border-bottom mt-3"></Row>
+
             {/* Buttons */}
             <Row className="mt-5 mb-5 d-flex justify-content-center">
               <Col md={3}>
-                <Row className="mb-4">
+                <Row className="mt-4 mb-4">
                   <Button
                     variant="light"
                     size="lg"

@@ -6,7 +6,6 @@ import Col from "react-bootstrap/Col";
 import FloatingLabel from "react-bootstrap/FloatingLabel";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
-import { FormLabel } from "react-bootstrap";
 import Spinner from "react-bootstrap/Spinner";
 import { API_PATH } from "../common";
 import { RoundType, QuestionType, TeamType, Endpoint } from "./../../server";
@@ -134,28 +133,26 @@ class QuestionInfoEachRound extends React.Component<
                 questions.push(
                   <React.Fragment key={i}>
                     {/* Question statement */}
-                    <Row className="mt-5 d-flex">
+                    <Row className="mt-5 d-flex border-bottom">
+                      <h5 style={{ color: "grey" }}>{`Question ${i}`}</h5>
+                    </Row>
+                    <Row className="mt-3 d-flex">
                       <Col md={6}>
-                        <Row>
-                          <FormLabel
-                            style={{ fontWeight: "bold" }}
-                          >{`Question ${i}`}</FormLabel>
-                          <FloatingLabel
-                            controlId={`question${i}Statement`}
-                            label={`For team ${teamIndex} (${
-                              this.props.teams[teamIndex - 1]["TeamName"]
-                            })`}
-                            className="px-1"
-                          >
-                            <Form.Control
-                              as="textarea"
-                              placeholder={"Question statement"}
-                              style={{ height: "100px" }}
-                              defaultValue="temp"
-                              required
-                            />
-                          </FloatingLabel>
-                        </Row>
+                        <FloatingLabel
+                          controlId={`question${i}Statement`}
+                          label={`Question statement (for team ${teamIndex} - ${
+                            this.props.teams[teamIndex - 1]["TeamName"]
+                          })`}
+                          className="px-1"
+                        >
+                          <Form.Control
+                            as="textarea"
+                            placeholder={"Question statement"}
+                            style={{ height: "100px" }}
+                            defaultValue="temp"
+                            required
+                          />
+                        </FloatingLabel>
                       </Col>
                     </Row>
 
@@ -163,7 +160,7 @@ class QuestionInfoEachRound extends React.Component<
                     {(() => {
                       if (this.props.roundData.IsAudioVisualRound) {
                         return (
-                          <Row className="mt-4 d-flex">
+                          <Row className="mt-3 d-flex">
                             <Col md={3}>
                               <Form.Group controlId={`mediaQuestion${i}`}>
                                 <Form.Label>Select Media File</Form.Label>
@@ -182,7 +179,7 @@ class QuestionInfoEachRound extends React.Component<
                       if (this.props.roundData.IsMCQ) {
                         return (
                           <React.Fragment>
-                            <Row className="mt-4 d-flex">
+                            <Row className="mt-3 d-flex">
                               <Col md={3}>
                                 <FloatingLabel
                                   controlId={`optionAQuestion${i}`}
@@ -262,7 +259,7 @@ class QuestionInfoEachRound extends React.Component<
                         );
                       } else {
                         return (
-                          <Row className="mt-4 d-flex">
+                          <Row className="mt-3 d-flex">
                             <Col md={3}>
                               <FloatingLabel
                                 controlId={`answerQuestion${i}`}
@@ -286,6 +283,9 @@ class QuestionInfoEachRound extends React.Component<
               }
               return questions;
             })()}
+
+            <Row className="d-flex justify-content-left border-bottom mt-3"></Row>
+
             {/* Buttons */}
             <Row className="mt-5 mb-5 d-flex justify-content-center">
               <Col md={3}>
