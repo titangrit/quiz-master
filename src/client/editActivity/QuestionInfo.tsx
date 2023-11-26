@@ -139,6 +139,8 @@ class QuestionInfoEachRound extends React.Component<
                     <Row className="mt-3 d-flex">
                       <Col md={6}>
                         <FloatingLabel
+                          // https://stackoverflow.com/questions/30146105/react-input-defaultvalue-doesnt-update-with-state/41717743#41717743
+                          key={`${this.props.roundData.UUID}question${i}Statement`}
                           controlId={`question${i}Statement`}
                           label={`Question statement (for team ${teamIndex} - ${
                             this.props.teams[teamIndex - 1]["TeamName"]
@@ -164,7 +166,11 @@ class QuestionInfoEachRound extends React.Component<
                             <Col md={3}>
                               <Form.Group controlId={`mediaQuestion${i}`}>
                                 <Form.Label>Select Media File</Form.Label>
-                                <Form.Control type="file" required />
+                                <Form.Control
+                                  key={`${this.props.roundData.UUID}mediaQuestion${i}`}
+                                  type="file"
+                                  required
+                                />
                               </Form.Group>
                             </Col>
                           </Row>
@@ -182,6 +188,7 @@ class QuestionInfoEachRound extends React.Component<
                             <Row className="mt-3 d-flex">
                               <Col md={3}>
                                 <FloatingLabel
+                                  key={`${this.props.roundData.UUID}optionAQuestion${i}`}
                                   controlId={`optionAQuestion${i}`}
                                   label="Option A"
                                   className="px-1"
@@ -196,6 +203,7 @@ class QuestionInfoEachRound extends React.Component<
                               </Col>
                               <Col md={3}>
                                 <FloatingLabel
+                                  key={`${this.props.roundData.UUID}optionBQuestion${i}`}
                                   controlId={`optionBQuestion${i}`}
                                   label="Option B"
                                   className="px-1"
@@ -212,6 +220,7 @@ class QuestionInfoEachRound extends React.Component<
                             <Row className="mt-4 d-flex">
                               <Col md={3}>
                                 <FloatingLabel
+                                  key={`${this.props.roundData.UUID}optionCQuestion${i}`}
                                   controlId={`optionCQuestion${i}`}
                                   label="Option C"
                                   className="px-1"
@@ -226,6 +235,7 @@ class QuestionInfoEachRound extends React.Component<
                               </Col>
                               <Col md={3}>
                                 <FloatingLabel
+                                  key={`${this.props.roundData.UUID}optionDQuestion${i}`}
                                   controlId={`optionDQuestion${i}`}
                                   label="Option D"
                                   className="px-1"
@@ -242,6 +252,7 @@ class QuestionInfoEachRound extends React.Component<
                             <Row className="mt-4 d-flex">
                               <Col md={3}>
                                 <FloatingLabel
+                                  key={`${this.props.roundData.UUID}correctOptionQuestion${i}`}
                                   controlId={`correctOptionQuestion${i}`}
                                   label="Correct Option"
                                   className="px-1"
@@ -262,6 +273,7 @@ class QuestionInfoEachRound extends React.Component<
                           <Row className="mt-3 d-flex">
                             <Col md={3}>
                               <FloatingLabel
+                                key={`${this.props.roundData.UUID}answerQuestion${i}`}
                                 controlId={`answerQuestion${i}`}
                                 label="Answer"
                                 className="px-1"
