@@ -9,11 +9,12 @@ import RoundInfo from "./RoundInfo";
 import QuestionInfo from "./QuestionInfo";
 
 interface EditQuizState {
-  currentEditStep: number;
+  isNewQuiz: boolean;
   quizID: number;
   quizEventName: string;
   numOfRounds: number;
   numOfTeams: number;
+  currentEditStep: number;
   serverError: boolean;
 }
 
@@ -31,12 +32,23 @@ export default class EditQuiz extends React.Component<object, EditQuizState> {
 
   constructor(props: object) {
     super(props);
+
+    const queryParams = new URLSearchParams(window.location.search);
+    const editQuizId = queryParams.get("quizID");
+    let quizID: number = 0;
+    let isNewQuiz: boolean = true;
+    if (editQuizId) {
+      quizID = parseInt(editQuizId);
+      isNewQuiz = false;
+    }
+
     this.state = {
-      currentEditStep: this.EditQuizStep.BasicInfo,
-      quizID: 0,
+      isNewQuiz: isNewQuiz,
+      quizID: quizID,
       quizEventName: "",
       numOfRounds: 1,
       numOfTeams: 2,
+      currentEditStep: this.EditQuizStep.BasicInfo,
       serverError: false,
     };
 
@@ -109,12 +121,17 @@ export default class EditQuiz extends React.Component<object, EditQuizState> {
         </React.Fragment>
       );
     }
+
     switch (this.state.currentEditStep) {
       case this.EditQuizStep.BasicInfo:
         return (
           <React.Fragment>
             <HomeNavbar />
-            <BasicInfo nextStep={this.nextAfterBasicInfo} />
+            <BasicInfo
+              isNewQuiz={this.state.isNewQuiz}
+              quizID={this.state.quizID}
+              nextStep={this.nextAfterBasicInfo}
+            />
           </React.Fragment>
         );
 
@@ -123,6 +140,7 @@ export default class EditQuiz extends React.Component<object, EditQuizState> {
           <React.Fragment>
             <HomeNavbar />
             <TeamInfo
+              isNewQuiz={this.state.isNewQuiz}
               quizID={this.state.quizID}
               quizEventName={this.state.quizEventName}
               numOfTeams={this.state.numOfTeams}
@@ -136,6 +154,7 @@ export default class EditQuiz extends React.Component<object, EditQuizState> {
           <React.Fragment>
             <HomeNavbar />
             <RoundInfo
+              isNewQuiz={this.state.isNewQuiz}
               quizID={this.state.quizID}
               quizEventName={this.state.quizEventName}
               numOfRounds={this.state.numOfRounds}
@@ -149,6 +168,7 @@ export default class EditQuiz extends React.Component<object, EditQuizState> {
           <React.Fragment>
             <HomeNavbar />
             <QuestionInfo
+              isNewQuiz={this.state.isNewQuiz}
               quizID={this.state.quizID}
               quizEventName={this.state.quizEventName}
               numOfRounds={this.state.numOfRounds}

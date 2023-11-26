@@ -14,6 +14,7 @@ interface RoundInfoState {
 }
 
 interface RoundInfoProps {
+  isNewQuiz: boolean;
   quizID: number;
   quizEventName: string;
   numOfRounds: number;

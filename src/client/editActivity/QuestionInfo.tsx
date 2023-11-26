@@ -341,6 +341,7 @@ interface QuestionInfoState {
 }
 
 interface QuestionInfoProps {
+  isNewQuiz: boolean;
   quizID: number;
   quizEventName: string;
   numOfTeams: number;

@@ -20,7 +20,7 @@ export default class RequestHandler {
   async handleRequest(req: Request, res: Response): Promise<void> {
     const endpoint: string = req.params[0];
     try {
-      logger.info("RequestHandler->handleRequest: " + endpoint);
+      logger.info("RequestHandler->handleRequest: " + req.originalUrl);
 
       switch (endpoint) {
         /**
