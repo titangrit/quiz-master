@@ -611,12 +611,21 @@ export class MySqlDbHandler implements IHandleDatabase {
         });
       }
 
+      // Sort ascending by sequence number
+      const sortedRounds: RoundType[] = rounds.sort((x, y) => {
+        if (x.SequenceNumber! > y.SequenceNumber!) {
+          return 1;
+        } else {
+          return -1;
+        }
+      });
+
       logger.info(
         "MySqlDbHandler->getRoundsByQuizID :: Read rounds of quiz: " +
-          JSON.stringify(rounds)
+          JSON.stringify(sortedRounds)
       );
 
-      return rounds;
+      return sortedRounds;
     } catch (error) {
       logger.error(
         "MySqlDbHandler->getRoundsByQuizID :: Failed to read rounds of quiz: " +
@@ -698,12 +707,21 @@ export class MySqlDbHandler implements IHandleDatabase {
         });
       }
 
+      // Sort ascending by sequence number
+      const sortedQuestions: QuestionType[] = questions.sort((x, y) => {
+        if (x.SequenceNumber! > y.SequenceNumber!) {
+          return 1;
+        } else {
+          return -1;
+        }
+      });
+
       logger.info(
         "MySqlDbHandler->getQuestionsByRoundUUID :: Read questions of round: " +
-          questions.length
+          sortedQuestions.length
       );
 
-      return questions;
+      return sortedQuestions;
     } catch (error) {
       logger.error(
         "MySqlDbHandler->getQuestionsByRoundUUID :: Failed to read questions of round: " +

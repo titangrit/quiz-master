@@ -5,7 +5,6 @@ import Container from "react-bootstrap/Container";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import Button from "react-bootstrap/Button";
-import Accordion from "react-bootstrap/Accordion";
 import Spinner from "react-bootstrap/Spinner";
 import Image from "react-bootstrap/Image";
 import "./common/style.css";
@@ -173,6 +172,7 @@ export default class QuizInstancePage extends React.Component<
       <React.Fragment>
         <HomeNavbar />
         <Container className="mt-4">
+          {/* Page title */}
           <Row className="d-inline">
             <Col md="auto" className="d-inline">
               <p className="fs-3 d-inline">Quiz Detail </p>
@@ -182,273 +182,272 @@ export default class QuizInstancePage extends React.Component<
             </Col>
           </Row>
 
-          <Accordion className="mt-3" alwaysOpen defaultActiveKey="0">
-            {/* Basic data, teams data, rounds data */}
-            <Accordion.Item eventKey="0">
-              <Accordion.Header>Basic Detail</Accordion.Header>
-              <Accordion.Body>
-                {/* Basic data */}
-                <div className="border-bottom">
-                  <Row className="d-flex justify-content-left">
-                    <p style={{ color: "grey" }}>
-                      {"Quiz event name: " + this.quiz.QuizEventName}
-                    </p>
-                  </Row>
-                  <Row className="d-flex justify-content-left">
-                    <Col md={3}>
-                      <Row>
-                        <p style={{ color: "grey" }}>
-                          {"Number of teams: " + this.quiz.NumberOfTeams}
-                        </p>
-                      </Row>
-                    </Col>
-                    <Col md={3}>
-                      <Row>
-                        <p style={{ color: "grey" }}>
-                          {"Number of quiz rounds: " + this.quiz.NumberOfRounds}
-                        </p>
-                      </Row>
-                    </Col>
-                    <Col md={3}>
-                      <Row>
-                        <p style={{ color: "grey" }}>
-                          {"Status: " +
-                            QuizLifecycleStatusCode[
-                              this.quiz.LifecycleStatusCode!
-                            ]}
-                        </p>
-                      </Row>
-                    </Col>
-                  </Row>
-                </div>
+          {/* Basic data */}
 
-                {/* Teams data */}
-                {(() => {
-                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                  const teams: any[] = [];
-                  let teamCounter = 1;
-                  for (const team of this.teams) {
-                    teams.push(
-                      <React.Fragment>
-                        <Row className="mt-2 d-flex justify-content-left">
+          <Row className="d-flex justify-content-left mt-5">
+            <p style={{ color: "grey" }}>
+              {"Quiz event name: " + this.quiz.QuizEventName}
+            </p>
+          </Row>
+          <Row className="d-flex justify-content-left">
+            <Col md={3}>
+              <Row>
+                <p style={{ color: "grey" }}>
+                  {"Number of teams: " + this.quiz.NumberOfTeams}
+                </p>
+              </Row>
+            </Col>
+            <Col md={3}>
+              <Row>
+                <p style={{ color: "grey" }}>
+                  {"Number of quiz rounds: " + this.quiz.NumberOfRounds}
+                </p>
+              </Row>
+            </Col>
+            <Col md={3}>
+              <Row>
+                <p style={{ color: "grey" }}>
+                  {"Status: " +
+                    QuizLifecycleStatusCode[this.quiz.LifecycleStatusCode!]}
+                </p>
+              </Row>
+            </Col>
+          </Row>
+
+          {/* Teams data */}
+          <Row className="d-flex justify-content-left border-bottom mt-3">
+            <h4 style={{ color: "grey" }}>{"Teams"}</h4>
+          </Row>
+          <Row>
+            {(() => {
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              const teams: any[] = [];
+              let teamCounter = 1;
+              for (const team of this.teams) {
+                teams.push(
+                  <React.Fragment>
+                    <Row className="mt-3 d-flex justify-content-left">
+                      <p style={{ color: "grey" }}>
+                        {`Team ${teamCounter} name: ${team.TeamName}`}
+                      </p>
+                    </Row>
+                    <Row className="d-flex justify-content-left">
+                      <Col md={3}>
+                        <Row>
                           <p style={{ color: "grey" }}>
-                            {`Team ${teamCounter} name: ${team.TeamName}`}
+                            {`Member 1: ${team.Member1Name}`}
                           </p>
                         </Row>
-                        <Row className="d-flex justify-content-left">
-                          <Col md={3}>
-                            <Row>
-                              <p style={{ color: "grey" }}>
-                                {`Member 1: ${team.Member1Name}`}
-                              </p>
-                            </Row>
-                          </Col>
-                          <Col md={3}>
-                            <Row>
-                              <p style={{ color: "grey" }}>
-                                {`Member 2: ${team.Member2Name}`}
-                              </p>
-                            </Row>
-                          </Col>
-                          <Col md={3}>
-                            <Row>
-                              <p style={{ color: "grey" }}>
-                                {`Member 3: ${team.Member3Name}`}
-                              </p>
-                            </Row>
-                          </Col>
-                          <Col md={3}>
-                            <Row>
-                              <p style={{ color: "grey" }}>
-                                {`Member 4: ${team.Member4Name}`}
-                              </p>
-                            </Row>
-                          </Col>
-                        </Row>
-                      </React.Fragment>
-                    );
-                    teamCounter++;
-                  }
-                  return <div className="border-bottom">{teams}</div>;
-                })()}
-
-                {/* Rounds data */}
-                {(() => {
-                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                  const rounds: any[] = [];
-                  for (const round of this.rounds) {
-                    rounds.push(
-                      <React.Fragment>
-                        <Row className="mt-2 d-flex justify-content-left">
+                      </Col>
+                      <Col md={3}>
+                        <Row>
                           <p style={{ color: "grey" }}>
-                            {`Round ${round.SequenceNumber} name: ${round.RoundName}`}
+                            {`Member 2: ${team.Member2Name}`}
                           </p>
                         </Row>
-                        <Row className="d-flex justify-content-left">
-                          <Col md={3}>
-                            <Row>
-                              <p style={{ color: "grey" }}>
-                                {`Number of questions for each team: ${round.NumQuestionsEachTeam}`}
-                              </p>
-                            </Row>
-                          </Col>
-                          <Col md={3}>
-                            <Row>
-                              <p style={{ color: "grey" }}>
-                                {`Maximum mark of each question: ${round.FullMarkEachQuestion}`}
-                              </p>
-                            </Row>
-                          </Col>
-                          <Col md={3}>
-                            <Row>
-                              <p style={{ color: "grey" }}>
-                                {`Time limit for each question: ${round.TimerSeconds} seconds`}
-                              </p>
-                            </Row>
-                          </Col>
+                      </Col>
+                      <Col md={3}>
+                        <Row>
+                          <p style={{ color: "grey" }}>
+                            {`Member 3: ${team.Member3Name}`}
+                          </p>
                         </Row>
-                        <Row className="d-flex justify-content-left">
-                          <Col md={3}>
-                            <Row>
-                              <p style={{ color: "grey" }}>
-                                {`MCQ: ${round.IsMCQ ? "Yes" : "No"}`}
-                              </p>
-                            </Row>
-                          </Col>
-                          <Col md={3}>
-                            <Row>
-                              <p style={{ color: "grey" }}>
-                                {`Audio/Visual: ${
-                                  round.IsAudioVisualRound ? "Yes" : "No"
-                                }`}
-                              </p>
-                            </Row>
-                          </Col>
-                          <Col md={3}>
-                            <Row>
-                              <p style={{ color: "grey" }}>
-                                {`Questions can be passed: ${
-                                  round.IsPassable ? "Yes" : "No"
-                                }`}
-                              </p>
-                            </Row>
-                          </Col>
+                      </Col>
+                      <Col md={3}>
+                        <Row>
+                          <p style={{ color: "grey" }}>
+                            {`Member 4: ${team.Member4Name}`}
+                          </p>
                         </Row>
-                      </React.Fragment>
-                    );
-                  }
-                  return <div className="border-bottom">{rounds}</div>;
-                })()}
-              </Accordion.Body>
-            </Accordion.Item>
+                      </Col>
+                    </Row>
+                  </React.Fragment>
+                );
+                teamCounter++;
+              }
+              return teams;
+            })()}
+          </Row>
 
-            {/* Questions Data */}
-            <Accordion.Item eventKey="1">
-              <Accordion.Header>Questions</Accordion.Header>
-              <Accordion.Body>
-                {(() => {
-                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                  const questionsDiv: any[] = [];
-                  for (const [roundSequence, questions] of this.questionsMap) {
-                    const round = this.rounds[roundSequence - 1];
-                    questionsDiv.push(
-                      <Row className="mt-2 d-flex justify-content-left">
-                        <Col md={3}>
-                          <Row>
-                            <p style={{ color: "grey" }}>
-                              {`Round ${roundSequence} (${round.RoundName}) Questions`}
-                            </p>
-                          </Row>
-                        </Col>
+          {/* Rounds data */}
+          <Row className="d-flex justify-content-left border-bottom mt-3">
+            <h4 style={{ color: "grey" }}>{"Quiz Rounds"}</h4>
+          </Row>
+          <Row>
+            {(() => {
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              const rounds: any[] = [];
+              for (const round of this.rounds) {
+                rounds.push(
+                  <React.Fragment>
+                    <Row className="mt-3 d-flex justify-content-left">
+                      <p style={{ color: "grey" }}>
+                        {`Round ${round.SequenceNumber} name: ${round.RoundName}`}
+                      </p>
+                    </Row>
+                    <Row className="d-flex justify-content-left">
+                      <Col md={3}>
+                        <Row>
+                          <p style={{ color: "grey" }}>
+                            {`Number of questions for each team: ${round.NumQuestionsEachTeam}`}
+                          </p>
+                        </Row>
+                      </Col>
+                      <Col md={3}>
+                        <Row>
+                          <p style={{ color: "grey" }}>
+                            {`Maximum mark of each question: ${round.FullMarkEachQuestion}`}
+                          </p>
+                        </Row>
+                      </Col>
+                      <Col md={3}>
+                        <Row>
+                          <p style={{ color: "grey" }}>
+                            {`Time limit for each question: ${round.TimerSeconds} seconds`}
+                          </p>
+                        </Row>
+                      </Col>
+                    </Row>
+                    <Row className="d-flex justify-content-left">
+                      <Col md={3}>
+                        <Row>
+                          <p style={{ color: "grey" }}>
+                            {`MCQ: ${round.IsMCQ ? "Yes" : "No"}`}
+                          </p>
+                        </Row>
+                      </Col>
+                      <Col md={3}>
+                        <Row>
+                          <p style={{ color: "grey" }}>
+                            {`Audio/Visual: ${
+                              round.IsAudioVisualRound ? "Yes" : "No"
+                            }`}
+                          </p>
+                        </Row>
+                      </Col>
+                      <Col md={3}>
+                        <Row>
+                          <p style={{ color: "grey" }}>
+                            {`Questions can be passed: ${
+                              round.IsPassable ? "Yes" : "No"
+                            }`}
+                          </p>
+                        </Row>
+                      </Col>
+                    </Row>
+                  </React.Fragment>
+                );
+              }
+              return rounds;
+            })()}
+          </Row>
+
+          {/* Questions data */}
+          <Row className="d-flex justify-content-left border-bottom mt-3">
+            <h4 style={{ color: "grey" }}>{"Questions"}</h4>
+          </Row>
+          <Row>
+            {(() => {
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              const questionsDiv: any[] = [];
+              for (const [roundSequence, questions] of this.questionsMap) {
+                const round = this.rounds[roundSequence - 1];
+                questionsDiv.push(
+                  <Row className="mt-3 d-flex justify-content-left">
+                    <h5 style={{ color: "grey" }}>
+                      {`Round ${roundSequence} (${round.RoundName}) Questions`}
+                    </h5>
+                  </Row>
+                );
+                for (const question of questions) {
+                  const teamIndex =
+                    question.SequenceNumber! % this.quiz.NumberOfTeams!
+                      ? question.SequenceNumber! % this.quiz.NumberOfTeams!
+                      : this.quiz.NumberOfTeams;
+                  questionsDiv.push(
+                    <React.Fragment>
+                      <Row className="d-flex justify-content-left mt-3">
+                        <p style={{ color: "grey" }}>
+                          {`Question ${question.SequenceNumber} (for ${
+                            this.teams[teamIndex! - 1].TeamName
+                          }): ${question.Description}`}
+                        </p>
                       </Row>
-                    );
-                    for (const question of questions) {
-                      questionsDiv.push(
-                        <React.Fragment>
+                      {round.IsAudioVisualRound === true && (
+                        <Row className="d-flex justify-content-left">
+                          <Col md={3}>
+                            <Row>
+                              <Image
+                                src={`data:image/gif;base64,${question.MediaBase64}`}
+                                fluid
+                              />
+                            </Row>
+                          </Col>
+                        </Row>
+                      )}
+                      {round.IsMCQ === true && (
+                        <>
                           <Row className="d-flex justify-content-left">
                             <Col md={3}>
                               <Row>
                                 <p style={{ color: "grey" }}>
-                                  {`Question ${question.SequenceNumber}: ${question.Description}`}
+                                  {`Option A: ${question.Option1}`}
+                                </p>
+                              </Row>
+                            </Col>
+                            <Col md={3}>
+                              <Row>
+                                <p style={{ color: "grey" }}>
+                                  {`Option B: ${question.Option2}`}
+                                </p>
+                              </Row>
+                            </Col>
+                            <Col md={3}>
+                              <Row>
+                                <p style={{ color: "grey" }}>
+                                  {`Option C: ${question.Option3}`}
+                                </p>
+                              </Row>
+                            </Col>
+                            <Col md={3}>
+                              <Row>
+                                <p style={{ color: "grey" }}>
+                                  {`Option D: ${question.Option4}`}
                                 </p>
                               </Row>
                             </Col>
                           </Row>
-                          {round.IsAudioVisualRound === true && (
-                            <Row className="d-flex justify-content-left">
-                              <Col md={3}>
-                                <Row>
-                                  <Image
-                                    src={`data:image/gif;base64,${question.MediaBase64}`}
-                                    fluid
-                                  />
-                                </Row>
-                              </Col>
-                            </Row>
-                          )}
-                          {round.IsMCQ === true && (
-                            <>
-                              <Row className="d-flex justify-content-left">
-                                <Col md={3}>
-                                  <Row>
-                                    <p style={{ color: "grey" }}>
-                                      {`Option A: ${question.Option1}`}
-                                    </p>
-                                  </Row>
-                                </Col>
-                                <Col md={3}>
-                                  <Row>
-                                    <p style={{ color: "grey" }}>
-                                      {`Option B: ${question.Option2}`}
-                                    </p>
-                                  </Row>
-                                </Col>
-                                <Col md={3}>
-                                  <Row>
-                                    <p style={{ color: "grey" }}>
-                                      {`Option C: ${question.Option3}`}
-                                    </p>
-                                  </Row>
-                                </Col>
-                                <Col md={3}>
-                                  <Row>
-                                    <p style={{ color: "grey" }}>
-                                      {`Option D: ${question.Option4}`}
-                                    </p>
-                                  </Row>
-                                </Col>
+                          <Row className="d-flex justify-content-left">
+                            <Col md={3}>
+                              <Row>
+                                <p style={{ color: "grey" }}>
+                                  {`Correct answer: ${question.Answer}`}
+                                </p>
                               </Row>
-                              <Row className="d-flex justify-content-left">
-                                <Col md={3}>
-                                  <Row>
-                                    <p style={{ color: "grey" }}>
-                                      {`Correct answer: ${question.Answer}`}
-                                    </p>
-                                  </Row>
-                                </Col>
-                              </Row>
-                            </>
-                          )}
-                          {round.IsMCQ === false && (
-                            <Row className="d-flex justify-content-left">
-                              <Col md={3}>
-                                <Row>
-                                  <p style={{ color: "grey" }}>
-                                    {`Answer: ${question.Answer}`}
-                                  </p>
-                                </Row>
-                              </Col>
+                            </Col>
+                          </Row>
+                        </>
+                      )}
+                      {round.IsMCQ === false && (
+                        <Row className="d-flex justify-content-left">
+                          <Col md={3}>
+                            <Row>
+                              <p style={{ color: "grey" }}>
+                                {`Answer: ${question.Answer}`}
+                              </p>
                             </Row>
-                          )}
-                        </React.Fragment>
-                      );
-                    }
-                  }
-                  return questionsDiv;
-                })()}
-              </Accordion.Body>
-            </Accordion.Item>
-          </Accordion>
+                          </Col>
+                        </Row>
+                      )}
+                    </React.Fragment>
+                  );
+                }
+              }
+              return questionsDiv;
+            })()}
+          </Row>
+
+          <Row className="d-flex justify-content-left border-bottom mt-3"></Row>
 
           {/* Buttons */}
           <Row className="mt-5 mb-5 d-flex justify-content-center">

@@ -52,11 +52,16 @@ class QuestionInfoEachRound extends React.Component<
         this.props.numOfTeams * this.props.roundData.NumQuestionsEachTeam!;
 
       for (let i = 1; i <= totalNumQuestions; i++) {
+        const teamIndex =
+          i % this.props.numOfTeams
+            ? i % this.props.numOfTeams
+            : this.props.numOfTeams;
+
         const question: QuestionType = {
           RoundUUID: this.props.roundData.UUID!,
           SequenceNumber: i,
           Description: form[`question${i}Statement`].value,
-          TargetTeamUUID: this.props.teams[i - 1]["UUID"],
+          TargetTeamUUID: this.props.teams[teamIndex - 1]["UUID"],
         };
 
         if (this.props.roundData.IsMCQ) {
@@ -122,6 +127,10 @@ class QuestionInfoEachRound extends React.Component<
                 this.props.numOfTeams *
                 this.props.roundData.NumQuestionsEachTeam!;
               for (let i = 1; i <= totalNumQuestions; i++) {
+                const teamIndex =
+                  i % this.props.numOfTeams
+                    ? i % this.props.numOfTeams
+                    : this.props.numOfTeams;
                 questions.push(
                   <React.Fragment key={i}>
                     {/* Question statement */}
@@ -133,11 +142,9 @@ class QuestionInfoEachRound extends React.Component<
                           >{`Question ${i}`}</FormLabel>
                           <FloatingLabel
                             controlId={`question${i}Statement`}
-                            label={`To team ${
-                              i % this.props.numOfTeams
-                                ? i % this.props.numOfTeams
-                                : this.props.numOfTeams
-                            } (${this.props.teams[i - 1]["TeamName"]})`}
+                            label={`For team ${teamIndex} (${
+                              this.props.teams[teamIndex - 1]["TeamName"]
+                            })`}
                             className="px-1"
                           >
                             <Form.Control
