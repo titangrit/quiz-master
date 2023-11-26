@@ -20,6 +20,7 @@ import {
 } from "../server";
 
 interface QuizInstancePageState {
+  quizNotFound: boolean;
   serverError: boolean;
   gotData: boolean;
 }
@@ -39,6 +40,7 @@ export default class QuizInstancePage extends React.Component<
   constructor(props: QuizInstancePageState) {
     super(props);
     this.state = {
+      quizNotFound: false,
       serverError: false,
       gotData: false,
     };
@@ -65,6 +67,12 @@ export default class QuizInstancePage extends React.Component<
         throw "Failed to get quiz data";
       }
       this.quiz = (await quizResponse.json()).Quiz;
+      if (!this.quiz) {
+        this.setState({
+          quizNotFound: true,
+        });
+        return;
+      }
 
       // get teams data
       const teamsApiEndpoint =
@@ -129,7 +137,9 @@ export default class QuizInstancePage extends React.Component<
       return (
         <React.Fragment>
           <HomeNavbar />
-          <p style={{ color: "red" }}>A server error occurred</p>
+          <div className="border-bottom d-flex align-items-center justify-content-center text-center">
+            <p style={{ color: "red" }}>A server error occurred</p>
+          </div>
         </React.Fragment>
       );
     }
@@ -138,8 +148,23 @@ export default class QuizInstancePage extends React.Component<
       return (
         <React.Fragment>
           <HomeNavbar />
-          <p>Loading quiz data</p>
-          <Spinner animation="grow" role="status" />
+          <Row className="d-flex align-items-center justify-content-center text-center">
+            <p>Loading quiz data...</p>
+          </Row>
+          <Row className="d-flex align-items-center justify-content-center">
+            <Spinner animation="grow" role="status" />
+          </Row>
+        </React.Fragment>
+      );
+    }
+
+    if (this.state.quizNotFound) {
+      return (
+        <React.Fragment>
+          <HomeNavbar />
+          <Row className="border-bottom d-flex align-items-center justify-content-center text-center">
+            <p>Quiz not found!</p>
+          </Row>
         </React.Fragment>
       );
     }
@@ -157,61 +182,58 @@ export default class QuizInstancePage extends React.Component<
             </Col>
           </Row>
 
-          <Accordion className="mt-5" alwaysOpen defaultActiveKey="0">
+          <Accordion className="mt-3" alwaysOpen defaultActiveKey="0">
             {/* Basic data, teams data, rounds data */}
             <Accordion.Item eventKey="0">
               <Accordion.Header>Basic Detail</Accordion.Header>
               <Accordion.Body>
                 {/* Basic data */}
-                <Row className="d-flex justify-content-left">
-                  <Col md={3}>
-                    <Row>
-                      <p style={{ color: "grey" }}>
-                        {"Quiz Event Name: " + this.quiz.QuizEventName}
-                      </p>
-                    </Row>
-                  </Col>
-                  <Col md={3}>
-                    <Row>
-                      <p style={{ color: "grey" }}>
-                        {"Number of teams: " + this.quiz.NumberOfTeams}
-                      </p>
-                    </Row>
-                  </Col>
-                  <Col md={3}>
-                    <Row>
-                      <p style={{ color: "grey" }}>
-                        {"Number of quiz rounds: " + this.quiz.NumberOfRounds}
-                      </p>
-                    </Row>
-                  </Col>
-                  <Col md={3}>
-                    <Row>
-                      <p style={{ color: "grey" }}>
-                        {"Status: " +
-                          QuizLifecycleStatusCode[
-                            this.quiz.LifecycleStatusCode!
-                          ]}
-                      </p>
-                    </Row>
-                  </Col>
-                </Row>
+                <div className="border-bottom">
+                  <Row className="d-flex justify-content-left">
+                    <p style={{ color: "grey" }}>
+                      {"Quiz event name: " + this.quiz.QuizEventName}
+                    </p>
+                  </Row>
+                  <Row className="d-flex justify-content-left">
+                    <Col md={3}>
+                      <Row>
+                        <p style={{ color: "grey" }}>
+                          {"Number of teams: " + this.quiz.NumberOfTeams}
+                        </p>
+                      </Row>
+                    </Col>
+                    <Col md={3}>
+                      <Row>
+                        <p style={{ color: "grey" }}>
+                          {"Number of quiz rounds: " + this.quiz.NumberOfRounds}
+                        </p>
+                      </Row>
+                    </Col>
+                    <Col md={3}>
+                      <Row>
+                        <p style={{ color: "grey" }}>
+                          {"Status: " +
+                            QuizLifecycleStatusCode[
+                              this.quiz.LifecycleStatusCode!
+                            ]}
+                        </p>
+                      </Row>
+                    </Col>
+                  </Row>
+                </div>
 
                 {/* Teams data */}
                 {(() => {
+                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
                   const teams: any[] = [];
                   let teamCounter = 1;
                   for (const team of this.teams) {
                     teams.push(
                       <React.Fragment>
                         <Row className="mt-2 d-flex justify-content-left">
-                          <Col md={3}>
-                            <Row>
-                              <p style={{ color: "grey" }}>
-                                {`Team ${teamCounter} name: ${team.TeamName}`}
-                              </p>
-                            </Row>
-                          </Col>
+                          <p style={{ color: "grey" }}>
+                            {`Team ${teamCounter} name: ${team.TeamName}`}
+                          </p>
                         </Row>
                         <Row className="d-flex justify-content-left">
                           <Col md={3}>
@@ -247,23 +269,22 @@ export default class QuizInstancePage extends React.Component<
                     );
                     teamCounter++;
                   }
-                  return teams;
+                  return <div className="border-bottom">{teams}</div>;
                 })()}
 
                 {/* Rounds data */}
                 {(() => {
+                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
                   const rounds: any[] = [];
                   for (const round of this.rounds) {
                     rounds.push(
                       <React.Fragment>
                         <Row className="mt-2 d-flex justify-content-left">
-                          <Col md={3}>
-                            <Row>
-                              <p style={{ color: "grey" }}>
-                                {`Round ${round.SequenceNumber} name: ${round.RoundName}`}
-                              </p>
-                            </Row>
-                          </Col>
+                          <p style={{ color: "grey" }}>
+                            {`Round ${round.SequenceNumber} name: ${round.RoundName}`}
+                          </p>
+                        </Row>
+                        <Row className="d-flex justify-content-left">
                           <Col md={3}>
                             <Row>
                               <p style={{ color: "grey" }}>
@@ -275,6 +296,13 @@ export default class QuizInstancePage extends React.Component<
                             <Row>
                               <p style={{ color: "grey" }}>
                                 {`Maximum mark of each question: ${round.FullMarkEachQuestion}`}
+                              </p>
+                            </Row>
+                          </Col>
+                          <Col md={3}>
+                            <Row>
+                              <p style={{ color: "grey" }}>
+                                {`Time limit for each question: ${round.TimerSeconds} seconds`}
                               </p>
                             </Row>
                           </Col>
@@ -305,18 +333,11 @@ export default class QuizInstancePage extends React.Component<
                               </p>
                             </Row>
                           </Col>
-                          <Col md={3}>
-                            <Row>
-                              <p style={{ color: "grey" }}>
-                                {`Time limit for each question: ${round.TimerSeconds} seconds`}
-                              </p>
-                            </Row>
-                          </Col>
                         </Row>
                       </React.Fragment>
                     );
                   }
-                  return rounds;
+                  return <div className="border-bottom">{rounds}</div>;
                 })()}
               </Accordion.Body>
             </Accordion.Item>
@@ -326,6 +347,7 @@ export default class QuizInstancePage extends React.Component<
               <Accordion.Header>Questions</Accordion.Header>
               <Accordion.Body>
                 {(() => {
+                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
                   const questionsDiv: any[] = [];
                   for (const [roundSequence, questions] of this.questionsMap) {
                     const round = this.rounds[roundSequence - 1];
