@@ -77,28 +77,32 @@ export default class BasicInfo extends React.Component<
         quiz.LifecycleStatusCode = QuizLifecycleStatusCode.Draft;
       }
 
-      let apiEndpoint: string;
-      if (this.props.isNewQuiz) {
-        apiEndpoint = API_PATH + Endpoint.create_quiz;
-      } else {
-        quiz.ID = this.props.quizID;
-        apiEndpoint = API_PATH + Endpoint.edit_quiz;
-      }
-
-      const response = await fetch(apiEndpoint, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ Quiz: quiz }),
-      });
-
-      if (!response.ok) {
-        throw `${apiEndpoint} responded ${response.statusText}; HTTP code: ${response.status}`;
-      }
-
       let quizID: number;
-      if (this.props.isNewQuiz) {
-        const data = await response.json();
-        quizID = data.QuizID;
+      if (Object.keys(quiz).length !== 0) {
+        let apiEndpoint: string;
+        if (this.props.isNewQuiz) {
+          apiEndpoint = API_PATH + Endpoint.create_quiz;
+        } else {
+          quiz.ID = this.props.quizID;
+          apiEndpoint = API_PATH + Endpoint.edit_quiz;
+        }
+
+        const response = await fetch(apiEndpoint, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ Quiz: quiz }),
+        });
+
+        if (!response.ok) {
+          throw `${apiEndpoint} responded ${response.statusText}; HTTP code: ${response.status}`;
+        }
+
+        if (this.props.isNewQuiz) {
+          const data = await response.json();
+          quizID = data.QuizID;
+        } else {
+          quizID = this.props.quizID;
+        }
       } else {
         quizID = this.props.quizID;
       }
@@ -106,8 +110,8 @@ export default class BasicInfo extends React.Component<
       this.props.nextStep(
         quizID,
         inputQuizEventName,
-        inputNumOfTeams,
-        inputNumOfRounds
+        inputNumOfRounds,
+        inputNumOfTeams
       );
     } catch (error) {
       console.error(error);
@@ -129,7 +133,7 @@ export default class BasicInfo extends React.Component<
         throw "Failed to get quiz data";
       }
       const quiz: QuizType = (await quizResponse.json()).Quiz;
-      if (!quiz) {
+      if (Object.keys(quiz).length === 0) {
         this.setState({
           editQuizNotFound: true,
         });

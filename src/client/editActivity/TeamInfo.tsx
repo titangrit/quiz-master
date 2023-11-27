@@ -10,6 +10,8 @@ import { API_PATH } from "../common";
 import { TeamType, Endpoint } from "./../../server";
 
 interface TeamInfoState {
+  gotTeamsData: boolean;
+  currentTeams: TeamType[];
   serverError: boolean;
 }
 
@@ -31,6 +33,8 @@ export default class TeamInfo extends React.Component<
   constructor(props: TeamInfoProps) {
     super(props);
     this.state = {
+      gotTeamsData: false,
+      currentTeams: [],
       serverError: false,
     };
   }
@@ -46,26 +50,57 @@ export default class TeamInfo extends React.Component<
       // extract the form data
       const teams: TeamType[] = [];
       for (let i = 0; i < this.props.numOfTeams; i++) {
-        const team: TeamType = {
-          TeamName: form[`team${i + 1}Name`].value,
-          Member1Name: form[`team${i + 1}Member1`].value,
-          Member2Name: form[`team${i + 1}Member2`].value,
-          Member3Name: form[`team${i + 1}Member3`].value,
-          Member4Name: form[`team${i + 1}Member4`].value,
-        };
-        teams.push(team);
+        const team: TeamType = {};
+
+        const inputTeamName = form[`team${i + 1}Name`].value;
+        const inputMember1Name = form[`team${i + 1}Member1`].value;
+        const inputMember2Name = form[`team${i + 1}Member2`].value;
+        const inputMember3Name = form[`team${i + 1}Member3`].value;
+        const inputMember4Name = form[`team${i + 1}Member4`].value;
+
+        if (inputTeamName !== this.state.currentTeams[i]?.TeamName) {
+          team.TeamName = inputTeamName;
+        }
+        if (inputMember1Name !== this.state.currentTeams[i]?.Member1Name) {
+          team.Member1Name = inputMember1Name;
+        }
+        if (inputMember2Name !== this.state.currentTeams[i]?.Member2Name) {
+          team.Member2Name = inputMember2Name;
+        }
+        if (inputMember3Name !== this.state.currentTeams[i]?.Member3Name) {
+          team.Member3Name = inputMember3Name;
+        }
+        if (inputMember4Name !== this.state.currentTeams[i]?.Member4Name) {
+          team.Member4Name = inputMember4Name;
+        }
+
+        if (this.props.isNewQuiz) {
+          teams.push(team);
+        } else if (Object.keys(team).length !== 0) {
+          team.UUID = this.state.currentTeams[i]?.UUID;
+          teams.push(team);
+        }
       }
 
-      // post new teams
-      const apiEndpoint = API_PATH + Endpoint.create_quiz_teams;
-      const response = await fetch(apiEndpoint, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ QuizID: this.props.quizID, Teams: teams }),
-      });
+      if (teams.length > 0) {
+        let apiEndpoint: string;
+        let body: string;
+        if (this.props.isNewQuiz) {
+          apiEndpoint = API_PATH + Endpoint.create_quiz_teams;
+          body = JSON.stringify({ QuizID: this.props.quizID, Teams: teams });
+        } else {
+          apiEndpoint = API_PATH + Endpoint.edit_quiz_teams;
+          body = JSON.stringify({ Teams: teams });
+        }
+        const response = await fetch(apiEndpoint, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: body,
+        });
 
-      if (!response.ok) {
-        throw `${apiEndpoint} responded ${response.statusText}; HTTP code: ${response.status}`;
+        if (!response.ok) {
+          throw `${apiEndpoint} responded ${response.statusText}; HTTP code: ${response.status}`;
+        }
       }
 
       this.props.nextStep();
@@ -76,6 +111,37 @@ export default class TeamInfo extends React.Component<
       });
     }
   };
+
+  getTeamsData = async () => {
+    try {
+      const teamsApiEndpoint =
+        API_PATH + Endpoint.get_quiz_teams + "?quizID=" + this.props.quizID;
+      const teamsResponse = await fetch(teamsApiEndpoint, {
+        method: "GET",
+        headers: { "Content-Type": "application/json" },
+      });
+      if (!teamsResponse.ok) {
+        throw "Failed to get teams data";
+      }
+      const teams: TeamType[] = (await teamsResponse.json()).Teams || [];
+
+      this.setState({
+        currentTeams: teams,
+        gotTeamsData: true,
+      });
+    } catch (error) {
+      console.error(error);
+      this.setState({
+        serverError: true,
+      });
+    }
+  };
+
+  async componentDidMount() {
+    if (!this.props.isNewQuiz && !this.state.gotTeamsData) {
+      await this.getTeamsData();
+    }
+  }
 
   render() {
     if (this.state.serverError) {
@@ -90,7 +156,11 @@ export default class TeamInfo extends React.Component<
               <p className="fs-3 d-inline">Provide Teams Detail </p>
             </Col>
             <Col md="auto" className="d-inline">
-              <p className="fs-4 d-inline">{`{ New Quiz | ${this.props.quizEventName} }`}</p>
+              <p className="fs-4 d-inline">
+                {this.props.isNewQuiz
+                  ? `{ New Quiz | ${this.props.quizEventName} }`
+                  : `{ Edit Quiz | ${this.props.quizEventName} }`}
+              </p>
             </Col>
           </Row>
 
@@ -99,6 +169,7 @@ export default class TeamInfo extends React.Component<
               // eslint-disable-next-line @typescript-eslint/no-explicit-any
               const teams: any[] = [];
               for (let i = 0; i < this.props.numOfTeams; i++) {
+                const currentTeam: TeamType = this.state.currentTeams[i];
                 teams.push(
                   <React.Fragment key={i}>
                     {/* Team name */}
@@ -113,7 +184,11 @@ export default class TeamInfo extends React.Component<
                             <Form.Control
                               type="text"
                               placeholder={`Team ${i + 1} Name`}
-                              defaultValue={`Team-${i + 1}`}
+                              defaultValue={
+                                currentTeam?.TeamName
+                                  ? currentTeam?.TeamName
+                                  : ""
+                              }
                               required
                             />
                           </FloatingLabel>
@@ -121,7 +196,7 @@ export default class TeamInfo extends React.Component<
                       </Col>
                     </Row>
                     {/* Member 1 and 2*/}
-                    <Row className="mt-2 d-flex justify-content-left">
+                    <Row className="mt-3 d-flex justify-content-left">
                       {/* Member 1 */}
                       <Col md={3}>
                         <Row>
@@ -133,6 +208,11 @@ export default class TeamInfo extends React.Component<
                             <Form.Control
                               type="text"
                               placeholder={"Member 1 Name"}
+                              defaultValue={
+                                currentTeam?.Member1Name
+                                  ? currentTeam?.Member1Name
+                                  : ""
+                              }
                             />
                           </FloatingLabel>
                         </Row>
@@ -148,6 +228,11 @@ export default class TeamInfo extends React.Component<
                             <Form.Control
                               type="text"
                               placeholder={"Member 2 Name"}
+                              defaultValue={
+                                currentTeam?.Member2Name
+                                  ? currentTeam?.Member2Name
+                                  : ""
+                              }
                             />
                           </FloatingLabel>
                         </Row>
@@ -163,6 +248,11 @@ export default class TeamInfo extends React.Component<
                             <Form.Control
                               type="text"
                               placeholder={"Member 3 Name"}
+                              defaultValue={
+                                currentTeam?.Member3Name
+                                  ? currentTeam?.Member3Name
+                                  : ""
+                              }
                             />
                           </FloatingLabel>
                         </Row>
@@ -178,6 +268,11 @@ export default class TeamInfo extends React.Component<
                             <Form.Control
                               type="text"
                               placeholder={"Member 4 Name"}
+                              defaultValue={
+                                currentTeam?.Member4Name
+                                  ? currentTeam?.Member4Name
+                                  : ""
+                              }
                             />
                           </FloatingLabel>
                         </Row>
@@ -188,10 +283,13 @@ export default class TeamInfo extends React.Component<
               }
               return teams;
             })()}
+
+            <Row className="d-flex justify-content-left border-bottom mt-5"></Row>
+
             {/* Buttons */}
             <Row className="mt-5 mb-5 d-flex justify-content-center">
               <Col md={3}>
-                <Row className="mb-4">
+                <Row className="mt-4 mb-4">
                   <Button
                     variant="light"
                     size="lg"
