@@ -97,9 +97,9 @@ export default class TeamInfo extends React.Component<
         const inputMember4Name = form[`team${i + 1}Member4`].value;
 
         const team: TeamType = {
-          TeamName: inputTeamName,
           QuizID: this.props.quizID,
           SequenceNumber: i + 1,
+          TeamName: inputTeamName,
           Member1Name: inputMember1Name,
           Member2Name: inputMember2Name,
           Member3Name: inputMember3Name,

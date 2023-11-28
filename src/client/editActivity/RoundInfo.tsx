@@ -48,12 +48,15 @@ export default class RoundInfo extends React.Component<
 
       const form = event.currentTarget;
 
-      // extract the form data
-      const rounds: RoundType[] = [];
-      for (let i = 0; i < this.props.numOfRounds; i++) {
-        const round: RoundType = {
-          QuizID: this.props.quizID,
-        };
+      // process update of existing rounds
+      const updateRounds: RoundType[] = [];
+      let count: number = 0;
+      for (
+        let i = 0;
+        i < this.state.currentRounds.length && i < this.props.numOfRounds;
+        i++
+      ) {
+        const round: RoundType = {};
 
         const inputRoundName = form[`round${i + 1}Name`].value;
         const inputSequenceNumber = i + 1;
@@ -102,28 +105,61 @@ export default class RoundInfo extends React.Component<
           round.TimerSeconds = inputTimerSeconds;
         }
 
-        if (this.props.isNewQuiz) {
-          round.QuizID = this.props.quizID;
-          rounds.push(round);
-        } else if (Object.keys(round).length !== 0) {
+        if (Object.keys(round).length !== 0) {
           round.UUID = this.state.currentRounds[i].UUID;
-          rounds.push(round);
+          updateRounds.push(round);
         }
+
+        count++;
       }
 
-      if (rounds.length > 0) {
-        let apiEndpoint: string;
-        if (this.props.isNewQuiz) {
-          apiEndpoint = API_PATH + Endpoint.create_quiz_rounds;
-        } else {
-          apiEndpoint = API_PATH + Endpoint.edit_quiz_rounds;
-        }
+      // process creation of new rounds
+      const createRounds: RoundType[] = [];
+      for (let i = count; i < this.props.numOfRounds; i++) {
+        const inputRoundName = form[`round${i + 1}Name`].value;
+        const inputNumQuestionsEachTeam =
+          form[`round${i + 1}NumQuestions`].value;
+        const inputFullMarkEachQuestion =
+          form[`round${i + 1}FullMarkEachQ`].value;
+        const inputIsMCQ = form[`round${i + 1}IsMCQ`].checked;
+        const inputIsAudioVisualRound = form[`round${i + 1}IsAVRound`].checked;
+        const inputIsPassable = form[`round${i + 1}IsPassable`].checked;
+        const inputTimerSeconds = form[`round${i + 1}TimerSeconds`].value;
+
+        const round: RoundType = {
+          QuizID: this.props.quizID,
+          SequenceNumber: i + 1,
+          RoundName: inputRoundName,
+          NumQuestionsEachTeam: inputNumQuestionsEachTeam,
+          FullMarkEachQuestion: inputFullMarkEachQuestion,
+          IsMCQ: inputIsMCQ,
+          IsAudioVisualRound: inputIsAudioVisualRound,
+          IsPassable: inputIsPassable,
+          TimerSeconds: inputTimerSeconds,
+        };
+
+        createRounds.push(round);
+      }
+
+      if (updateRounds.length) {
+        const apiEndpoint: string = API_PATH + Endpoint.edit_quiz_rounds;
         const response = await fetch(apiEndpoint, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ Rounds: rounds }),
+          body: JSON.stringify({ Rounds: updateRounds }),
         });
+        if (!response.ok) {
+          throw `${apiEndpoint} responded ${response.statusText}; HTTP code: ${response.status}`;
+        }
+      }
 
+      if (createRounds.length) {
+        const apiEndpoint: string = API_PATH + Endpoint.create_quiz_rounds;
+        const response = await fetch(apiEndpoint, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ Rounds: createRounds }),
+        });
         if (!response.ok) {
           throw `${apiEndpoint} responded ${response.statusText}; HTTP code: ${response.status}`;
         }

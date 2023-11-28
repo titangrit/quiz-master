@@ -96,7 +96,8 @@ export default class QuizInstancePage extends React.Component<
       if (!roundsResponse.ok) {
         throw "Failed to get rounds data";
       }
-      this.rounds = (await roundsResponse.json()).Rounds || [];
+      const allRounds = (await roundsResponse.json()).Rounds || [];
+      this.rounds = allRounds.slice(0, this.quiz.NumberOfRounds!);
 
       // get question data
       for (const round of this.rounds) {
@@ -113,7 +114,12 @@ export default class QuizInstancePage extends React.Component<
           throw "Failed to get questions data";
         }
         const roundQuestions = (await questionResponse.json()).Questions || [];
-        this.questionsMap.set(round.SequenceNumber!, roundQuestions);
+        const totalNumQuestions =
+          round.NumQuestionsEachTeam! * this.quiz.NumberOfTeams!;
+        this.questionsMap.set(
+          round.SequenceNumber!,
+          roundQuestions.slice(0, totalNumQuestions)
+        );
       }
     } catch (error) {
       console.error(error);
