@@ -10,14 +10,12 @@ export type QuizType = {
   NumberOfTeams?: number;
   CurrentRoundSeq?: number;
   CurrentQuestionSeq?: number;
-  Team1UUID?: string;
-  Team2UUID?: string;
-  Team3UUID?: string;
-  Team4UUID?: string;
 };
 
 export type TeamType = {
   UUID?: string;
+  QuizID?: number;
+  SequenceNumber?: number;
   TeamName?: string;
   Member1Name?: string;
   Member2Name?: string;

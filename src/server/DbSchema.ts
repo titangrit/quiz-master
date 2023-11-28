@@ -15,10 +15,6 @@ export enum Quiz {
   NumberOfTeams = "NUM_OF_TEAMS",
   CurrentRoundSeq = "CURR_ROUND_SEQ_NUM",
   CurrentQuestionSeq = "CURR_QUESTION_SEQ_NUM",
-  Team1UUID = "TEAM_1_UUID",
-  Team2UUID = "TEAM_2_UUID",
-  Team3UUID = "TEAM_3_UUID",
-  Team4UUID = "TEAM_4_UUID",
 }
 
 export enum Round {
@@ -53,6 +49,8 @@ export enum Question {
 
 export enum Team {
   UUID = "UUID",
+  QuizID = "QUIZ_ID",
+  SequenceNumber = "SEQUENCE_NUM",
   TeamName = "TEAM_NAME",
   Member1Name = "MEMBER_1_Name",
   Member2Name = "MEMBER_2_Name",

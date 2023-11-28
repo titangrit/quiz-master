@@ -70,18 +70,14 @@ export default class RequestHandler {
           break;
         }
         case Endpoint.create_quiz_teams: {
-          const quizID: number = req.body.QuizID;
           const teams: TeamType[] = req.body.Teams || [];
-          const quiz: QuizType[] = await this.db.getQuiz(quizID);
-          if (quiz.length === 0) {
-            res.status(400).send("Invalid quiz ID: " + req.body.QuizID);
-            break;
-          }
           if (!teams.length) {
             res.status(200).send("No value for Teams provided");
             break;
           }
-          await this.createQuizTeams(quizID, teams);
+          for (const team of teams) {
+            await this.db.createTeam(team);
+          }
           res.status(201).send("Created teams");
           break;
         }
@@ -474,36 +470,5 @@ export default class RequestHandler {
       }
     });
     return sorted;
-  }
-
-  private async createQuizTeams(
-    quizID: number,
-    teams: TeamType[]
-  ): Promise<void> {
-    const teamUUIDs: string[] = [];
-    for (let i = 0; i < 4; i++) {
-      if (teams[i]) {
-        teamUUIDs.push(await this.db.createTeam(teams[i]));
-      }
-    }
-
-    const quiz: QuizType = {
-      ID: quizID,
-    };
-
-    if (teamUUIDs[0]) {
-      quiz.Team1UUID = teamUUIDs[0];
-    }
-    if (teamUUIDs[1]) {
-      quiz.Team2UUID = teamUUIDs[1];
-    }
-    if (teamUUIDs[2]) {
-      quiz.Team3UUID = teamUUIDs[2];
-    }
-    if (teamUUIDs[3]) {
-      quiz.Team4UUID = teamUUIDs[3];
-    }
-
-    await this.db.updateQuiz(quiz);
   }
 }

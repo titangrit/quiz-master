@@ -76,10 +76,12 @@ export class MySqlDbHandler implements IHandleDatabase {
       const teamUUID: string = uuidv4();
       const statement =
         `INSERT INTO ${schema.Table.Team} ` +
-        `(${schema.Team.UUID}, ${schema.Team.TeamName}, ${schema.Team.Member1Name}, ${schema.Team.Member2Name}, ${schema.Team.Member3Name}, ${schema.Team.Member4Name}) ` +
-        "VALUES (?, ?, ?, ?, ?, ?)";
+        `(${schema.Team.UUID},${schema.Team.QuizID},${schema.Team.SequenceNumber}, ${schema.Team.TeamName}, ${schema.Team.Member1Name}, ${schema.Team.Member2Name}, ${schema.Team.Member3Name}, ${schema.Team.Member4Name}) ` +
+        "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
       const values = [
         teamUUID,
+        team.QuizID,
+        team.SequenceNumber,
         team.TeamName,
         team.Member1Name,
         team.Member2Name,
@@ -222,26 +224,6 @@ export class MySqlDbHandler implements IHandleDatabase {
     if (quiz.CurrentQuestionSeq !== undefined) {
       statement += `${schema.Quiz.CurrentQuestionSeq} = ?,`;
       values.push(quiz.CurrentQuestionSeq);
-    }
-
-    if (quiz.Team1UUID !== undefined) {
-      statement += `${schema.Quiz.Team1UUID} = ?,`;
-      values.push(quiz.Team1UUID);
-    }
-
-    if (quiz.Team2UUID !== undefined) {
-      statement += `${schema.Quiz.Team2UUID} = ?,`;
-      values.push(quiz.Team2UUID);
-    }
-
-    if (quiz.Team3UUID !== undefined) {
-      statement += `${schema.Quiz.Team3UUID} = ?,`;
-      values.push(quiz.Team3UUID);
-    }
-
-    if (quiz.Team4UUID !== undefined) {
-      statement += `${schema.Quiz.Team4UUID} = ?,`;
-      values.push(quiz.Team4UUID);
     }
 
     if (values.length === 0) {
@@ -504,10 +486,6 @@ export class MySqlDbHandler implements IHandleDatabase {
           NumberOfTeams: quiz[schema.Quiz.NumberOfTeams],
           CurrentRoundSeq: quiz[schema.Quiz.CurrentRoundSeq],
           CurrentQuestionSeq: quiz[schema.Quiz.CurrentQuestionSeq],
-          Team1UUID: quiz[schema.Quiz.Team1UUID],
-          Team2UUID: quiz[schema.Quiz.Team2UUID],
-          Team3UUID: quiz[schema.Quiz.Team3UUID],
-          Team4UUID: quiz[schema.Quiz.Team4UUID],
         });
       }
       logger.info("MySqlDbHandler->getQuiz :: Read quiz: " + quizzes.length);
@@ -524,22 +502,31 @@ export class MySqlDbHandler implements IHandleDatabase {
   async getTeamsByQuizID(quizID: number): Promise<TeamType[]> {
     try {
       const teams: TeamType[] = [];
-      const quiz: QuizType = (await this.getQuiz(quizID))[0];
-      if (quiz.Team1UUID) {
-        teams.push(await this.getTeamByUUID(quiz.Team1UUID));
-      }
-      if (quiz.Team2UUID) {
-        teams.push(await this.getTeamByUUID(quiz.Team2UUID));
-      }
-      if (quiz.Team3UUID) {
-        teams.push(await this.getTeamByUUID(quiz.Team3UUID));
-      }
-      if (quiz.Team4UUID) {
-        teams.push(await this.getTeamByUUID(quiz.Team4UUID));
+      const statement = `SELECT * FROM ${schema.Table.Team} WHERE ${schema.Team.QuizID} = ? ORDER BY ${schema.Team.SequenceNumber} ASC`;
+      const values = [quizID];
+      const sql = mysql.format(statement, values);
+
+      const [_result] = await this.db_conn.execute(sql);
+      const result = JSON.parse(JSON.stringify(_result));
+
+      for (const team of result) {
+        teams.push({
+          UUID: team[schema.Team.UUID],
+          QuizID: team[schema.Team.QuizID],
+          SequenceNumber: team[schema.Team.SequenceNumber],
+          TeamName: team[schema.Team.TeamName],
+          Member1Name: team[schema.Team.Member1Name],
+          Member2Name: team[schema.Team.Member2Name],
+          Member3Name: team[schema.Team.Member3Name],
+          Member4Name: team[schema.Team.Member4Name],
+          TotalMark: team[schema.Team.TotalMark],
+        });
       }
 
       logger.info(
-        "MySqlDbHandler->getTeamsByQuizID :: Read teams of quiz: " +
+        "MySqlDbHandler->getTeamsByQuizID :: Read teams of quiz " +
+          quizID +
+          ": " +
           JSON.stringify(teams)
       );
 
@@ -565,6 +552,8 @@ export class MySqlDbHandler implements IHandleDatabase {
 
       const team: TeamType = {
         UUID: result[0][schema.Team.UUID],
+        QuizID: result[0][schema.Team.QuizID],
+        SequenceNumber: result[0][schema.Team.SequenceNumber],
         TeamName: result[0][schema.Team.TeamName],
         Member1Name: result[0][schema.Team.Member1Name],
         Member2Name: result[0][schema.Team.Member2Name],
@@ -590,7 +579,7 @@ export class MySqlDbHandler implements IHandleDatabase {
   async getRoundsByQuizID(quizID: number): Promise<RoundType[]> {
     try {
       const rounds: RoundType[] = [];
-      const statement = `SELECT * FROM ${schema.Table.Round} WHERE ${schema.Round.QuizID} = ?`;
+      const statement = `SELECT * FROM ${schema.Table.Round} WHERE ${schema.Round.QuizID} = ? ORDER BY ${schema.Round.SequenceNumber} ASC`;
       const values = [quizID];
       const sql = mysql.format(statement, values);
       const [_result] = await this.db_conn.execute(sql);
@@ -611,21 +600,12 @@ export class MySqlDbHandler implements IHandleDatabase {
         });
       }
 
-      // Sort ascending by sequence number
-      const sortedRounds: RoundType[] = rounds.sort((x, y) => {
-        if (x.SequenceNumber! > y.SequenceNumber!) {
-          return 1;
-        } else {
-          return -1;
-        }
-      });
-
       logger.info(
         "MySqlDbHandler->getRoundsByQuizID :: Read rounds of quiz: " +
-          JSON.stringify(sortedRounds)
+          JSON.stringify(rounds)
       );
 
-      return sortedRounds;
+      return rounds;
     } catch (error) {
       logger.error(
         "MySqlDbHandler->getRoundsByQuizID :: Failed to read rounds of quiz: " +
@@ -675,7 +655,7 @@ export class MySqlDbHandler implements IHandleDatabase {
   async getQuestionsByRoundUUID(roundUUID: string): Promise<QuestionType[]> {
     try {
       const questions: QuestionType[] = [];
-      const statement = `SELECT * FROM ${schema.Table.Question} WHERE ${schema.Question.RoundUUID} = ?`;
+      const statement = `SELECT * FROM ${schema.Table.Question} WHERE ${schema.Question.RoundUUID} = ? ORDER BY ${schema.Question.SequenceNumber} ASC`;
       const values = [roundUUID];
       const sql = mysql.format(statement, values);
 
@@ -707,21 +687,12 @@ export class MySqlDbHandler implements IHandleDatabase {
         });
       }
 
-      // Sort ascending by sequence number
-      const sortedQuestions: QuestionType[] = questions.sort((x, y) => {
-        if (x.SequenceNumber! > y.SequenceNumber!) {
-          return 1;
-        } else {
-          return -1;
-        }
-      });
-
       logger.info(
         "MySqlDbHandler->getQuestionsByRoundUUID :: Read questions of round: " +
-          sortedQuestions.length
+          questions.length
       );
 
-      return sortedQuestions;
+      return questions;
     } catch (error) {
       logger.error(
         "MySqlDbHandler->getQuestionsByRoundUUID :: Failed to read questions of round: " +

@@ -47,9 +47,14 @@ export default class TeamInfo extends React.Component<
 
       const form = event.currentTarget;
 
-      // extract the form data
-      const teams: TeamType[] = [];
-      for (let i = 0; i < this.props.numOfTeams; i++) {
+      // process update of existing teams
+      const updateTeams: TeamType[] = [];
+      let count: number = 0;
+      for (
+        let i = 0;
+        i < this.state.currentTeams.length && i < this.props.numOfTeams;
+        i++
+      ) {
         const team: TeamType = {};
 
         const inputTeamName = form[`team${i + 1}Name`].value;
@@ -74,28 +79,55 @@ export default class TeamInfo extends React.Component<
           team.Member4Name = inputMember4Name;
         }
 
-        if (this.props.isNewQuiz) {
-          teams.push(team);
-        } else if (Object.keys(team).length !== 0) {
+        if (Object.keys(team).length !== 0) {
           team.UUID = this.state.currentTeams[i]?.UUID;
-          teams.push(team);
+          updateTeams.push(team);
         }
+
+        count++;
       }
 
-      if (teams.length > 0) {
-        let apiEndpoint: string;
-        let body: string;
-        if (this.props.isNewQuiz) {
-          apiEndpoint = API_PATH + Endpoint.create_quiz_teams;
-          body = JSON.stringify({ QuizID: this.props.quizID, Teams: teams });
-        } else {
-          apiEndpoint = API_PATH + Endpoint.edit_quiz_teams;
-          body = JSON.stringify({ Teams: teams });
-        }
+      // process creation of new teams
+      const createTeams: TeamType[] = [];
+      for (let i = count; i < this.props.numOfTeams; i++) {
+        const inputTeamName = form[`team${i + 1}Name`].value;
+        const inputMember1Name = form[`team${i + 1}Member1`].value;
+        const inputMember2Name = form[`team${i + 1}Member2`].value;
+        const inputMember3Name = form[`team${i + 1}Member3`].value;
+        const inputMember4Name = form[`team${i + 1}Member4`].value;
+
+        const team: TeamType = {
+          TeamName: inputTeamName,
+          QuizID: this.props.quizID,
+          SequenceNumber: i + 1,
+          Member1Name: inputMember1Name,
+          Member2Name: inputMember2Name,
+          Member3Name: inputMember3Name,
+          Member4Name: inputMember4Name,
+        };
+
+        createTeams.push(team);
+      }
+
+      if (updateTeams.length > 0) {
+        const apiEndpoint: string = API_PATH + Endpoint.edit_quiz_teams;
         const response = await fetch(apiEndpoint, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: body,
+          body: JSON.stringify({ Teams: updateTeams }),
+        });
+
+        if (!response.ok) {
+          throw `${apiEndpoint} responded ${response.statusText}; HTTP code: ${response.status}`;
+        }
+      }
+
+      if (createTeams.length > 0) {
+        const apiEndpoint: string = API_PATH + Endpoint.create_quiz_teams;
+        const response = await fetch(apiEndpoint, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ Teams: createTeams }),
         });
 
         if (!response.ok) {
