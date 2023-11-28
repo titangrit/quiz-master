@@ -466,11 +466,11 @@ export class MySqlDbHandler implements IHandleDatabase {
       const quizzes: QuizType[] = [];
       let sql: string;
       if (quizID) {
-        const statement = `SELECT * FROM ${schema.Table.Quiz} WHERE ID = ?`;
+        const statement = `SELECT * FROM ${schema.Table.Quiz} WHERE ID = ? ORDER BY ${schema.Quiz.QuizID} DESC`;
         const values = [quizID];
         sql = mysql.format(statement, values);
       } else {
-        sql = `SELECT * FROM ${schema.Table.Quiz}`;
+        sql = `SELECT * FROM ${schema.Table.Quiz} ORDER BY ${schema.Quiz.QuizID} DESC`;
       }
       const [_result] = await this.db_conn.execute(sql);
       const result = JSON.parse(JSON.stringify(_result));

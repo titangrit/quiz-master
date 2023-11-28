@@ -27,7 +27,7 @@ export default class RequestHandler {
          * GET endpoints
          */
         case Endpoint.get_all_quizzes: {
-          const quizzes: QuizType[] = await this.getAllQuizzes();
+          const quizzes: QuizType[] = await this.db.getQuiz();
           res.json({ Quizzes: quizzes });
           break;
         }
@@ -456,19 +456,5 @@ export default class RequestHandler {
       res.status(404).send("Invalid quiz ID: " + req.query.quizID);
     }
     return id;
-  }
-
-  private async getAllQuizzes(): Promise<QuizType[]> {
-    const quizzes: QuizType[] = await this.db.getQuiz();
-
-    // Sort descending by quiz ID
-    const sorted = quizzes.sort((x, y) => {
-      if (x.ID! < y.ID!) {
-        return 1;
-      } else {
-        return -1;
-      }
-    });
-    return sorted;
   }
 }
