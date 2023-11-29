@@ -183,9 +183,11 @@ export default class RoundInfo extends React.Component<
         headers: { "Content-Type": "application/json" },
       });
       if (!roundsResponse.ok) {
-        throw "Failed to get rounds data";
+        throw `${roundApiEndpoint} responded ${roundsResponse.statusText}; HTTP code: ${roundsResponse.status}`;
       }
-      const rounds: RoundType[] = (await roundsResponse.json()).Rounds || [];
+      const allRounds: RoundType[] = (await roundsResponse.json()).Rounds || [];
+      // in case there are more rounds created earlier, consider only the number specified in Quiz table
+      const rounds = allRounds.slice(0, this.props.numOfRounds);
 
       this.setState({
         currentRounds: rounds,

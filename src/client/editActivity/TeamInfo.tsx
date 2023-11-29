@@ -153,9 +153,12 @@ export default class TeamInfo extends React.Component<
         headers: { "Content-Type": "application/json" },
       });
       if (!teamsResponse.ok) {
-        throw "Failed to get teams data";
+        throw `${teamsApiEndpoint} responded ${teamsResponse.statusText}; HTTP code: ${teamsResponse.status}`;
       }
-      const teams: TeamType[] = (await teamsResponse.json()).Teams || [];
+      const allTeams: TeamType[] = (await teamsResponse.json()).Teams || [];
+
+      // in case there are more teams created earlier, consider only the number specified in Quiz table
+      const teams = allTeams.slice(0, this.props.numOfTeams);
 
       this.setState({
         currentTeams: teams,

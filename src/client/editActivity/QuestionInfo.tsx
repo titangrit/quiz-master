@@ -7,14 +7,18 @@ import FloatingLabel from "react-bootstrap/FloatingLabel";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import Spinner from "react-bootstrap/Spinner";
+import Image from "react-bootstrap/Image";
 import { API_PATH } from "../common";
 import { RoundType, QuestionType, TeamType, Endpoint } from "./../../server";
 
 interface QuestionInfoEachRoundState {
+  gotRoundQuestionsData: boolean;
+  currentRoundQuestions: QuestionType[];
   serverError: boolean;
 }
 
 interface QuestionInfoEachRoundProps {
+  isNewQuiz: boolean;
   quizEventName: string;
   numOfTeams: number;
   roundData: RoundType;
@@ -32,6 +36,8 @@ class QuestionInfoEachRound extends React.Component<
   constructor(props: QuestionInfoEachRoundProps) {
     super(props);
     this.state = {
+      gotRoundQuestionsData: false,
+      currentRoundQuestions: [],
       serverError: false,
     };
   }
@@ -44,56 +50,177 @@ class QuestionInfoEachRound extends React.Component<
 
       const form = event.currentTarget;
 
-      const formData: FormData = new FormData();
-      const questions: QuestionType[] = [];
-
       const totalNumQuestions =
         this.props.numOfTeams * this.props.roundData.NumQuestionsEachTeam!;
 
-      for (let i = 1; i <= totalNumQuestions; i++) {
+      // process update of existing questions
+      const updateFormData: FormData = new FormData();
+      const updateQuestions: QuestionType[] = [];
+      let count: number = 1;
+      for (
+        let i = 1;
+        i <= this.state.currentRoundQuestions.length && i <= totalNumQuestions;
+        i++
+      ) {
+        const question: QuestionType = {
+          RoundUUID: this.props.roundData.UUID!,
+        };
+
         const teamIndex =
           i % this.props.numOfTeams
             ? i % this.props.numOfTeams
             : this.props.numOfTeams;
-
-        const question: QuestionType = {
-          RoundUUID: this.props.roundData.UUID!,
-          SequenceNumber: i,
-          Description: form[`question${i}Statement`].value,
-          TargetTeamUUID: this.props.teams[teamIndex - 1]["UUID"],
-        };
-
-        if (this.props.roundData.IsMCQ) {
-          question.Option1 = form[`optionAQuestion${i}`].value;
-          question.Option2 = form[`optionBQuestion${i}`].value;
-          question.Option3 = form[`optionCQuestion${i}`].value;
-          question.Option4 = form[`optionDQuestion${i}`].value;
-
-          const correctOption = form[`correctOptionQuestion${i}`].value;
-          question.Answer = form[`option${correctOption}Question${i}`].value;
-        } else {
-          question.Answer = form[`answerQuestion${i}`].value;
+        const targetTeamUUID = this.props.teams[teamIndex - 1]["UUID"];
+        if (
+          targetTeamUUID !==
+          this.state.currentRoundQuestions[i - 1]?.TargetTeamUUID
+        ) {
+          question.TargetTeamUUID = targetTeamUUID;
         }
 
-        questions.push(question);
+        const inputDesc = form[`question${i}Statement`].value;
+        if (
+          inputDesc !== this.state.currentRoundQuestions[i - 1]?.Description
+        ) {
+          question.Description = inputDesc;
+        }
 
+        if (this.props.roundData.IsMCQ) {
+          const inputOption1 = form[`optionAQuestion${i}`].value;
+          const inputOption2 = form[`optionBQuestion${i}`].value;
+          const inputOption3 = form[`optionCQuestion${i}`].value;
+          const inputOption4 = form[`optionDQuestion${i}`].value;
+
+          const correctOption = form[`correctOptionQuestion${i}`].value;
+          const inputAnswer = form[`option${correctOption}Question${i}`].value;
+
+          if (
+            inputOption1 !== this.state.currentRoundQuestions[i - 1]?.Option1
+          ) {
+            question.Option1 = inputOption1;
+          }
+          if (
+            inputOption2 !== this.state.currentRoundQuestions[i - 1]?.Option2
+          ) {
+            question.Option2 = inputOption2;
+          }
+          if (
+            inputOption3 !== this.state.currentRoundQuestions[i - 1]?.Option3
+          ) {
+            question.Option3 = inputOption3;
+          }
+          if (
+            inputOption4 !== this.state.currentRoundQuestions[i - 1]?.Option4
+          ) {
+            question.Option4 = inputOption4;
+          }
+          if (inputAnswer !== this.state.currentRoundQuestions[i - 1]?.Answer) {
+            question.Answer = inputAnswer;
+          }
+        } else {
+          const inputAnswer = form[`answerQuestion${i}`].value;
+          if (inputAnswer !== this.state.currentRoundQuestions[i - 1]?.Answer) {
+            question.Answer = inputAnswer;
+          }
+        }
+
+        let mediaUpdated = false;
         if (this.props.roundData.IsAudioVisualRound) {
-          formData.append("Media", form[`mediaQuestion${i}`].files[0], `${i}`);
+          const inputFile =
+            form[`${this.props.roundData.UUID}mediaQuestion${i}`].value;
+          const imageBase64 = await this.toBase64(inputFile);
+          if (
+            imageBase64 !== this.state.currentRoundQuestions[i - 1].MediaBase64
+          ) {
+            updateFormData.append(
+              "Media",
+              form[`mediaQuestion${i}`].files[0],
+              `${i}`
+            );
+            mediaUpdated = true;
+          }
+        }
+
+        if (Object.keys(question).length !== 0 || mediaUpdated) {
+          question.UUID = this.state.currentRoundQuestions[i - 1].UUID;
+          updateQuestions.push(question);
+        }
+
+        count++;
+      }
+
+      updateFormData.append("Questions", JSON.stringify(updateQuestions));
+
+      // process creation of new questions
+      const createQuestions: QuestionType[] = [];
+      const createFormData: FormData = new FormData();
+      for (let i = count; i <= totalNumQuestions; i++) {
+        const question: QuestionType = {
+          RoundUUID: this.props.roundData.UUID,
+        };
+        const teamIndex =
+          i % this.props.numOfTeams
+            ? i % this.props.numOfTeams
+            : this.props.numOfTeams;
+        const targetTeamUUID = this.props.teams[teamIndex - 1]["UUID"];
+        question.TargetTeamUUID = targetTeamUUID;
+
+        const inputDesc = form[`question${i}Statement`].value;
+        question.Description = inputDesc;
+
+        if (this.props.roundData.IsMCQ) {
+          const inputOption1 = form[`optionAQuestion${i}`].value;
+          const inputOption2 = form[`optionBQuestion${i}`].value;
+          const inputOption3 = form[`optionCQuestion${i}`].value;
+          const inputOption4 = form[`optionDQuestion${i}`].value;
+          const correctOption = form[`correctOptionQuestion${i}`].value;
+          const inputAnswer = form[`option${correctOption}Question${i}`].value;
+
+          question.Option1 = inputOption1;
+          question.Option2 = inputOption2;
+          question.Option3 = inputOption3;
+          question.Option4 = inputOption4;
+          question.Answer = inputAnswer;
+        } else {
+          const inputAnswer = form[`answerQuestion${i}`].value;
+          question.Answer = inputAnswer;
+        }
+
+        createQuestions.push(question);
+
+        createFormData.append(
+          "Media",
+          form[`mediaQuestion${i}`].files[0],
+          `${i}`
+        );
+      }
+
+      createFormData.append("Questions", JSON.stringify(createQuestions));
+
+      if (Object.keys(updateFormData).length !== 0) {
+        const apiEndpoint: string =
+          API_PATH + Endpoint.edit_quiz_round_questions;
+        const response = await fetch(apiEndpoint, {
+          method: "POST",
+          // headers: { "Content-Type": "application/json" },
+          body: updateFormData,
+        });
+        if (!response.ok) {
+          throw `${apiEndpoint} responded ${response.statusText}; HTTP code: ${response.status}`;
         }
       }
 
-      formData.append("Questions", JSON.stringify(questions));
-
-      // post new questions
-      const apiEndpoint = API_PATH + Endpoint.create_quiz_round_questions;
-      const response = await fetch(apiEndpoint, {
-        method: "POST",
-        // headers: { "Content-Type": "application/json" },
-        body: formData,
-      });
-
-      if (!response.ok) {
-        throw `${apiEndpoint} responded ${response.statusText}; HTTP code: ${response.status}`;
+      if (Object.keys(createFormData).length !== 0) {
+        const apiEndpoint: string =
+          API_PATH + Endpoint.create_quiz_round_questions;
+        const response = await fetch(apiEndpoint, {
+          method: "POST",
+          // headers: { "Content-Type": "application/json" },
+          body: createFormData,
+        });
+        if (!response.ok) {
+          throw `${apiEndpoint} responded ${response.statusText}; HTTP code: ${response.status}`;
+        }
       }
 
       this.props.nextRound();
@@ -105,7 +232,70 @@ class QuestionInfoEachRound extends React.Component<
     }
   };
 
+  toBase64 = (file) =>
+    new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = reject;
+    });
+
+  previewImage = async (eventCurrentTarget) => {
+    const elementId = eventCurrentTarget.id;
+    const bin = eventCurrentTarget.files[0];
+    const imageBase64 = await this.toBase64(bin);
+
+    document
+      .getElementById(elementId + "preview")
+      ?.setAttribute("src", `data:image/gif;base64,${imageBase64}`);
+  };
+
+  getRoundQuestionsData = async () => {
+    try {
+      const questionApiEndpoint =
+        API_PATH +
+        Endpoint.get_quiz_round_questions +
+        "?roundUUID=" +
+        this.props.roundData.UUID;
+      const questionsResponse = await fetch(questionApiEndpoint, {
+        method: "GET",
+        headers: { "Content-Type": "application/json" },
+      });
+      if (!questionsResponse.ok) {
+        throw `${questionApiEndpoint} responded ${questionsResponse.statusText}; HTTP code: ${questionsResponse.status}`;
+      }
+      const allQuestions: QuestionType[] =
+        (await questionsResponse.json()).Questions || [];
+
+      const numOfQuestions =
+        this.props.roundData.NumQuestionsEachTeam! * this.props.numOfTeams;
+
+      // in case there are more round questions created earlier, consider only up to the required
+      const questions = allQuestions.slice(0, numOfQuestions);
+
+      this.setState({
+        currentRoundQuestions: questions,
+        gotRoundQuestionsData: true,
+      });
+    } catch (error) {
+      console.error(error);
+      this.setState({
+        serverError: true,
+      });
+    }
+  };
+
+  async componentDidMount() {
+    if (!this.props.isNewQuiz && !this.state.gotRoundQuestionsData) {
+      await this.getRoundQuestionsData();
+    }
+  }
+
   render() {
+    if (this.state.serverError) {
+      return <p style={{ color: "red" }}>A server error occurred</p>;
+    }
+
     return (
       <React.Fragment>
         <Container className="mt-4">
@@ -126,10 +316,14 @@ class QuestionInfoEachRound extends React.Component<
                 this.props.numOfTeams *
                 this.props.roundData.NumQuestionsEachTeam!;
               for (let i = 1; i <= totalNumQuestions; i++) {
+                const currentQuestion: QuestionType =
+                  this.state.currentRoundQuestions[i - 1];
+
                 const teamIndex =
                   i % this.props.numOfTeams
                     ? i % this.props.numOfTeams
                     : this.props.numOfTeams;
+
                 questions.push(
                   <React.Fragment key={i}>
                     {/* Question statement */}
@@ -151,7 +345,11 @@ class QuestionInfoEachRound extends React.Component<
                             as="textarea"
                             placeholder={"Question statement"}
                             style={{ height: "100px" }}
-                            defaultValue="temp"
+                            defaultValue={
+                              currentQuestion?.Description
+                                ? currentQuestion.Description
+                                : "temp"
+                            }
                             required
                           />
                         </FloatingLabel>
@@ -169,9 +367,21 @@ class QuestionInfoEachRound extends React.Component<
                                 <Form.Control
                                   key={`${this.props.roundData.UUID}mediaQuestion${i}`}
                                   type="file"
+                                  onChange={(e) =>
+                                    this.previewImage(e.currentTarget)
+                                  }
                                   required
                                 />
                               </Form.Group>
+                            </Col>
+                            <Col md={3}>
+                              <Row>
+                                <Image
+                                  key={`${this.props.roundData.UUID}mediaQuestion${i}Preview`}
+                                  src={`data:image/gif;base64,${currentQuestion?.MediaBase64}`}
+                                  fluid
+                                />
+                              </Row>
                             </Col>
                           </Row>
                         );
@@ -183,6 +393,22 @@ class QuestionInfoEachRound extends React.Component<
                     {/* Answer */}
                     {(() => {
                       if (this.props.roundData.IsMCQ) {
+                        let correctOption: string;
+                        if (
+                          currentQuestion?.Answer === currentQuestion?.Option2
+                        ) {
+                          correctOption = "B";
+                        } else if (
+                          currentQuestion?.Answer === currentQuestion?.Option3
+                        ) {
+                          correctOption = "C";
+                        } else if (
+                          currentQuestion?.Answer === currentQuestion?.Option4
+                        ) {
+                          correctOption = "D";
+                        } else {
+                          correctOption = "A";
+                        }
                         return (
                           <React.Fragment>
                             <Row className="mt-3 d-flex">
@@ -196,7 +422,11 @@ class QuestionInfoEachRound extends React.Component<
                                   <Form.Control
                                     type="text"
                                     placeholder="Option A"
-                                    defaultValue="temp"
+                                    defaultValue={
+                                      currentQuestion?.Option1
+                                        ? currentQuestion.Option1
+                                        : "temp"
+                                    }
                                     required
                                   />
                                 </FloatingLabel>
@@ -211,7 +441,11 @@ class QuestionInfoEachRound extends React.Component<
                                   <Form.Control
                                     type="text"
                                     placeholder="Option B"
-                                    defaultValue="temp"
+                                    defaultValue={
+                                      currentQuestion?.Option2
+                                        ? currentQuestion.Option2
+                                        : "temp"
+                                    }
                                     required
                                   />
                                 </FloatingLabel>
@@ -228,7 +462,11 @@ class QuestionInfoEachRound extends React.Component<
                                   <Form.Control
                                     type="text"
                                     placeholder="Option C"
-                                    defaultValue="temp"
+                                    defaultValue={
+                                      currentQuestion?.Option3
+                                        ? currentQuestion.Option3
+                                        : "temp"
+                                    }
                                     required
                                   />
                                 </FloatingLabel>
@@ -243,7 +481,11 @@ class QuestionInfoEachRound extends React.Component<
                                   <Form.Control
                                     type="text"
                                     placeholder="Option D"
-                                    defaultValue="temp"
+                                    defaultValue={
+                                      currentQuestion?.Option4
+                                        ? currentQuestion.Option4
+                                        : "temp"
+                                    }
                                     required
                                   />
                                 </FloatingLabel>
@@ -257,7 +499,10 @@ class QuestionInfoEachRound extends React.Component<
                                   label="Correct Option"
                                   className="px-1"
                                 >
-                                  <Form.Select aria-label="Floating label">
+                                  <Form.Select
+                                    aria-label="Floating label"
+                                    defaultValue={correctOption}
+                                  >
                                     <option value="A">{"Option A"}</option>
                                     <option value="B">{"Option B"}</option>
                                     <option value="C">{"Option C"}</option>
@@ -281,7 +526,11 @@ class QuestionInfoEachRound extends React.Component<
                                 <Form.Control
                                   type="text"
                                   placeholder="Answer"
-                                  defaultValue="temp"
+                                  defaultValue={
+                                    currentQuestion?.Answer
+                                      ? currentQuestion.Answer
+                                      : "temp"
+                                  }
                                   required
                                 />
                               </FloatingLabel>
@@ -385,11 +634,12 @@ export default class QuestionInfo extends React.Component<
         throw `${roundsApiEndpoint} responded ${roundsResponse.statusText}; HTTP code: ${roundsResponse.status}`;
       }
 
-      const _roundsResponse = await roundsResponse.json();
-      this.rounds = _roundsResponse?.Rounds || [];
-      if (this.props.numOfRounds != this.rounds.length) {
+      const allRounds = (await roundsResponse.json())?.Rounds || [];
+      // at this point it is expected that at least number of rounds specified in Quiz table was created
+      if (allRounds.length < this.props.numOfRounds) {
         throw "Failed to get rounds data";
       }
+      this.rounds = allRounds.slice(0, this.props.numOfRounds);
 
       const teamsApiEndpoint =
         API_PATH + Endpoint.get_quiz_teams + "?quizID=" + this.props.quizID;
@@ -402,11 +652,12 @@ export default class QuestionInfo extends React.Component<
         throw `${teamsApiEndpoint} responded ${teamsResponse.statusText}; HTTP code: ${teamsResponse.status}`;
       }
 
-      const _teamsResponse = await teamsResponse.json();
-      this.teams = _teamsResponse?.Teams || [];
-      if (this.props.numOfTeams != this.teams.length) {
+      const allTeams = (await teamsResponse.json())?.Teams || [];
+      // at this point it is expected that at least number of teams specified in Quiz table was created
+      if (allTeams.length < this.props.numOfTeams) {
         throw "Failed to get teams data";
       }
+      this.teams = allTeams.slice(0, this.props.numOfTeams);
     } catch (error) {
       console.error(error);
       this.setState({
@@ -451,6 +702,7 @@ export default class QuestionInfo extends React.Component<
 
     return (
       <QuestionInfoEachRound
+        isNewQuiz={this.props.isNewQuiz}
         quizEventName={this.props.quizEventName}
         numOfTeams={this.props.numOfTeams}
         roundData={this.rounds[this.state.currentRound - 1]}
