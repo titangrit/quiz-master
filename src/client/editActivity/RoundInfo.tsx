@@ -6,6 +6,7 @@ import Col from "react-bootstrap/Col";
 import FloatingLabel from "react-bootstrap/FloatingLabel";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
+import Spinner from "react-bootstrap/Spinner";
 import { API_PATH } from "../common";
 import { RoundType, Endpoint } from "./../../server";
 
@@ -220,6 +221,19 @@ export default class RoundInfo extends React.Component<
       return <p style={{ color: "red" }}>A server error occurred</p>;
     }
 
+    if (!this.props.isNewQuiz && !this.state.gotRoundsData) {
+      return (
+        <React.Fragment>
+          <Row className="d-flex align-items-center justify-content-center text-center">
+            <p>Loading round...</p>
+          </Row>
+          <Row className="d-flex align-items-center justify-content-center">
+            <Spinner animation="grow" role="status" />
+          </Row>
+        </React.Fragment>
+      );
+    }
+
     return (
       <React.Fragment>
         <Container className="mt-4">
@@ -279,7 +293,11 @@ export default class RoundInfo extends React.Component<
                         >
                           <Form.Select
                             aria-label="Floating label"
-                            defaultValue={currentRound?.NumQuestionsEachTeam}
+                            defaultValue={
+                              currentRound?.NumQuestionsEachTeam
+                                ? currentRound.NumQuestionsEachTeam
+                                : 1
+                            }
                           >
                             <option value="1">{"1 (One)"}</option>
                             <option value="2">{"2 (Two)"}</option>
@@ -298,7 +316,11 @@ export default class RoundInfo extends React.Component<
                         >
                           <Form.Select
                             aria-label="Floating label"
-                            defaultValue={currentRound?.FullMarkEachQuestion}
+                            defaultValue={
+                              currentRound?.FullMarkEachQuestion
+                                ? currentRound.FullMarkEachQuestion
+                                : 10
+                            }
                           >
                             <option value="10">{"10 (Ten)"}</option>
                             <option value="5">{"5 (Five)"}</option>
@@ -315,7 +337,11 @@ export default class RoundInfo extends React.Component<
                         >
                           <Form.Select
                             aria-label="Floating label"
-                            defaultValue={currentRound?.TimerSeconds}
+                            defaultValue={
+                              currentRound?.TimerSeconds
+                                ? currentRound.TimerSeconds
+                                : 60
+                            }
                           >
                             <option value="60">{"60 (Sixty)"}</option>
                             <option value="15">{"15 (Fifteen)"}</option>
