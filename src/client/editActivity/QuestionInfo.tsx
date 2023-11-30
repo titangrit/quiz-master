@@ -62,9 +62,7 @@ class QuestionInfoEachRound extends React.Component<
         i <= this.state.currentRoundQuestions.length && i <= totalNumQuestions;
         i++
       ) {
-        const question: QuestionType = {
-          RoundUUID: this.props.roundData.UUID!,
-        };
+        const question: QuestionType = {};
 
         const teamIndex =
           i % this.props.numOfTeams
@@ -124,13 +122,13 @@ class QuestionInfoEachRound extends React.Component<
           }
         }
 
+        const inputFile = form[`mediaQuestion${i}`].files[0];
         let mediaUpdated = false;
-        if (this.props.roundData.IsAudioVisualRound) {
-          const inputFile =
-            form[`${this.props.roundData.UUID}mediaQuestion${i}`].value;
-          const imageBase64 = await this.toBase64(inputFile);
+        if (this.props.roundData.IsAudioVisualRound && inputFile) {
+          const imageBase64: string = await this.toBase64(inputFile);
+          const inputMedia = imageBase64?.split(",")[1]; // to remove the first part from "data:image/jpeg;base64,/contentblahblahblah"
           if (
-            imageBase64 !== this.state.currentRoundQuestions[i - 1].MediaBase64
+            inputMedia !== this.state.currentRoundQuestions[i - 1].MediaBase64
           ) {
             updateFormData.append(
               "Media",
@@ -143,6 +141,7 @@ class QuestionInfoEachRound extends React.Component<
 
         if (Object.keys(question).length !== 0 || mediaUpdated) {
           question.UUID = this.state.currentRoundQuestions[i - 1].UUID;
+          question.SequenceNumber = i; // if media is updated, sequence number is required to find the corresponding media
           updateQuestions.push(question);
         }
 
@@ -157,6 +156,7 @@ class QuestionInfoEachRound extends React.Component<
       for (let i = count; i <= totalNumQuestions; i++) {
         const question: QuestionType = {
           RoundUUID: this.props.roundData.UUID,
+          SequenceNumber: i,
         };
         const teamIndex =
           i % this.props.numOfTeams
@@ -187,17 +187,18 @@ class QuestionInfoEachRound extends React.Component<
         }
 
         createQuestions.push(question);
-
-        createFormData.append(
-          "Media",
-          form[`mediaQuestion${i}`].files[0],
-          `${i}`
-        );
+        if (this.props.roundData.IsAudioVisualRound) {
+          createFormData.append(
+            "Media",
+            form[`mediaQuestion${i}`].files[0],
+            `${i}`
+          );
+        }
       }
 
       createFormData.append("Questions", JSON.stringify(createQuestions));
 
-      if (Object.keys(updateFormData).length !== 0) {
+      if (updateQuestions.length !== 0) {
         const apiEndpoint: string =
           API_PATH + Endpoint.edit_quiz_round_questions;
         const response = await fetch(apiEndpoint, {
@@ -210,7 +211,7 @@ class QuestionInfoEachRound extends React.Component<
         }
       }
 
-      if (Object.keys(createFormData).length !== 0) {
+      if (createQuestions.length !== 0) {
         const apiEndpoint: string =
           API_PATH + Endpoint.create_quiz_round_questions;
         const response = await fetch(apiEndpoint, {
@@ -232,22 +233,23 @@ class QuestionInfoEachRound extends React.Component<
     }
   };
 
-  toBase64 = (file) =>
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  toBase64 = (file: any): Promise<string> =>
     new Promise((resolve, reject) => {
       const reader = new FileReader();
       reader.readAsDataURL(file);
-      reader.onload = () => resolve(reader.result);
+      reader.onload = () => resolve(reader.result as string);
       reader.onerror = reject;
     });
 
-  previewImage = async (eventCurrentTarget) => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  previewImage = async (eventCurrentTarget: any) => {
     const elementId = eventCurrentTarget.id;
     const bin = eventCurrentTarget.files[0];
     const imageBase64 = await this.toBase64(bin);
 
-    document
-      .getElementById(elementId + "preview")
-      ?.setAttribute("src", `data:image/gif;base64,${imageBase64}`);
+    const element = document.getElementById(elementId + "Preview");
+    element!.setAttribute("src", `${imageBase64}`);
   };
 
   getRoundQuestionsData = async () => {
@@ -294,6 +296,19 @@ class QuestionInfoEachRound extends React.Component<
   render() {
     if (this.state.serverError) {
       return <p style={{ color: "red" }}>A server error occurred</p>;
+    }
+
+    if (!this.props.isNewQuiz && !this.state.gotRoundQuestionsData) {
+      return (
+        <React.Fragment>
+          <Row className="d-flex align-items-center justify-content-center text-center">
+            <p>Loading question...</p>
+          </Row>
+          <Row className="d-flex align-items-center justify-content-center">
+            <Spinner animation="grow" role="status" />
+          </Row>
+        </React.Fragment>
+      );
     }
 
     return (
@@ -370,15 +385,19 @@ class QuestionInfoEachRound extends React.Component<
                                   onChange={(e) =>
                                     this.previewImage(e.currentTarget)
                                   }
-                                  required
+                                  required={this.props.isNewQuiz ? true : false}
                                 />
                               </Form.Group>
                             </Col>
                             <Col md={3}>
                               <Row>
                                 <Image
-                                  key={`${this.props.roundData.UUID}mediaQuestion${i}Preview`}
-                                  src={`data:image/gif;base64,${currentQuestion?.MediaBase64}`}
+                                  id={`mediaQuestion${i}Preview`}
+                                  src={
+                                    currentQuestion?.MediaBase64
+                                      ? `data:image/gif;base64,${currentQuestion.MediaBase64}`
+                                      : ""
+                                  }
                                   fluid
                                 />
                               </Row>

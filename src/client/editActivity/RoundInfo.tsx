@@ -60,14 +60,18 @@ export default class RoundInfo extends React.Component<
 
         const inputRoundName = form[`round${i + 1}Name`].value;
         const inputSequenceNumber = i + 1;
-        const inputNumQuestionsEachTeam =
-          form[`round${i + 1}NumQuestions`].value;
-        const inputFullMarkEachQuestion =
-          form[`round${i + 1}FullMarkEachQ`].value;
+        const inputNumQuestionsEachTeam = parseInt(
+          form[`round${i + 1}NumQuestions`].value
+        );
+        const inputFullMarkEachQuestion = parseInt(
+          form[`round${i + 1}FullMarkEachQ`].value
+        );
         const inputIsMCQ = form[`round${i + 1}IsMCQ`].checked;
         const inputIsAudioVisualRound = form[`round${i + 1}IsAVRound`].checked;
         const inputIsPassable = form[`round${i + 1}IsPassable`].checked;
-        const inputTimerSeconds = form[`round${i + 1}TimerSeconds`].value;
+        const inputTimerSeconds = parseInt(
+          form[`round${i + 1}TimerSeconds`].value
+        );
 
         if (inputRoundName !== this.state.currentRounds[i]?.RoundName) {
           round.RoundName = inputRoundName;
@@ -117,14 +121,18 @@ export default class RoundInfo extends React.Component<
       const createRounds: RoundType[] = [];
       for (let i = count; i < this.props.numOfRounds; i++) {
         const inputRoundName = form[`round${i + 1}Name`].value;
-        const inputNumQuestionsEachTeam =
-          form[`round${i + 1}NumQuestions`].value;
-        const inputFullMarkEachQuestion =
-          form[`round${i + 1}FullMarkEachQ`].value;
+        const inputNumQuestionsEachTeam = parseInt(
+          form[`round${i + 1}NumQuestions`].value
+        );
+        const inputFullMarkEachQuestion = parseInt(
+          form[`round${i + 1}FullMarkEachQ`].value
+        );
         const inputIsMCQ = form[`round${i + 1}IsMCQ`].checked;
         const inputIsAudioVisualRound = form[`round${i + 1}IsAVRound`].checked;
         const inputIsPassable = form[`round${i + 1}IsPassable`].checked;
-        const inputTimerSeconds = form[`round${i + 1}TimerSeconds`].value;
+        const inputTimerSeconds = parseInt(
+          form[`round${i + 1}TimerSeconds`].value
+        );
 
         const round: RoundType = {
           QuizID: this.props.quizID,
