@@ -319,7 +319,11 @@ class QuestionInfoEachRound extends React.Component<
               <p className="fs-3 d-inline">{`Provide Questions of Round ${this.props.roundData.SequenceNumber} - ${this.props.roundData.RoundName}`}</p>
             </Col>
             <Col md="auto" className="d-inline">
-              <p className="fs-4 d-inline">{`{ New Quiz | ${this.props.quizEventName} }`}</p>
+              <p className="fs-4 d-inline">
+                {this.props.isNewQuiz
+                  ? `{ New Quiz | ${this.props.quizEventName} }`
+                  : `{ Edit Quiz | ${this.props.quizEventName} }`}
+              </p>
             </Col>
           </Row>
 
