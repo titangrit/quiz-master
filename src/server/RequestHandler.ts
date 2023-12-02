@@ -1,14 +1,15 @@
 import { Request, Response } from "express";
+import { fileTypeFromBuffer } from "file-type";
 import File = Express.Multer.File;
-import { logger } from "./logger";
-import { Endpoint, QuizLifecycleStatusCode } from "./constants";
+import { logger } from "./logger.js";
+import { Endpoint, MediaType, QuizLifecycleStatusCode } from "./constants.js";
 import {
   IHandleDatabase,
   QuizType,
   TeamType,
   RoundType,
   QuestionType,
-} from "./IHandleDatabase";
+} from "./IHandleDatabase.js";
 
 export default class RequestHandler {
   private db: IHandleDatabase;
@@ -57,6 +58,7 @@ export default class RequestHandler {
           }
           const questions: QuestionType[] =
             await this.db.getQuestionsByRoundUUID(roundUUID);
+          await this.fillMediaType(questions);
           res.json({ Questions: questions });
           break;
         }
@@ -456,5 +458,26 @@ export default class RequestHandler {
       res.status(404).send("Invalid quiz ID: " + req.query.quizID);
     }
     return id;
+  }
+
+  private async fillMediaType(questions: QuestionType[]): Promise<void> {
+    for (const question of questions) {
+      const mimeType = await fileTypeFromBuffer(
+        Buffer.from(question.MediaBase64!)
+      );
+      const mediaType = mimeType?.mime.split("/")[0];
+      if (
+        mimeType &&
+        (mediaType === MediaType.Image ||
+          mediaType === MediaType.Video ||
+          mediaType === MediaType.Audio)
+      ) {
+        question.MimeType_Transient = mimeType.mime;
+      } else if (!question.MediaBase64) {
+        throw new Error(
+          "Invalid mime type of media: " + JSON.stringify(mimeType)
+        );
+      }
+    }
   }
 }

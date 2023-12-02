@@ -6,6 +6,7 @@ import Col from "react-bootstrap/Col";
 import FloatingLabel from "react-bootstrap/FloatingLabel";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
+import Spinner from "react-bootstrap/Spinner";
 import { API_PATH } from "../common";
 import { TeamType, Endpoint } from "./../../server";
 
@@ -181,6 +182,19 @@ export default class TeamInfo extends React.Component<
   render() {
     if (this.state.serverError) {
       return <p style={{ color: "red" }}>A server error occurred</p>;
+    }
+
+    if (!this.props.isNewQuiz && !this.state.gotTeamsData) {
+      return (
+        <React.Fragment>
+          <Row className="d-flex align-items-center justify-content-center text-center">
+            <p>Loading teams...</p>
+          </Row>
+          <Row className="d-flex align-items-center justify-content-center">
+            <Spinner animation="grow" role="status" />
+          </Row>
+        </React.Fragment>
+      );
     }
 
     return (

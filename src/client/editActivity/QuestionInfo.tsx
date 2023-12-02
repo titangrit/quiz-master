@@ -9,7 +9,13 @@ import Button from "react-bootstrap/Button";
 import Spinner from "react-bootstrap/Spinner";
 import Image from "react-bootstrap/Image";
 import { API_PATH } from "../common";
-import { RoundType, QuestionType, TeamType, Endpoint } from "./../../server";
+import {
+  RoundType,
+  QuestionType,
+  TeamType,
+  Endpoint,
+  MediaType,
+} from "./../../server";
 
 interface QuestionInfoEachRoundState {
   gotRoundQuestionsData: boolean;
@@ -128,7 +134,8 @@ class QuestionInfoEachRound extends React.Component<
           const imageBase64: string = await this.toBase64(inputFile);
           const inputMedia = imageBase64?.split(",")[1]; // to remove the first part from "data:image/jpeg;base64,/contentblahblahblah"
           if (
-            inputMedia !== this.state.currentRoundQuestions[i - 1].MediaBase64
+            inputMedia !==
+            this.state.currentRoundQuestions[i - 1].MediaBase64?.toString()
           ) {
             updateFormData.append(
               "Media",
@@ -245,11 +252,32 @@ class QuestionInfoEachRound extends React.Component<
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   previewImage = async (eventCurrentTarget: any) => {
     const elementId = eventCurrentTarget.id;
-    const bin = eventCurrentTarget.files[0];
-    const imageBase64 = await this.toBase64(bin);
+    const file = eventCurrentTarget.files[0];
+    const base64 = await this.toBase64(file);
 
-    const element = document.getElementById(elementId + "Preview");
-    element!.setAttribute("src", `${imageBase64}`);
+    const imageComp = document.getElementById(elementId + "ImagePreview");
+    const videoComp = document.getElementById(elementId + "VideoPreview");
+    const audioComp = document.getElementById(elementId + "AudioPreview");
+    const mediaType = file.type.split("/")[0];
+    if (mediaType === MediaType.Image) {
+      imageComp!.setAttribute("hidden", "false");
+      imageComp!.setAttribute("src", `${base64}`);
+
+      videoComp!.setAttribute("hidden", "true");
+      audioComp!.setAttribute("hidden", "true");
+    } else if (mediaType === MediaType.Video) {
+      videoComp!.setAttribute("hidden", "false");
+      videoComp!.setAttribute("src", `${base64}`);
+
+      imageComp!.setAttribute("hidden", "true");
+      audioComp!.setAttribute("hidden", "true");
+    } else if (mediaType === MediaType.Audio) {
+      audioComp!.setAttribute("hidden", "false");
+      audioComp!.setAttribute("src", `${base64}`);
+
+      imageComp!.setAttribute("hidden", "true");
+      videoComp!.setAttribute("hidden", "true");
+    }
   };
 
   getRoundQuestionsData = async () => {
@@ -378,6 +406,16 @@ class QuestionInfoEachRound extends React.Component<
                     {/* Audio Visual Media */}
                     {(() => {
                       if (this.props.roundData.IsAudioVisualRound) {
+                        let mediaType = MediaType.Image;
+                        const type =
+                          currentQuestion?.MimeType_Transient?.split("/")[0];
+                        if (type === MediaType.Image) {
+                          mediaType = MediaType.Image;
+                        } else if (type === MediaType.Video) {
+                          mediaType = MediaType.Video;
+                        } else if (type === MediaType.Audio) {
+                          mediaType = MediaType.Audio;
+                        }
                         return (
                           <Row className="mt-3 d-flex">
                             <Col md={3}>
@@ -396,13 +434,32 @@ class QuestionInfoEachRound extends React.Component<
                             <Col md={3}>
                               <Row>
                                 <Image
-                                  id={`mediaQuestion${i}Preview`}
+                                  id={`mediaQuestion${i}ImagePreview`}
                                   src={
                                     currentQuestion?.MediaBase64
-                                      ? `data:image/gif;base64,${currentQuestion.MediaBase64}`
+                                      ? `data:${currentQuestion.MimeType_Transient};base64,${currentQuestion.MediaBase64}`
                                       : ""
                                   }
                                   fluid
+                                  hidden={mediaType === MediaType.Image}
+                                />
+                                <video
+                                  id={`mediaQuestion${i}VideoPreview`}
+                                  src={
+                                    currentQuestion?.MediaBase64
+                                      ? `data:${currentQuestion.MimeType_Transient};base64,${currentQuestion.MediaBase64}`
+                                      : ""
+                                  }
+                                  hidden={mediaType === MediaType.Video}
+                                />
+                                <audio
+                                  id={`mediaQuestion${i}AudioPreview`}
+                                  src={
+                                    currentQuestion?.MediaBase64
+                                      ? `data:${currentQuestion.MimeType_Transient};base64,${currentQuestion.MediaBase64}`
+                                      : ""
+                                  }
+                                  hidden={mediaType === MediaType.Audio}
                                 />
                               </Row>
                             </Col>

@@ -1,13 +1,14 @@
 import express from "express";
-import * as bodyParser from "body-parser";
-import path from "path";
-import { logger } from "./logger";
-import { httpLogger } from "./httpLogger";
+import bodyParser from "body-parser";
+import path, { dirname } from "path";
+import { logger } from "./logger.js";
+import { httpLogger } from "./httpLogger.js";
 import multer from "multer";
 import dotenv from "dotenv";
-import RequestHandler from "./RequestHandler";
-import { IHandleDatabase } from "./IHandleDatabase";
-import { MySqlDbHandler } from "./MySqlDbHandler";
+import RequestHandler from "./RequestHandler.js";
+import { IHandleDatabase } from "./IHandleDatabase.js";
+import { MySqlDbHandler } from "./MySqlDbHandler.js";
+import { fileURLToPath } from "url";
 
 const start = async () => {
   dotenv.config();
@@ -28,6 +29,9 @@ const start = async () => {
   }
 
   const requestHandler: RequestHandler = new RequestHandler(dbHandler);
+
+  const __filename = fileURLToPath(import.meta.url);
+  const __dirname = dirname(__filename);
 
   const app = express();
   app.use(bodyParser.json());

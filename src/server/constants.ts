@@ -27,3 +27,9 @@ export enum Endpoint {
   record_quiz_progress = "record_quiz_progress",
   record_team_response = "record_team_response",
 }
+
+export enum MediaType {
+  Image = "image",
+  Audio = "audio",
+  Video = "video",
+}

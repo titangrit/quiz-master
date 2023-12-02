@@ -1,4 +1,4 @@
-import { QuizLifecycleStatusCode } from "./constants";
+import { QuizLifecycleStatusCode } from "./constants.js";
 
 export type QuizType = {
   ID?: number;
@@ -48,6 +48,7 @@ export type QuestionType = {
   Option4?: string;
   Answer?: string;
   MediaBase64?: string;
+  MimeType_Transient?: string;
   TargetTeamUUID?: string;
   ActualTeamUUID?: string;
   ActualMarkGiven?: number;

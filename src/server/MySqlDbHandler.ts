@@ -1,14 +1,14 @@
-import * as schema from "./DbSchema";
+import * as schema from "./DbSchema.js";
 import {
   IHandleDatabase,
   QuizType,
   TeamType,
   RoundType,
   QuestionType,
-} from "./IHandleDatabase";
+} from "./IHandleDatabase.js";
 import * as mysql from "mysql2/promise";
 import { v4 as uuidv4 } from "uuid";
-import { logger } from "./logger";
+import { logger } from "./logger.js";
 import dotenv from "dotenv";
 
 export class MySqlDbHandler implements IHandleDatabase {
@@ -664,9 +664,9 @@ export class MySqlDbHandler implements IHandleDatabase {
 
       for (const question of result) {
         const blob = question[schema.Question.MediaBase64];
-        let mediaBase64 = "";
+        let mediaBase64: string = "";
         if (blob !== null) {
-          mediaBase64 = Buffer.from(blob).toString("utf-8");
+          mediaBase64 = Buffer.from(blob).toString();
         }
 
         questions.push({
@@ -713,9 +713,9 @@ export class MySqlDbHandler implements IHandleDatabase {
       const result = JSON.parse(JSON.stringify(_result));
 
       const blob = result[0][schema.Question.MediaBase64];
-      let mediaBase64 = "";
+      let mediaBase64: string = "";
       if (blob !== null) {
-        mediaBase64 = Buffer.from(blob).toString("utf-8");
+        mediaBase64 = Buffer.from(blob).toString();
       }
 
       const question: QuestionType = {

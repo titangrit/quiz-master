@@ -1,5 +1,10 @@
-import { QuizType, TeamType, RoundType, QuestionType } from "./IHandleDatabase";
-import { QuizLifecycleStatusCode, Endpoint } from "./constants";
+import {
+  QuizType,
+  TeamType,
+  RoundType,
+  QuestionType,
+} from "./IHandleDatabase.js";
+import { QuizLifecycleStatusCode, Endpoint, MediaType } from "./constants.js";
 
 export {
   QuizType,
@@ -8,4 +13,5 @@ export {
   QuestionType,
   QuizLifecycleStatusCode,
   Endpoint,
+  MediaType,
 };
