@@ -452,12 +452,22 @@ export class MySqlDbHandler implements IHandleDatabase {
           JSON.stringify(question)
       );
     } catch (error) {
-      logger.error(
-        "MySqlDbHandler->updateQuestion :: Failed to update question: " +
-          JSON.stringify(question),
-        error
-      );
-      throw error;
+      delete question.MediaBase64; // Omit from logging
+      // if the media blob is greater than 16MB, it will throw error and try to print the whole sql statement
+      if (typeof error === "object" && error !== null && "message" in error) {
+        logger.error(
+          "MySqlDbHandler->updateQuestion :: Failed to update question: " +
+            JSON.stringify(question) +
+            " MySql error:" +
+            error.message
+        );
+        throw error.message;
+      } else {
+        throw new Error(
+          "MySqlDbHandler->updateQuestion :: Failed to update question: " +
+            JSON.stringify(question)
+        );
+      }
     }
   }
 

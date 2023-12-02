@@ -446,7 +446,9 @@ export default class RequestHandler {
       //     res.status(204).send("Recorded question response");
       //   }
     } catch (error) {
-      logger.error("RequestHandler->handleRequest: " + endpoint, error);
+      logger.error(
+        "RequestHandler->handleRequest: " + endpoint + " Error: " + error
+      );
       res.status(500).send("Error occurred: " + JSON.stringify(error));
     }
   }
@@ -463,7 +465,7 @@ export default class RequestHandler {
   private async fillMediaType(questions: QuestionType[]): Promise<void> {
     for (const question of questions) {
       const mimeType = await fileTypeFromBuffer(
-        Buffer.from(question.MediaBase64!)
+        Buffer.from(question.MediaBase64!, "base64")
       );
       const mediaType = mimeType?.mime.split("/")[0];
       if (

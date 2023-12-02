@@ -1,12 +1,13 @@
-require("dotenv").config();
-const path = require("path");
-const webpack = require("webpack");
+import dotenv from "dotenv";
+import path from "path";
+// const webpack = require("webpack");
+import TerserPlugin from "terser-webpack-plugin";
 
-const TerserPlugin = require("terser-webpack-plugin");
-
+dotenv.config();
+// eslint-disable-next-line no-undef
 const PROD = JSON.parse(process.env.PROD_ENV || "0");
 
-module.exports = {
+export default {
   mode: "development",
   devtool: PROD ? false : "inline-source-map",
   // entry: "./src/client/index.js",

@@ -260,19 +260,19 @@ class QuestionInfoEachRound extends React.Component<
     const audioComp = document.getElementById(elementId + "AudioPreview");
     const mediaType = file.type.split("/")[0];
     if (mediaType === MediaType.Image) {
-      imageComp!.setAttribute("hidden", "false");
+      imageComp!.removeAttribute("hidden");
       imageComp!.setAttribute("src", `${base64}`);
 
       videoComp!.setAttribute("hidden", "true");
       audioComp!.setAttribute("hidden", "true");
     } else if (mediaType === MediaType.Video) {
-      videoComp!.setAttribute("hidden", "false");
+      videoComp!.removeAttribute("hidden");
       videoComp!.setAttribute("src", `${base64}`);
 
       imageComp!.setAttribute("hidden", "true");
       audioComp!.setAttribute("hidden", "true");
     } else if (mediaType === MediaType.Audio) {
-      audioComp!.setAttribute("hidden", "false");
+      audioComp!.removeAttribute("hidden");
       audioComp!.setAttribute("src", `${base64}`);
 
       imageComp!.setAttribute("hidden", "true");
@@ -432,36 +432,38 @@ class QuestionInfoEachRound extends React.Component<
                               </Form.Group>
                             </Col>
                             <Col md={3}>
-                              <Row>
-                                <Image
-                                  id={`mediaQuestion${i}ImagePreview`}
-                                  src={
-                                    currentQuestion?.MediaBase64
-                                      ? `data:${currentQuestion.MimeType_Transient};base64,${currentQuestion.MediaBase64}`
-                                      : ""
-                                  }
-                                  fluid
-                                  hidden={mediaType === MediaType.Image}
-                                />
-                                <video
-                                  id={`mediaQuestion${i}VideoPreview`}
-                                  src={
-                                    currentQuestion?.MediaBase64
-                                      ? `data:${currentQuestion.MimeType_Transient};base64,${currentQuestion.MediaBase64}`
-                                      : ""
-                                  }
-                                  hidden={mediaType === MediaType.Video}
-                                />
-                                <audio
-                                  id={`mediaQuestion${i}AudioPreview`}
-                                  src={
-                                    currentQuestion?.MediaBase64
-                                      ? `data:${currentQuestion.MimeType_Transient};base64,${currentQuestion.MediaBase64}`
-                                      : ""
-                                  }
-                                  hidden={mediaType === MediaType.Audio}
-                                />
-                              </Row>
+                              <Image
+                                id={`mediaQuestion${i}ImagePreview`}
+                                src={
+                                  currentQuestion?.MediaBase64
+                                    ? `data:${currentQuestion.MimeType_Transient};base64,${currentQuestion.MediaBase64}`
+                                    : ""
+                                }
+                                fluid
+                                hidden={mediaType !== MediaType.Image}
+                              />
+                              <video
+                                width={"100%"}
+                                controls
+                                id={`mediaQuestion${i}VideoPreview`}
+                                src={
+                                  currentQuestion?.MediaBase64
+                                    ? `data:${currentQuestion.MimeType_Transient};base64,${currentQuestion.MediaBase64}`
+                                    : ""
+                                }
+                                hidden={mediaType !== MediaType.Video}
+                              />
+                              <video
+                                width={"100%"}
+                                controls
+                                id={`mediaQuestion${i}AudioPreview`}
+                                src={
+                                  currentQuestion?.MediaBase64
+                                    ? `data:${currentQuestion.MimeType_Transient};base64,${currentQuestion.MediaBase64}`
+                                    : ""
+                                }
+                                hidden={mediaType !== MediaType.Audio}
+                              />
                             </Col>
                           </Row>
                         );
