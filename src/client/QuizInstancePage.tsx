@@ -16,6 +16,7 @@ import {
   QuestionType,
   Endpoint,
   QuizLifecycleStatusCode,
+  MediaType,
 } from "../server";
 
 interface QuizInstancePageState {
@@ -232,7 +233,7 @@ export default class QuizInstancePage extends React.Component<
               let teamCounter = 1;
               for (const team of this.teams) {
                 teams.push(
-                  <React.Fragment>
+                  <React.Fragment key={team.SequenceNumber}>
                     <Row className="mt-3 d-flex justify-content-left">
                       <p style={{ color: "grey" }}>
                         {`Team ${teamCounter} name: ${team.TeamName}`}
@@ -286,7 +287,7 @@ export default class QuizInstancePage extends React.Component<
               const rounds: any[] = [];
               for (const round of this.rounds) {
                 rounds.push(
-                  <React.Fragment>
+                  <React.Fragment key={round.SequenceNumber}>
                     <Row className="mt-3 d-flex justify-content-left">
                       <p style={{ color: "grey" }}>
                         {`Round ${round.SequenceNumber} name: ${round.RoundName}`}
@@ -360,7 +361,10 @@ export default class QuizInstancePage extends React.Component<
               for (const [roundSequence, questions] of this.questionsMap) {
                 const round = this.rounds[roundSequence - 1];
                 questionsDiv.push(
-                  <Row className="mt-3 d-flex justify-content-left">
+                  <Row
+                    key={round.UUID}
+                    className="mt-3 d-flex justify-content-left"
+                  >
                     <h5 style={{ color: "grey" }}>
                       {`Round ${roundSequence} (${round.RoundName}) Questions`}
                     </h5>
@@ -371,8 +375,18 @@ export default class QuizInstancePage extends React.Component<
                     question.SequenceNumber! % this.quiz.NumberOfTeams!
                       ? question.SequenceNumber! % this.quiz.NumberOfTeams!
                       : this.quiz.NumberOfTeams;
+
+                  let mediaType = MediaType.Image;
+                  const type = question?.MimeType_Transient?.split("/")[0];
+                  if (type === MediaType.Image) {
+                    mediaType = MediaType.Image;
+                  } else if (type === MediaType.Video) {
+                    mediaType = MediaType.Video;
+                  } else if (type === MediaType.Audio) {
+                    mediaType = MediaType.Audio;
+                  }
                   questionsDiv.push(
-                    <React.Fragment>
+                    <React.Fragment key={question.UUID}>
                       <Row className="d-flex justify-content-left mt-3">
                         <p style={{ color: "grey" }}>
                           {`Question ${
@@ -387,8 +401,16 @@ export default class QuizInstancePage extends React.Component<
                           <Col md={3}>
                             <Row>
                               <Image
-                                src={`data:image/gif;base64,${question.MediaBase64}`}
+                                src={`data:${question.MimeType_Transient};base64,${question.MediaBase64}`}
                                 fluid
+                                hidden={mediaType !== MediaType.Image}
+                              />
+                              {/* audio and video */}
+                              <video
+                                width={"100%"}
+                                controls
+                                src={`data:${question.MimeType_Transient};base64,${question.MediaBase64}`}
+                                hidden={mediaType === MediaType.Image}
                               />
                             </Row>
                           </Col>
