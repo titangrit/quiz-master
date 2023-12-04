@@ -475,7 +475,7 @@ export default class RequestHandler {
           mediaType === MediaType.Audio)
       ) {
         question.MimeType_Transient = mimeType.mime;
-      } else if (!question.MediaBase64) {
+      } else if (question.MediaBase64) {
         throw new Error(
           "Invalid mime type of media: " + JSON.stringify(mimeType)
         );

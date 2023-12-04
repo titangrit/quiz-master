@@ -427,6 +427,7 @@ class QuestionInfoEachRound extends React.Component<
                                   onChange={(e) =>
                                     this.previewImage(e.currentTarget)
                                   }
+                                  accept="audio/*,video/*,image/*"
                                   required={this.props.isNewQuiz ? true : false}
                                 />
                               </Form.Group>
