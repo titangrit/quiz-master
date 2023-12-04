@@ -128,9 +128,12 @@ class QuestionInfoEachRound extends React.Component<
           }
         }
 
-        const inputFile = form[`mediaQuestion${i}`].files[0];
         let mediaUpdated = false;
-        if (this.props.roundData.IsAudioVisualRound && inputFile) {
+        if (
+          this.props.roundData.IsAudioVisualRound &&
+          form[`mediaQuestion${i}`].files[0]
+        ) {
+          const inputFile = form[`mediaQuestion${i}`].files[0];
           const imageBase64: string = await this.toBase64(inputFile);
           const inputMedia = imageBase64?.split(",")[1]; // to remove the first part from "data:image/jpeg;base64,/contentblahblahblah"
           if (
@@ -231,6 +234,11 @@ class QuestionInfoEachRound extends React.Component<
         }
       }
 
+      // for next round
+      this.setState({
+        gotRoundQuestionsData: false,
+      });
+
       this.props.nextRound();
     } catch (error) {
       console.error(error);
@@ -315,7 +323,15 @@ class QuestionInfoEachRound extends React.Component<
     }
   };
 
+  // for first render
   async componentDidMount() {
+    if (!this.props.isNewQuiz && !this.state.gotRoundQuestionsData) {
+      await this.getRoundQuestionsData();
+    }
+  }
+
+  // for subsequent renders
+  async componentDidUpdate() {
     if (!this.props.isNewQuiz && !this.state.gotRoundQuestionsData) {
       await this.getRoundQuestionsData();
     }
@@ -428,7 +444,12 @@ class QuestionInfoEachRound extends React.Component<
                                     this.previewImage(e.currentTarget)
                                   }
                                   accept="audio/*,video/*,image/*"
-                                  required={this.props.isNewQuiz ? true : false}
+                                  required={
+                                    this.props.isNewQuiz ||
+                                    !currentQuestion.MediaBase64
+                                      ? true
+                                      : false
+                                  }
                                 />
                               </Form.Group>
                             </Col>
@@ -478,6 +499,10 @@ class QuestionInfoEachRound extends React.Component<
                       if (this.props.roundData.IsMCQ) {
                         let correctOption: string;
                         if (
+                          currentQuestion?.Answer === currentQuestion?.Option1
+                        ) {
+                          correctOption = "A";
+                        } else if (
                           currentQuestion?.Answer === currentQuestion?.Option2
                         ) {
                           correctOption = "B";
