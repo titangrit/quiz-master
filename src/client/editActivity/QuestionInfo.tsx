@@ -54,6 +54,15 @@ class QuestionInfoEachRound extends React.Component<
       event.preventDefault();
       event.stopPropagation();
 
+      // loading button...
+      // const spinner = document.createElement("Spinner");
+      // spinner.setAttribute("animation", "grow");
+      // spinner.setAttribute("role", "status");
+      const saveButton = document.getElementById("saveButton");
+      // saveButton!.appendChild(spinner);
+      saveButton!.innerHTML = "Saving...";
+      saveButton!.setAttribute("disabled", "true");
+
       const form = event.currentTarget;
 
       const totalNumQuestions =
@@ -446,7 +455,7 @@ class QuestionInfoEachRound extends React.Component<
                                   accept="audio/*,video/*,image/*"
                                   required={
                                     this.props.isNewQuiz ||
-                                    !currentQuestion.MediaBase64
+                                    !currentQuestion?.MediaBase64
                                       ? true
                                       : false
                                   }
@@ -660,6 +669,7 @@ class QuestionInfoEachRound extends React.Component<
               <Col md={3}>
                 <Row className="mb-4">
                   <Button
+                    id="saveButton"
                     variant="light"
                     size="lg"
                     type="submit"

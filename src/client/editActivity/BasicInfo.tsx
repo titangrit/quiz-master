@@ -51,6 +51,11 @@ export default class BasicInfo extends React.Component<
       event.preventDefault();
       event.stopPropagation();
 
+      // loading button...
+      const saveButton = document.getElementById("saveButton");
+      saveButton!.innerHTML = "Saving...";
+      saveButton!.setAttribute("disabled", "true");
+
       const form = event.currentTarget;
       const inputQuizEventName: string = form["quizEventName"].value;
       const inputNumOfTeams: number = parseInt(form["numOfTeams"].value);
@@ -255,6 +260,7 @@ export default class BasicInfo extends React.Component<
 
                 <Row className="mb-4">
                   <Button
+                    id="saveButton"
                     variant="light"
                     size="lg"
                     type="submit"

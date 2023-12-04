@@ -47,6 +47,11 @@ export default class RoundInfo extends React.Component<
       event.preventDefault();
       event.stopPropagation();
 
+      // loading button...
+      const saveButton = document.getElementById("saveButton");
+      saveButton!.innerHTML = "Saving...";
+      saveButton!.setAttribute("disabled", "true");
+
       const form = event.currentTarget;
 
       // process update of existing rounds
@@ -392,6 +397,7 @@ export default class RoundInfo extends React.Component<
               <Col md={3}>
                 <Row className="mt-4 mb-4">
                   <Button
+                    id="saveButton"
                     variant="light"
                     size="lg"
                     type="submit"
