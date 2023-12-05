@@ -7,6 +7,7 @@ import BasicInfo from "./BasicInfo";
 import TeamInfo from "./TeamInfo";
 import RoundInfo from "./RoundInfo";
 import QuestionInfo from "./QuestionInfo";
+import { ErrorBoundary } from "../common";
 
 interface EditQuizState {
   isNewQuiz: boolean;
@@ -127,11 +128,13 @@ export default class EditQuiz extends React.Component<object, EditQuizState> {
         return (
           <React.Fragment>
             <HomeNavbar />
-            <BasicInfo
-              isNewQuiz={this.state.isNewQuiz}
-              quizID={this.state.quizID}
-              nextStep={this.nextAfterBasicInfo}
-            />
+            <ErrorBoundary>
+              <BasicInfo
+                isNewQuiz={this.state.isNewQuiz}
+                quizID={this.state.quizID}
+                nextStep={this.nextAfterBasicInfo}
+              />
+            </ErrorBoundary>
           </React.Fragment>
         );
 
@@ -139,13 +142,15 @@ export default class EditQuiz extends React.Component<object, EditQuizState> {
         return (
           <React.Fragment>
             <HomeNavbar />
-            <TeamInfo
-              isNewQuiz={this.state.isNewQuiz}
-              quizID={this.state.quizID}
-              quizEventName={this.state.quizEventName}
-              numOfTeams={this.state.numOfTeams}
-              nextStep={this.nextStep}
-            />
+            <ErrorBoundary>
+              <TeamInfo
+                isNewQuiz={this.state.isNewQuiz}
+                quizID={this.state.quizID}
+                quizEventName={this.state.quizEventName}
+                numOfTeams={this.state.numOfTeams}
+                nextStep={this.nextStep}
+              />
+            </ErrorBoundary>
           </React.Fragment>
         );
 
@@ -153,13 +158,15 @@ export default class EditQuiz extends React.Component<object, EditQuizState> {
         return (
           <React.Fragment>
             <HomeNavbar />
-            <RoundInfo
-              isNewQuiz={this.state.isNewQuiz}
-              quizID={this.state.quizID}
-              quizEventName={this.state.quizEventName}
-              numOfRounds={this.state.numOfRounds}
-              nextStep={this.nextStep}
-            />
+            <ErrorBoundary>
+              <RoundInfo
+                isNewQuiz={this.state.isNewQuiz}
+                quizID={this.state.quizID}
+                quizEventName={this.state.quizEventName}
+                numOfRounds={this.state.numOfRounds}
+                nextStep={this.nextStep}
+              />
+            </ErrorBoundary>
           </React.Fragment>
         );
 
@@ -167,14 +174,16 @@ export default class EditQuiz extends React.Component<object, EditQuizState> {
         return (
           <React.Fragment>
             <HomeNavbar />
-            <QuestionInfo
-              isNewQuiz={this.state.isNewQuiz}
-              quizID={this.state.quizID}
-              quizEventName={this.state.quizEventName}
-              numOfRounds={this.state.numOfRounds}
-              numOfTeams={this.state.numOfTeams}
-              nextStep={this.nextStep}
-            />
+            <ErrorBoundary>
+              <QuestionInfo
+                isNewQuiz={this.state.isNewQuiz}
+                quizID={this.state.quizID}
+                quizEventName={this.state.quizEventName}
+                numOfRounds={this.state.numOfRounds}
+                numOfTeams={this.state.numOfTeams}
+                nextStep={this.nextStep}
+              />
+            </ErrorBoundary>
           </React.Fragment>
         );
     }
