@@ -2,6 +2,7 @@ import dotenv from "dotenv";
 import path from "path";
 // const webpack = require("webpack");
 import TerserPlugin from "terser-webpack-plugin";
+import WebpackBundleAnalyzer from "webpack-bundle-analyzer";
 
 dotenv.config();
 // eslint-disable-next-line no-undef
@@ -75,5 +76,8 @@ export default {
   },
   resolve: {
     extensions: [".js", ".ts", ".tsx"],
-  }
+  },
+  plugins: [
+    new WebpackBundleAnalyzer.BundleAnalyzerPlugin(),
+  ]
 };
